@@ -1,0 +1,107 @@
+{% schema %}
+{
+  "name": "Features Icons",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Features Icons",
+      "blocks": [
+        { "type": "feature", "settings": { "title": "FREE SHIPPING", "subtitle": "Free shipping for all US orders" } },
+        { "type": "feature", "settings": { "title": "SUPPORT 24/7", "subtitle": "We support 24 hours a day" } },
+        { "type": "feature", "settings": { "title": "30 DAYS RETURN", "subtitle": "You have 30 days to return" } },
+        { "type": "feature", "settings": { "title": "100% PAYMENT SECURE", "subtitle": "Payment 100% secured" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<div class="features-icons">
+  {% for block in section.blocks %}
+    <div class="feature-item">
+      {% if block.settings.icon %}
+        <div class="feature-icon">
+          <img src="{{ block.settings.icon | img_url: '50x50' }}" alt="{{ block.settings.title }}">
+        </div>
+      {% endif %}
+      <div class="feature-text">
+        <h4>{{ block.settings.title }}</h4>
+        <p>{{ block.settings.subtitle }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<style>
+  .features-icons {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 40px 20px; //ashiqul ..
+    flex-wrap: wrap;
+    max-width:1500px;
+    margin: 0px auto;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    flex: 1 1 22%; /* 4 per row */
+    min-width: 220px;
+    gap: 15px;
+    text-align: left;
+  }
+
+  .feature-icon img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+  }
+
+  .feature-text h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .feature-text p {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: #777;
+  }
+
+  /* On mobile, stack vertically */
+  @media (max-width: 768px) {
+    .features-icons {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .feature-item {
+      flex: 1 1 100%;
+      justify-content: flex-start;
+    }
+  }
+</style>
