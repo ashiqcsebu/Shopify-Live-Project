@@ -1,0 +1,91 @@
+{% schema %}
+{
+  "name": "Premium Video Showcase",
+  "settings": [
+    { "type": "text", "id": "section_heading", "label": "Section Heading", "default": "#Style Gallery" }
+  ],
+  "blocks": [
+    {
+      "type": "video_block",
+      "name": "Video + Product",
+      "settings": [
+        { "type": "video", "id": "gallery_video", "label": "Shopify Video" },
+        { "type": "product", "id": "gallery_product", "label": "Linked Product" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Premium Video Showcase", "category": "Custom Sections" }
+  ]
+}
+{% endschema %}
+
+<section style="background:#F9F9F9;width:100%;">
+<section class="premium-showcase" style="background:#F9F9F9; padding:60px 20px; max-width:100%; margin: 30px auto;">
+  {% if section.settings.section_heading %}
+    <h2 class="premium-showcase__heading">{{ section.settings.section_heading }}</h2>
+  {% endif %}
+  <div class="showcase-carousel js-flickity"
+       data-flickity='{"wrapAround": true, "pageDots": false, "prevNextButtons": false, "contain": true, "cellAlign": "center"}'>
+    {% for block in section.blocks %}
+      <div class="showcase-slide">
+        {% if block.settings.gallery_video %}
+          {{ block.settings.gallery_video | video_tag: controls: true, autoplay: true, loop: true, muted: true, image_size: "400x", class: "showcase-video" }}
+        {% endif %}
+        <div class="showcase-product">
+          {% if block.settings.gallery_product %}
+            {% assign product = all_products[block.settings.gallery_product] %}
+            {% if product %}
+              <a href="{{ product.url }}" class="showcase-product__link">
+                {% if product.featured_image %}
+                  <img src="{{ product.featured_image | img_url: '200x' }}" alt="{{ product.title }}">
+                {% endif %}
+                <div class="showcase-product__info">
+                  <p class="showcase-product__title">{{ product.title }}</p>
+                  <p class="showcase-product__price">{{ product.price | money }}</p>
+                </div>
+              </a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+</section>
+
+<style>
+.premium-showcase__heading { font-size:32px; font-weight:700; margin-bottom:40px; font-family:'Cabin',sans-serif; text-align:center; }
+.showcase-slide { width: 20%; padding:0 10px; box-sizing: border-box; }
+.showcase-video { width:100%; border-radius:12px; height:440px ;  object-fit: cover; transition: transform .3s, box-shadow .3s;  } 
+.showcase-slide.is-selected .showcase-video { transform: scale(1.05);  box-shadow:0 10px 20px rgba(0,0,0,0.15); }
+.showcase-product { display:none; margin-top:15px; text-align:center; }
+.showcase-slide.is-selected .showcase-product { display:block; }
+.showcase-product img { max-width:100px; border-radius:8px; margin-bottom:6px; }
+.showcase-product__title { font-size:14px; font-weight:600; margin:0; }
+.showcase-product__price { font-size:14px; font-weight:700; color:#000; margin:2px 0 0; }
+
+@media (max-width:1024px){ .showcase-slide { width:33.33%; } }
+@media (min-width: 768px) and (max-width: 1022px){ .showcase-slide { width:50%; } }
+@media (max-width: 767px) {
+  .showcase-slide {
+    width: 100% !important; /* force full width */
+  }
+}
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.3.0/flickity.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.3.0/flickity.pkgd.min.js"></script>
+<script>
+window.addEventListener('load', () => {
+  window.dispatchEvent(new Event('resize'));
+  var carousel = document.querySelector('.js-flickity');
+  var flkty = new Flickity(carousel);
+  function updateCenter() {
+    carousel.querySelectorAll('.showcase-slide').forEach(s => s.classList.remove('is-selected'));
+    carousel.querySelectorAll('.showcase-slide')[flkty.selectedIndex]?.classList.add('is-selected');
+  }
+  flkty.on('change', updateCenter);
+  updateCenter();
+});
+</script>
