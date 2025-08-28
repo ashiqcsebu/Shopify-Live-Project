@@ -1,0 +1,136 @@
+
+
+ {% stylesheet %}
+.fullwidth-slider {
+  position: relative;
+  width: 100vw; /* Full viewport width */
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw; /* Pull section to full screen */
+  margin-right: -50vw;
+  overflow: hidden;
+  background: #F9F9F9; /* Modern background */
+  padding: 60px 0; /* Smart modern padding */
+  margin-top: 50px;
+  margin-bottom: 30px;
+}
+
+.fullwidth-slider h2 {
+  text-align: center;
+  font-family: 'Cabin', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 60px;
+  color: black;
+}
+
+.slider-inner {
+  display: flex;
+  flex-wrap: nowrap;
+  animation: scroll linear infinite;
+  white-space: nowrap;
+}
+
+.slider-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 40px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.slider-item:hover {
+  transform: scale(1.05);
+}
+
+.slider-item img {
+  height: var(--image-height, 100px);
+  width: auto;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+{% endstylesheet %}
+
+<section class="fullwidth-slider">
+  {% if section.settings.title != blank %}
+    <h2>{{ section.settings.title }}</h2>
+  {% endif %}
+
+  <div class="slider-inner" style="animation-duration: {{ 25.0 | divided_by: section.settings.speed }}s;">
+    {% assign blocks_to_repeat = section.blocks | concat: section.blocks %}
+    {% for block in blocks_to_repeat %}
+      {% if block.type == 'image' and block.settings.image != blank %}
+        <a href="{{ block.settings.link | default: '#' }}" class="slider-item">
+          <img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.image.alt | escape }}" style="--image-height: {{ block.settings.height }}px;">
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Fullwidth Brand Slider",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Shop By Brands"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.1,
+      "label": "Scroll Speed",
+      "unit": "x",
+      "default": 1.5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Brand Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Upload Brand Logo"
+        },
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Logo Height",
+          "min": 40,
+          "max": 200,
+          "step": 10,
+          "unit": "px",
+          "default": 100
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Brand Collection Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Fullwidth Brand Slider",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
