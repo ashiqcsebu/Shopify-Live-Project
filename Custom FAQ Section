@@ -1,0 +1,234 @@
+
+{% comment %}
+Shop FAQ Section - Accordion Style
+Responsive, smooth accordion with vanilla CSS
+{% endcomment %}
+
+<section class="faq-section">
+  <div class="faq-container">
+    <div class="faq-header">
+      <h2>Frequently Asked Questions</h2>
+      
+    </div>
+
+    <div class="faq-items" id="faq-accordion">
+      {% for block in section.blocks limit:8 %}
+        <div class="faq-item">
+          <button class="faq-toggle" aria-expanded="false">
+            <span>{{ block.settings.question }}</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>{{ block.settings.answer }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% comment %} <div class="faq-footer">
+      <a href="/pages/contact">View all FAQs →</a>
+    </div> {% endcomment %}
+  </div>
+</section>
+
+<style>
+/* FAQ Section Base */
+.faq-section {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  background: #fff;
+}
+
+.faq-header {
+ 
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.faq-header h2 {
+  font-size: 40px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+.faq-header p {
+  color: #666;
+  font-size: 16px;
+}
+
+/* FAQ Items */
+.faq-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.faq-item {
+  border: 1px solid #e5e5e5;
+  width:900px;
+  margin:0px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fafafa;
+  transition: box-shadow 0.3s ease;
+}
+
+.faq-item:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.faq-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-icon {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.faq-toggle[aria-expanded="true"] .faq-icon {
+  transform: rotate(45deg); /* Turns + into × */
+}
+
+/* Answer Area */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  padding: 0 20px;
+  background: #fff;
+}
+
+.faq-answer p {
+  margin: 15px 0;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 500px; /* enough space for long answers */
+  padding: 0 20px 20px;
+}
+
+/* Footer link */
+.faq-footer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.faq-footer a {
+   color:#000000;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.faq-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+  .faq-header h2 {
+   font-size: 30px !important;
+}
+  .faq-section{
+    padding: 10px 20px 30px 20px;
+  }
+  .faq-item {
+    width:100%;
+    margin: 0px auto;
+  }
+  .faq-header h2 {
+    font-size: 26px;
+  }
+  .faq-toggle {
+    font-size: 16px;
+  }
+  .faq-answer p {
+    font-size: 15px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const toggles = document.querySelectorAll(".faq-toggle");
+
+  toggles.forEach(toggle => {
+    toggle.addEventListener("click", function () {
+      const parent = this.parentElement;
+      const expanded = this.getAttribute("aria-expanded") === "true";
+
+      // Close all others
+      document.querySelectorAll(".faq-item").forEach(item => {
+        item.classList.remove("active");
+        item.querySelector(".faq-toggle").setAttribute("aria-expanded", "false");
+      });
+
+      // Open this one
+      if (!expanded) {
+        parent.classList.add("active");
+        this.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is the return policy?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer",
+          "default": "You can return your Kick Cam Mini Retro Camera within 30 days of purchase."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Shop FAQ Section",
+      "blocks": [
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" },
+        { "type": "faq" }
+      ]
+    }
+  ]
+}
+{% endschema %}
