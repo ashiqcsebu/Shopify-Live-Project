@@ -1,0 +1,159 @@
+{% schema %}
+{
+  "name": "Why Choose Us",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Why Customers Choose Us"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle",
+      "label": "Section Subtitle",
+      "default": "Because we provide our service with best care, comfort, and love!"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Feature Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Card Icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Card Title",
+          "default": "Free Shipping"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Card Description",
+          "default": "Enjoy free delivery on all pet products over $50!"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background Color",
+          "default": "#fdf7ee"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Why Choose Us",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+{% style %}
+.pet-why-choose-us {
+  text-align: center;
+  padding: 60px 20px; 
+  background-color: #FFF8F0;
+}
+
+.pet-why-choose-us .page-width {
+  max-width: 1200px;
+  margin: 0 auto;
+ 
+}
+
+.pet-why-choose-us h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.pet-why-choose-us p.subtitle {
+  font-size: 24px;
+  margin-bottom: 50px;
+  color: #555;
+}
+
+/* Grid Layout */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.card-item {
+  border-radius: 16px;
+  padding: 15px 25px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.card-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.card-item .icon {
+  margin: 0 auto 20px;
+  height: 70px;
+  width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-item .icon img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.card-item h3 {
+  font-size: 20px;
+  font-weight: 600;
+
+  color: #222;
+}
+
+.card-item p {
+  font-size: 15px;
+  color: #555;
+}
+{% endstyle %}
+
+<section class="pet-why-choose-us">
+  <div class="page-width">
+    <h2>{{ section.settings.section_title }}</h2>
+    <p class="subtitle">{{ section.settings.section_subtitle }}</p>
+
+    <div class="card-grid">
+      {% for block in section.blocks %}
+        <div class="card-item" style="background-color: {{ block.settings.background_color }}">
+          <div class="icon">
+            {% if block.settings.icon %}
+              <img src="{{ block.settings.icon | image_url: width: 80 }}" alt="{{ block.settings.title }}">
+            {% endif %}
+          </div>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.description }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
