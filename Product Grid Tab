@@ -1,0 +1,2811 @@
+https://themes.shopify.com/themes/hyper/presets/ceramide
+
+https://prnt.sc/9IIw9CnCYoCj
+
+
+
+
+
+
+{% schema %}
+{
+  "name": "New Arrivals V2",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Alignment Settings"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Section Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Typography & Colors"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size",
+      "default": 42
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Traditional divides between personal and professional space."
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading Font Size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Active Tab/Underline Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Product Card Design (Shrine Pro Style)"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 20,
+      "default": 8,
+      "label": "Card Border Radius (px)"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "default": 0,
+      "label": "Card Border Width (px)"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Card Border Color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_hover_bg",
+      "label": "Button Hover Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_hover_text",
+      "label": "Button Hover Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_sale_color",
+      "label": "Sale Badge Color",
+      "default": "#d32f2f"
+    },
+    {
+      "type": "color",
+      "id": "badge_new_color",
+      "label": "New Badge Color",
+      "default": "#4caf50"
+    },
+    {
+      "type": "header",
+      "content": "View All Button"
+    },
+    {
+      "type": "color",
+      "id": "viewall_bg",
+      "label": "View All Button Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "viewall_text",
+      "label": "View All Button Text",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab Label",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "collection",
+          "id": "tab_collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "New Arrivals V2",
+      "blocks": [
+        { "type": "tab", "settings": { "tab_label": "New Arrivals" } },
+        { "type": "tab", "settings": { "tab_label": "Best Sellers" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+/* --- Section Scoping --- */
+#section-{{ section.id }} { 
+  padding: 60px 20px; 
+  max-width: 1400px; 
+  margin: 0 auto; 
+  overflow: hidden;
+  
+  /* Shrine Pro CSS Variables */
+  --card-radius: {{ section.settings.card_radius }}px;
+  --border-width: {{ section.settings.border_width }}px;
+  --border-color: {{ section.settings.border_color }};
+  --btn-bg: {{ section.settings.btn_bg }};
+  --btn-text: {{ section.settings.btn_text }};
+  --btn-hover-bg: {{ section.settings.btn_hover_bg }};
+  --btn-hover-text: {{ section.settings.btn_hover_text }};
+  --badge-sale: {{ section.settings.badge_sale_color }};
+  --badge-new: {{ section.settings.badge_new_color }};
+}
+
+/* --- Header & Alignment --- */
+#section-{{ section.id }} .na-header {
+  display: flex; 
+  flex-direction: column; 
+  margin-bottom: 40px;
+  text-align: {{ section.settings.content_alignment }};
+  align-items: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-title-wrapper h2 {
+  font-size: {{ section.settings.heading_size }}px; 
+  color: {{ section.settings.heading_color }};
+  margin: 0 0 10px 0; 
+  font-family: Alegreya Sans; 
+  line-height: 1.2em; 
+  font-weight: 500;
+}
+
+#section-{{ section.id }} .na-title-wrapper p {
+  font-size: {{ section.settings.subheading_size }}px; 
+  color: {{ section.settings.subheading_color }}; 
+  margin: 0;
+}
+
+/* --- Tabs --- */
+#section-{{ section.id }} .na-tabs {
+  display: flex; 
+  gap: 32px; 
+  margin-top: 25px; 
+  flex-wrap: wrap;
+  justify-content: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-tab-btn {
+  background: none; 
+  border: none; 
+  padding: 0 0 8px 0; 
+  font-size: 16px; 
+  color: #888;
+  cursor: pointer; 
+  position: relative; 
+  font-weight: 500; 
+  transition: 0.3s;
+}
+
+#section-{{ section.id }} .na-tab-btn.active { 
+  color: {{ section.settings.tab_active_color }}; 
+}
+
+#section-{{ section.id }} .na-tab-btn.active::after {
+  content: ''; 
+  position: absolute; 
+  bottom: -2px; 
+  left: 0; 
+  right: 0; 
+  height: 2px;
+  background: {{ section.settings.tab_active_color }};
+}
+
+/* --- GRID LAYOUT (3 columns, 2 rows = 6 products max) --- */
+#section-{{ section.id }} .na-grid-wrapper { 
+  position: relative; 
+}
+
+#section-{{ section.id }} .na-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* Responsive Grid */
+@media (max-width: 1024px) {
+  #section-{{ section.id }} .na-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  #section-{{ section.id }} .na-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- SHRINE PRO STYLE PRODUCT CARD --- */
+#section-{{ section.id }} .na-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Media Wrapper - Shrine Pro Clone */
+#section-{{ section.id }} .shrine-media-wrapper { 
+  position: relative; 
+}
+
+#section-{{ section.id }} .shrine-media {
+  position: relative;
+  width: 100%;
+  padding-bottom: 110%; 
+  background-color: #f4f4f4;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  border: var(--border-width) solid var(--border-color);
+  box-sizing: border-box;
+}
+
+#section-{{ section.id }} .shrine-media img {
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#section-{{ section.id }} .shrine-img-secondary { 
+  opacity: 0; 
+  z-index: 1; 
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-img-secondary { 
+  opacity: 1; 
+  transform: scale(1.06); 
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-img-primary { 
+  opacity: 0; 
+  transform: scale(1.06); 
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-img-primary:only-child { 
+  opacity: 1; 
+}
+
+/* Badges - Shrine Pro Style */
+#section-{{ section.id }} .shrine-badge {
+  position: absolute; 
+  top: 10px; 
+  left: 10px;
+  padding: 4px 10px; 
+  border-radius: 20px;
+  font-size: 11px; 
+  font-weight: 700; 
+  text-transform: uppercase;
+  color: white; 
+  z-index: 2;
+}
+
+#section-{{ section.id }} .badge-sale { 
+  background-color: var(--badge-sale); 
+}
+
+#section-{{ section.id }} .badge-new { 
+  background-color: var(--badge-new); 
+}
+
+/* Cart Icon - Shrine Pro Style */
+#section-{{ section.id }} .shrine-cart-trigger {
+  position: absolute; 
+  top: 10px; 
+  right: 10px;
+  width: 35px; 
+  height: 35px; 
+  background: white;
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+  opacity: 0;
+  transform: translateX(10px); 
+  transition: all 0.3s ease;
+  cursor: pointer; 
+  z-index: 5; 
+  border: none; 
+  padding: 0;
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-cart-trigger { 
+  opacity: 1; 
+  transform: translateX(0); 
+}
+
+#section-{{ section.id }} .shrine-cart-trigger:hover { 
+  background-color: #f0f0f0; 
+}
+
+#section-{{ section.id }} .shrine-cart-trigger svg { 
+  width: 18px; 
+  height: 18px; 
+  fill: none; 
+  stroke: black; 
+}
+
+/* Add to Cart Button - Shrine Pro Style */
+#section-{{ section.id }} .shrine-atc-btn {
+  position: absolute; 
+  bottom: 15px; 
+  left: 50%;
+  transform: translate(-50%, 100%); 
+  width: 85%;
+  background: var(--btn-bg); 
+  color: var(--btn-text);
+  border: none; 
+  padding: 12px 0; 
+  border-radius: 30px;
+  font-size: 13px; 
+  font-weight: 700; 
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+  opacity: 0; 
+  z-index: 3;
+  text-align: center; 
+  text-decoration: none;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  overflow: hidden; 
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#section-{{ section.id }} .shrine-atc-btn::before {
+  content: ''; 
+  position: absolute; 
+  top: 0; 
+  left: 0;
+  width: 0%; 
+  height: 100%; 
+  background: var(--btn-hover-bg);
+  z-index: -1; 
+  transition: width 0.3s ease-in-out;
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-atc-btn { 
+  opacity: 1; 
+  transform: translate(-50%, 0); 
+}
+
+#section-{{ section.id }} .shrine-atc-btn:hover::before { 
+  width: 100%; 
+}
+
+#section-{{ section.id }} .shrine-atc-btn:hover { 
+  color: var(--btn-hover-text); 
+}
+
+#section-{{ section.id }} .shrine-atc-btn.loading { 
+  opacity: 0.6; 
+  cursor: wait; 
+}
+
+/* Product Info - Shrine Pro Style */
+#section-{{ section.id }} .na-card-info { 
+  padding-top: 12px; 
+  text-align: center;
+}
+
+#section-{{ section.id }} .na-card-vendor { 
+  font-size: 10px; 
+  text-transform: uppercase; 
+  color: #888; 
+  margin-bottom: 5px; 
+}
+
+#section-{{ section.id }} .na-card-title { 
+  font-size: 18px; 
+  font-weight: 500; 
+  color: #1a1a1a; 
+  text-decoration: none; 
+  display: block; 
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+
+#section-{{ section.id }} .na-card-price { 
+  font-size: 18px; 
+  font-weight: 600; 
+  color: #333333; 
+}
+
+#section-{{ section.id }} .shrine-compare { 
+  text-decoration: line-through; 
+  opacity: 0.6; 
+  margin-right: 6px; 
+}
+
+/* --- VIEW ALL BUTTON --- */
+#section-{{ section.id }} .na-view-all-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+#section-{{ section.id }} .na-view-all-btn {
+  background: {{ section.settings.viewall_bg }};
+  color: {{ section.settings.viewall_text }};
+  padding: 10px 30px;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+#section-{{ section.id }} .na-view-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* Modal Scoped */
+#qvModal-{{ section.id }} {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0,0,0,0.7);
+  z-index: 9999; 
+  display: none; 
+  justify-content: center; 
+  align-items: center; 
+  opacity: 0; 
+  transition: 0.3s;
+}
+
+#qvModal-{{ section.id }}.open { 
+  opacity: 1; 
+}
+
+.qv-inner { 
+  background: white; 
+  width: 90%; 
+  max-width: 800px; 
+  display: flex; 
+  border-radius: 10px; 
+  position: relative; 
+  overflow: hidden; 
+}
+
+.qv-close { 
+  position: absolute; 
+  top: 10px; 
+  right: 10px; 
+  font-size: 24px; 
+  cursor: pointer; 
+  border: none; 
+  background: none; 
+  z-index: 5; 
+}
+
+.qv-left { 
+  width: 50%; 
+  background: #f9f9f9; 
+}
+
+.qv-left img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.qv-right { 
+  width: 50%; 
+  padding: 40px; 
+}
+
+@media (max-width: 768px) {
+  .qv-inner { 
+    flex-direction: column; 
+  }
+}
+</style>
+
+<div id="section-{{ section.id }}">
+  <div class="na-header">
+    <div class="na-title-wrapper">
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.subheading }}</p>
+    </div>
+    
+    {% if section.blocks.size > 0 %}
+    <div class="na-tabs">
+      {% for block in section.blocks %}
+        <button class="na-tab-btn {% if forloop.first %}active{% endif %}" 
+                data-tab-idx="{{ forloop.index }}"
+                data-collection-handle="{{ block.settings.tab_collection }}">
+          {{ block.settings.tab_label }}
+        </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% for block in section.blocks %}
+    <div class="na-content-box" data-box-idx="{{ forloop.index }}" style="{% unless forloop.first %}display:none;{% endunless %}">
+      <div class="na-grid-wrapper">
+        <div class="na-grid">
+          {% assign collection = collections[block.settings.tab_collection] %}
+          {% if collection != blank %}
+            {% for product in collection.products limit: 8 %}
+              <div class="na-card">
+                <div class="shrine-media-wrapper">
+                  <a href="{{ product.url }}">
+                    <div class="shrine-media">
+                      <img class="shrine-img-primary" src="{{ product.featured_image | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+                      {% if product.media[1] != blank %}
+                        <img class="shrine-img-secondary" src="{{ product.media[1] | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+                      {% endif %}
+
+                      {% if product.compare_at_price > product.price %}
+                        <span class="shrine-badge badge-sale">Sale</span>
+                      {% elsif product.tags contains 'New' or product.tags contains 'new' %}
+                        <span class="shrine-badge badge-new">New</span>
+                      {% endif %}
+
+                      {% if product.available %}
+                        <button class="shrine-cart-trigger js-shrine-cart" type="button" data-variant-id="{{ product.variants.first.id }}">
+                          <svg viewBox="0 0 24 24"><path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </button>
+                      {% endif %}
+
+                      {% if product.available %}
+                        {% if product.variants.size > 1 %}
+                          <a href="{{ product.url }}" class="shrine-atc-btn">Choose Options</a>
+                        {% else %}
+                          <button type="button" class="shrine-atc-btn js-na-atc" data-vid="{{ product.variants[0].id }}">Add to Cart</button>
+                        {% endif %}
+                      {% else %}
+                        <button class="shrine-atc-btn" disabled style="background:#eee; color:#999;">Sold Out</button>
+                      {% endif %}
+                    </div>
+                  </a>
+                </div>
+
+                <div class="na-card-info">
+                  <div class="na-card-vendor">{{ product.type }}</div>
+                  <a href="{{ product.url }}" class="na-card-title">{{ product.title }}</a>
+                  <div class="na-card-price">
+                    {% if product.compare_at_price > product.price %}
+                      <span class="shrine-compare">{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                    {{ product.price | money }}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        {% if collection.products.size > 6 %}
+          <div class="na-view-all-wrapper">
+            <a href="/collections/{{ block.settings.tab_collection }}" class="na-view-all-btn">View All</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div id="qvModal-{{ section.id }}" class="qv-wrapper">
+  <div class="qv-inner">
+    <button class="qv-close">&times;</button>
+    <div class="qv-left"><img class="qv-img" src="" alt=""></div>
+    <div class="qv-right">
+      <h2 class="qv-title"></h2>
+      <p class="qv-price" style="font-weight:bold; margin: 10px 0;"></p>
+      <div class="qv-desc" style="font-size:14px; color:#555; margin-bottom:20px;"></div>
+      <button class="na-atc-btn qv-atc-btn">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sId = "{{ section.id }}";
+  const scope = document.getElementById(`section-${sId}`);
+  const modal = document.getElementById(`qvModal-${sId}`);
+  if (!scope) return;
+
+  // Tabs with dynamic View All button
+  scope.querySelectorAll('.na-tab-btn').forEach(t => {
+    t.addEventListener('click', () => {
+      scope.querySelectorAll('.na-tab-btn').forEach(btn => btn.classList.remove('active'));
+      t.classList.add('active');
+      
+      scope.querySelectorAll('.na-content-box').forEach(box => {
+        box.style.display = box.dataset.boxIdx === t.dataset.tabIdx ? 'block' : 'none';
+      });
+    });
+  });
+
+  // SHRINE PRO - Cart Function
+  async function addToCart(id, btn) {
+    if(!id || btn.classList.contains('loading')) return;
+    const originalText = btn.innerText;
+    btn.innerText = 'Adding...';
+    btn.classList.add('loading');
+    
+    try {
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: id, quantity: 1 }] })
+      });
+      
+      const cartData = await response.json();
+      
+      // SHRINE PRO SPECIFIC TRIGGERS
+      document.dispatchEvent(new CustomEvent('cart:updated', {
+        detail: { cart: cartData }
+      }));
+
+      document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+      
+      if (window.theme && window.theme.cart) {
+        window.theme.cart.render(); 
+      }
+
+      const drawer = document.querySelector('cart-drawer') || document.querySelector('#CartDrawer');
+      if (drawer) {
+        if (typeof drawer.open === 'function') {
+          drawer.open();
+        } else {
+          drawer.setAttribute('active', '');
+          document.documentElement.classList.add('cart-drawer-open');
+        }
+      } else {
+        document.documentElement.dispatchEvent(new CustomEvent('cart-drawer:open', { bubbles: true }));
+        document.documentElement.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
+      }
+
+      btn.innerText = 'Added!';
+    } catch (e) { 
+      console.error(e);
+      btn.innerText = 'Error';
+    }
+    setTimeout(() => { 
+      btn.innerText = originalText; 
+      btn.classList.remove('loading'); 
+    }, 2000);
+  }
+
+  // Regular ATC buttons
+  scope.querySelectorAll('.js-na-atc').forEach(btn => {
+    btn.addEventListener('click', () => addToCart(btn.dataset.vid, btn));
+  });
+
+  // Shrine cart trigger buttons
+  scope.querySelectorAll('.js-shrine-cart').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const variantId = btn.dataset.variantId;
+      addToCart(variantId, btn);
+    });
+  });
+
+  // Quick View Logic (kept for compatibility)
+  if(modal) {
+    const qvImg = modal.querySelector('.qv-img');
+    const qvTitle = modal.querySelector('.qv-title');
+    const qvPrice = modal.querySelector('.qv-price');
+    const qvDesc = modal.querySelector('.qv-desc');
+    const qvAtc = modal.querySelector('.qv-atc-btn');
+
+    scope.querySelectorAll('.js-open-qv').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const h = btn.dataset.handle;
+        const r = await fetch(`/products/${h}.js`);
+        const p = await r.json();
+        qvImg.src = p.featured_image;
+        qvTitle.innerText = p.title;
+        qvPrice.innerText = (p.price/100).toFixed(2) + ' ' + (window.Shopify.currency.active || '');
+        qvDesc.innerHTML = p.description.substring(0, 150) + '...';
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('open'), 10);
+        qvAtc.onclick = () => addToCart(p.variants[0].id, qvAtc);
+      });
+    });
+
+    modal.querySelector('.qv-close').onclick = () => {
+      modal.classList.remove('open');
+      setTimeout(() => modal.style.display = 'none', 300);
+    };
+  }
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% schema %}
+{
+  "name": "New Arrivals V2",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Alignment Settings"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Section Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Typography & Colors"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size",
+      "default": 42
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Traditional divides between personal and professional space."
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading Font Size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Active Tab/Underline Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Product Card Design (Shrine Pro Style)"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 20,
+      "default": 8,
+      "label": "Card Border Radius (px)"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "default": 0,
+      "label": "Card Border Width (px)"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Card Border Color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_hover_bg",
+      "label": "Button Hover Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_hover_text",
+      "label": "Button Hover Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_sale_color",
+      "label": "Sale Badge Color",
+      "default": "#d32f2f"
+    },
+    {
+      "type": "color",
+      "id": "badge_new_color",
+      "label": "New Badge Color",
+      "default": "#4caf50"
+    },
+    {
+      "type": "header",
+      "content": "Product Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 3,
+      "max": 50,
+      "step": 1,
+      "label": "Products to show",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab Label",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "collection",
+          "id": "tab_collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "New Arrivals V2",
+      "blocks": [
+        { "type": "tab", "settings": { "tab_label": "New Arrivals" } },
+        { "type": "tab", "settings": { "tab_label": "Best Sellers" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+/* --- Section Scoping --- */
+#section-{{ section.id }} { 
+  padding: 60px 20px; 
+  max-width: 1400px; 
+  margin: 0 auto; 
+  overflow: hidden;
+  
+  /* Shrine Pro CSS Variables */
+  --card-radius: {{ section.settings.card_radius }}px;
+  --border-width: {{ section.settings.border_width }}px;
+  --border-color: {{ section.settings.border_color }};
+  --btn-bg: {{ section.settings.btn_bg }};
+  --btn-text: {{ section.settings.btn_text }};
+  --btn-hover-bg: {{ section.settings.btn_hover_bg }};
+  --btn-hover-text: {{ section.settings.btn_hover_text }};
+  --badge-sale: {{ section.settings.badge_sale_color }};
+  --badge-new: {{ section.settings.badge_new_color }};
+}
+
+/* --- Header & Alignment --- */
+#section-{{ section.id }} .na-header {
+  display: flex; 
+  flex-direction: column; 
+  margin-bottom: 40px;
+  text-align: {{ section.settings.content_alignment }};
+  align-items: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-title-wrapper h2 {
+  font-size: {{ section.settings.heading_size }}px; 
+  color: {{ section.settings.heading_color }};
+  margin: 0 0 10px 0; 
+  font-family: Alegreya Sans; 
+  line-height: 1.2em; 
+  font-weight: 500;
+}
+
+#section-{{ section.id }} .na-title-wrapper p {
+  font-size: {{ section.settings.subheading_size }}px; 
+  color: {{ section.settings.subheading_color }}; 
+  margin: 0;
+}
+
+/* --- Tabs --- */
+#section-{{ section.id }} .na-tabs {
+  display: flex; 
+  gap: 32px; 
+  margin-top: 25px; 
+  flex-wrap: wrap;
+  justify-content: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-tab-btn {
+  background: none; 
+  border: none; 
+  padding: 0 0 8px 0; 
+  font-size: 16px; 
+  color: #888;
+  cursor: pointer; 
+  position: relative; 
+  font-weight: 500; 
+  transition: 0.3s;
+}
+
+#section-{{ section.id }} .na-tab-btn.active { 
+  color: {{ section.settings.tab_active_color }}; 
+}
+
+#section-{{ section.id }} .na-tab-btn.active::after {
+  content: ''; 
+  position: absolute; 
+  bottom: -2px; 
+  left: 0; 
+  right: 0; 
+  height: 2px;
+  background: {{ section.settings.tab_active_color }};
+}
+
+/* --- Carousel --- */
+#section-{{ section.id }} .na-carousel-wrapper { 
+  position: relative; 
+}
+
+#section-{{ section.id }} .na-carousel {
+  display: flex; 
+  gap: 20px; 
+  overflow-x: auto; 
+  scroll-behavior: smooth; 
+  scrollbar-width: none; 
+  padding: 10px 0 30px 0;
+  align-items: stretch;
+}
+
+#section-{{ section.id }} .na-carousel::-webkit-scrollbar { 
+  display: none; 
+}
+
+#section-{{ section.id }} .na-nav { 
+  position: absolute; 
+  top: -65px; 
+  right: 0; 
+  display: flex; 
+  gap: 10px; 
+}
+
+#section-{{ section.id }} .na-nav-btn {
+  width: 38px; 
+  height: 38px; 
+  border-radius: 50%; 
+  border: 1px solid #ddd; 
+  background: white;
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  transition: 0.3s;
+}
+
+#section-{{ section.id }} .na-nav-btn:hover { 
+  background: #000; 
+  color: #fff; 
+}
+
+/* --- SHRINE PRO STYLE PRODUCT CARD --- */
+#section-{{ section.id }} .na-card {
+  flex: 0 0 280px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Media Wrapper - Shrine Pro Clone */
+#section-{{ section.id }} .shrine-media-wrapper { 
+  position: relative; 
+}
+
+#section-{{ section.id }} .shrine-media {
+  position: relative;
+  width: 100%;
+  padding-bottom: 110%; 
+  background-color: #f4f4f4;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  border: var(--border-width) solid var(--border-color);
+  box-sizing: border-box;
+}
+
+#section-{{ section.id }} .shrine-media img {
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#section-{{ section.id }} .shrine-img-secondary { 
+  opacity: 0; 
+  z-index: 1; 
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-img-secondary { 
+  opacity: 1; 
+  transform: scale(1.06); 
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-img-primary { 
+  opacity: 0; 
+  transform: scale(1.06); 
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-img-primary:only-child { 
+  opacity: 1; 
+}
+
+/* Badges - Shrine Pro Style */
+#section-{{ section.id }} .shrine-badge {
+  position: absolute; 
+  top: 10px; 
+  left: 10px;
+  padding: 4px 10px; 
+  border-radius: 20px;
+  font-size: 11px; 
+  font-weight: 700; 
+  text-transform: uppercase;
+  color: white; 
+  z-index: 2;
+}
+
+#section-{{ section.id }} .badge-sale { 
+  background-color: var(--badge-sale); 
+}
+
+#section-{{ section.id }} .badge-new { 
+  background-color: var(--badge-new); 
+}
+
+/* Cart Icon - Shrine Pro Style */
+#section-{{ section.id }} .shrine-cart-trigger {
+  position: absolute; 
+  top: 10px; 
+  right: 10px;
+  width: 35px; 
+  height: 35px; 
+  background: white;
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+  opacity: 0;
+  transform: translateX(10px); 
+  transition: all 0.3s ease;
+  cursor: pointer; 
+  z-index: 5; 
+  border: none; 
+  padding: 0;
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-cart-trigger { 
+  opacity: 1; 
+  transform: translateX(0); 
+}
+
+#section-{{ section.id }} .shrine-cart-trigger:hover { 
+  background-color: #f0f0f0; 
+}
+
+#section-{{ section.id }} .shrine-cart-trigger svg { 
+  width: 18px; 
+  height: 18px; 
+  fill: none; 
+  stroke: black; 
+}
+
+/* Add to Cart Button - Shrine Pro Style */
+#section-{{ section.id }} .shrine-atc-btn {
+  position: absolute; 
+  bottom: 15px; 
+  left: 50%;
+  transform: translate(-50%, 100%); 
+  width: 85%;
+  background: var(--btn-bg); 
+  color: var(--btn-text);
+  border: none; 
+  padding: 12px 0; 
+  border-radius: 30px;
+  font-size: 13px; 
+  font-weight: 700; 
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+  opacity: 0; 
+  z-index: 3;
+  text-align: center; 
+  text-decoration: none;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  overflow: hidden; 
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#section-{{ section.id }} .shrine-atc-btn::before {
+  content: ''; 
+  position: absolute; 
+  top: 0; 
+  left: 0;
+  width: 0%; 
+  height: 100%; 
+  background: var(--btn-hover-bg);
+  z-index: -1; 
+  transition: width 0.3s ease-in-out;
+}
+
+#section-{{ section.id }} .na-card:hover .shrine-atc-btn { 
+  opacity: 1; 
+  transform: translate(-50%, 0); 
+}
+
+#section-{{ section.id }} .shrine-atc-btn:hover::before { 
+  width: 100%; 
+}
+
+#section-{{ section.id }} .shrine-atc-btn:hover { 
+  color: var(--btn-hover-text); 
+}
+
+#section-{{ section.id }} .shrine-atc-btn.loading { 
+  opacity: 0.6; 
+  cursor: wait; 
+}
+
+/* Product Info - Shrine Pro Style */
+#section-{{ section.id }} .na-card-info { 
+  padding-top: 15px; 
+  text-align: left;
+}
+
+#section-{{ section.id }} .na-card-vendor { 
+  font-size: 10px; 
+  text-transform: uppercase; 
+  color: #888; 
+  margin-bottom: 5px; 
+}
+
+#section-{{ section.id }} .na-card-title { 
+  font-size: 15px; 
+  font-weight: 600; 
+  color: #1a1a1a; 
+  text-decoration: none; 
+  display: block; 
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+
+#section-{{ section.id }} .na-card-price { 
+  font-size: 14px; 
+  font-weight: 600; 
+  color: #333333; 
+}
+
+#section-{{ section.id }} .shrine-compare { 
+  text-decoration: line-through; 
+  opacity: 0.6; 
+  margin-right: 6px; 
+}
+
+/* Modal Scoped */
+#qvModal-{{ section.id }} {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0,0,0,0.7);
+  z-index: 9999; 
+  display: none; 
+  justify-content: center; 
+  align-items: center; 
+  opacity: 0; 
+  transition: 0.3s;
+}
+
+#qvModal-{{ section.id }}.open { 
+  opacity: 1; 
+}
+
+.qv-inner { 
+  background: white; 
+  width: 90%; 
+  max-width: 800px; 
+  display: flex; 
+  border-radius: 10px; 
+  position: relative; 
+  overflow: hidden; 
+}
+
+.qv-close { 
+  position: absolute; 
+  top: 10px; 
+  right: 10px; 
+  font-size: 24px; 
+  cursor: pointer; 
+  border: none; 
+  background: none; 
+  z-index: 5; 
+}
+
+.qv-left { 
+  width: 50%; 
+  background: #f9f9f9; 
+}
+
+.qv-left img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.qv-right { 
+  width: 50%; 
+  padding: 40px; 
+}
+
+@media (max-width: 768px) {
+  #section-{{ section.id }} .na-nav { 
+    display: none; 
+  }
+  #section-{{ section.id }} .na-card { 
+    flex: 0 0 240px; 
+  }
+  .qv-inner { 
+    flex-direction: column; 
+  }
+}
+</style>
+
+<div id="section-{{ section.id }}">
+  <div class="na-header">
+    <div class="na-title-wrapper">
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.subheading }}</p>
+    </div>
+    
+    {% if section.blocks.size > 0 %}
+    <div class="na-tabs">
+      {% for block in section.blocks %}
+        <button class="na-tab-btn {% if forloop.first %}active{% endif %}" data-tab-idx="{{ forloop.index }}">
+          {{ block.settings.tab_label }}
+        </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% for block in section.blocks %}
+    <div class="na-content-box" data-box-idx="{{ forloop.index }}" style="{% unless forloop.first %}display:none;{% endunless %}">
+      <div class="na-carousel-wrapper">
+        <div class="na-carousel" id="carousel-{{ section.id }}-{{ forloop.index }}">
+          {% assign collection = collections[block.settings.tab_collection] %}
+          {% if collection != blank %}
+            {% for product in collection.products limit: section.settings.products_to_show %}
+              <div class="na-card">
+                <div class="shrine-media-wrapper">
+                  <a href="{{ product.url }}">
+                    <div class="shrine-media">
+                      <img class="shrine-img-primary" src="{{ product.featured_image | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+                      {% if product.media[1] != blank %}
+                        <img class="shrine-img-secondary" src="{{ product.media[1] | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+                      {% endif %}
+
+                      {% if product.compare_at_price > product.price %}
+                        <span class="shrine-badge badge-sale">Sale</span>
+                      {% elsif product.tags contains 'New' or product.tags contains 'new' %}
+                        <span class="shrine-badge badge-new">New</span>
+                      {% endif %}
+
+                      {% if product.available %}
+                        <button class="shrine-cart-trigger js-shrine-cart" type="button" data-variant-id="{{ product.variants.first.id }}">
+                          <svg viewBox="0 0 24 24"><path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </button>
+                      {% endif %}
+
+                      {% if product.available %}
+                        {% if product.variants.size > 1 %}
+                          <a href="{{ product.url }}" class="shrine-atc-btn">Choose Options</a>
+                        {% else %}
+                          <button type="button" class="shrine-atc-btn js-na-atc" data-vid="{{ product.variants[0].id }}">Add to Cart</button>
+                        {% endif %}
+                      {% else %}
+                        <button class="shrine-atc-btn" disabled style="background:#eee; color:#999;">Sold Out</button>
+                      {% endif %}
+                    </div>
+                  </a>
+                </div>
+
+                <div class="na-card-info">
+                  <div class="na-card-vendor">{{ product.type }}</div>
+                  <a href="{{ product.url }}" class="na-card-title">{{ product.title }}</a>
+                  <div class="na-card-price">
+                    {% if product.compare_at_price > product.price %}
+                      <span class="shrine-compare">{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                    {{ product.price | money }}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="na-nav">
+          <button class="na-nav-btn js-na-prev" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❮</button>
+          <button class="na-nav-btn js-na-next" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❯</button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div id="qvModal-{{ section.id }}" class="qv-wrapper">
+  <div class="qv-inner">
+    <button class="qv-close">&times;</button>
+    <div class="qv-left"><img class="qv-img" src="" alt=""></div>
+    <div class="qv-right">
+      <h2 class="qv-title"></h2>
+      <p class="qv-price" style="font-weight:bold; margin: 10px 0;"></p>
+      <div class="qv-desc" style="font-size:14px; color:#555; margin-bottom:20px;"></div>
+      <button class="na-atc-btn qv-atc-btn">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sId = "{{ section.id }}";
+  const scope = document.getElementById(`section-${sId}`);
+  const modal = document.getElementById(`qvModal-${sId}`);
+  if (!scope) return;
+
+  // Tabs
+  scope.querySelectorAll('.na-tab-btn').forEach(t => {
+    t.addEventListener('click', () => {
+      scope.querySelectorAll('.na-tab-btn').forEach(btn => btn.classList.remove('active'));
+      t.classList.add('active');
+      scope.querySelectorAll('.na-content-box').forEach(box => {
+        box.style.display = box.dataset.boxIdx === t.dataset.tabIdx ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Carousel
+  scope.querySelectorAll('.js-na-next').forEach(b => {
+    b.addEventListener('click', () => { 
+      document.getElementById(b.dataset.target).scrollBy({ left: 300, behavior: 'smooth' }); 
+    });
+  });
+  scope.querySelectorAll('.js-na-prev').forEach(b => {
+    b.addEventListener('click', () => { 
+      document.getElementById(b.dataset.target).scrollBy({ left: -300, behavior: 'smooth' }); 
+    });
+  });
+
+  // SHRINE PRO - Cart Function
+  async function addToCart(id, btn) {
+    if(!id || btn.classList.contains('loading')) return;
+    const originalText = btn.innerText;
+    btn.innerText = 'Adding...';
+    btn.classList.add('loading');
+    
+    try {
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: id, quantity: 1 }] })
+      });
+      
+      const cartData = await response.json();
+      
+      // SHRINE PRO SPECIFIC TRIGGERS
+      document.dispatchEvent(new CustomEvent('cart:updated', {
+        detail: { cart: cartData }
+      }));
+
+      document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+      
+      if (window.theme && window.theme.cart) {
+        window.theme.cart.render(); 
+      }
+
+      const drawer = document.querySelector('cart-drawer') || document.querySelector('#CartDrawer');
+      if (drawer) {
+        if (typeof drawer.open === 'function') {
+          drawer.open();
+        } else {
+          drawer.setAttribute('active', '');
+          document.documentElement.classList.add('cart-drawer-open');
+        }
+      } else {
+        document.documentElement.dispatchEvent(new CustomEvent('cart-drawer:open', { bubbles: true }));
+        document.documentElement.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
+      }
+
+      btn.innerText = 'Added!';
+    } catch (e) { 
+      console.error(e);
+      btn.innerText = 'Error';
+    }
+    setTimeout(() => { 
+      btn.innerText = originalText; 
+      btn.classList.remove('loading'); 
+    }, 2000);
+  }
+
+  // Regular ATC buttons
+  scope.querySelectorAll('.js-na-atc').forEach(btn => {
+    btn.addEventListener('click', () => addToCart(btn.dataset.vid, btn));
+  });
+
+  // Shrine cart trigger buttons
+  scope.querySelectorAll('.js-shrine-cart').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const variantId = btn.dataset.variantId;
+      addToCart(variantId, btn);
+    });
+  });
+
+  // Quick View Logic (kept for compatibility)
+  if(modal) {
+    const qvImg = modal.querySelector('.qv-img');
+    const qvTitle = modal.querySelector('.qv-title');
+    const qvPrice = modal.querySelector('.qv-price');
+    const qvDesc = modal.querySelector('.qv-desc');
+    const qvAtc = modal.querySelector('.qv-atc-btn');
+
+    scope.querySelectorAll('.js-open-qv').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const h = btn.dataset.handle;
+        const r = await fetch(`/products/${h}.js`);
+        const p = await r.json();
+        qvImg.src = p.featured_image;
+        qvTitle.innerText = p.title;
+        qvPrice.innerText = (p.price/100).toFixed(2) + ' ' + (window.Shopify.currency.active || '');
+        qvDesc.innerHTML = p.description.substring(0, 150) + '...';
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('open'), 10);
+        qvAtc.onclick = () => addToCart(p.variants[0].id, qvAtc);
+      });
+    });
+
+    modal.querySelector('.qv-close').onclick = () => {
+      modal.classList.remove('open');
+      setTimeout(() => modal.style.display = 'none', 300);
+    };
+  }
+})();
+</script>
+ {% endcomment %}
+
+
+
+
+
+
+
+{% comment %} 
+{% schema %}
+{
+  "name": "New Arrivals V2",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Alignment Settings"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Section Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Typography & Colors"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size",
+      "default": 42
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Traditional divides between personal and professional space."
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading Font Size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Active Tab/Underline Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Product Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 3,
+      "max": 50,
+      "step": 1,
+      "label": "Products to show",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab Label",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "collection",
+          "id": "tab_collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "New Arrivals V2",
+      "blocks": [
+        { "type": "tab", "settings": { "tab_label": "New Arrivals" } },
+        { "type": "tab", "settings": { "tab_label": "Best Sellers" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+/* --- Section Scoping --- */
+#section-{{ section.id }} { padding: 60px 20px; max-width: 1400px; margin: 0 auto; overflow: hidden; }
+
+/* --- Header & Alignment --- */
+#section-{{ section.id }} .na-header {
+  display: flex; flex-direction: column; margin-bottom: 40px;
+  text-align: {{ section.settings.content_alignment }};
+  align-items: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-title-wrapper h2 {
+  font-size: {{ section.settings.heading_size }}px; color: {{ section.settings.heading_color }};
+  margin: 0 0 10px 0; font-family: Alegreya Sans; line-height: 1.2em; font-weight:500;
+}
+
+#section-{{ section.id }} .na-title-wrapper p {
+  font-size: {{ section.settings.subheading_size }}px; color: {{ section.settings.subheading_color }}; margin: 0;
+}
+
+/* --- Tabs --- */
+#section-{{ section.id }} .na-tabs {
+  display: flex; gap: 32px; margin-top: 25px; flex-wrap: wrap;
+  justify-content: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-tab-btn {
+  background: none; border: none; padding: 0 0 8px 0; font-size: 16px; color: #888;
+  cursor: pointer; position: relative; font-weight: 500; transition: 0.3s;
+}
+
+#section-{{ section.id }} .na-tab-btn.active { color: {{ section.settings.tab_active_color }}; }
+#section-{{ section.id }} .na-tab-btn.active::after {
+  content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px;
+  background: {{ section.settings.tab_active_color }};
+}
+
+/* --- Carousel --- */
+#section-{{ section.id }} .na-carousel-wrapper { position: relative; }
+#section-{{ section.id }} .na-carousel {
+  display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 10px 0 30px 0;
+}
+#section-{{ section.id }} .na-carousel::-webkit-scrollbar { display: none; }
+
+#section-{{ section.id }} .na-nav { position: absolute; top: -65px; right: 0; display: flex; gap: 10px; }
+#section-{{ section.id }} .na-nav-btn {
+  width: 38px; height: 38px; border-radius: 50%; border: 1px solid #ddd; background: white;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+}
+#section-{{ section.id }} .na-nav-btn:hover { background: #000; color: #fff; }
+
+/* --- Product Card --- */
+#section-{{ section.id }} .na-card {
+  flex: 0 0 280px; background: #fff; border: 1px solid #f0f0f0; border-radius: 8px; padding: 15px; position: relative; transition: 0.3s;
+}
+#section-{{ section.id }} .na-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.07); }
+
+#section-{{ section.id }} .na-img-link { display: block; position: relative; padding-top: 100%; background: #fdfdfd; overflow: hidden; border-radius: 4px; }
+#section-{{ section.id }} .na-img-link img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+
+#section-{{ section.id }} .na-card-info { text-align: center; margin-top: 15px; }
+#section-{{ section.id }} .na-card-title { font-size: 15px; font-weight: 500; margin: 10px 0; color: #1a1a1a; text-decoration: none; display: block; height: 40px; overflow: hidden; }
+#section-{{ section.id }} .na-card-price { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+
+#section-{{ section.id }} .na-atc-btn {
+  width: 100%; padding: 12px; background: #D87889; color: #fff; border: none; border-radius: 4px;
+  margin-top: 15px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s;
+}
+#section-{{ section.id }} .na-atc-btn.loading { opacity: 0.6; cursor: wait; }
+
+/* Quick View Icon */
+#section-{{ section.id }} .na-qv-icon {
+  position: absolute; top: 10px; right: 10px; background: white; width: 35px; height: 35px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; opacity: 0; transition: 0.3s;
+}
+#section-{{ section.id }} .na-card:hover .na-qv-icon { opacity: 1; }
+
+/* Modal Scoped */
+#qvModal-{{ section.id }} {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+  z-index: 9999; display: none; justify-content: center; align-items: center; opacity: 0; transition: 0.3s;
+}
+#qvModal-{{ section.id }}.open { opacity: 1; }
+.qv-inner { background: white; width: 90%; max-width: 800px; display: flex; border-radius: 10px; position: relative; overflow: hidden; }
+.qv-close { position: absolute; top: 10px; right: 10px; font-size: 24px; cursor: pointer; border: none; background: none; z-index: 5; }
+.qv-left { width: 50%; background: #f9f9f9; }
+.qv-left img { width: 100%; height: 100%; object-fit: cover; }
+.qv-right { width: 50%; padding: 40px; }
+
+@media (max-width: 768px) {
+  #section-{{ section.id }} .na-nav { display: none; }
+  #section-{{ section.id }} .na-card { flex: 0 0 240px; }
+  .qv-inner { flex-direction: column; }
+}
+</style>
+
+<div id="section-{{ section.id }}">
+  <div class="na-header">
+    <div class="na-title-wrapper">
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.subheading }}</p>
+    </div>
+    
+    {% if section.blocks.size > 0 %}
+    <div class="na-tabs">
+      {% for block in section.blocks %}
+        <button class="na-tab-btn {% if forloop.first %}active{% endif %}" data-tab-idx="{{ forloop.index }}">
+          {{ block.settings.tab_label }}
+        </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% for block in section.blocks %}
+    <div class="na-content-box" data-box-idx="{{ forloop.index }}" style="{% unless forloop.first %}display:none;{% endunless %}">
+      <div class="na-carousel-wrapper">
+        <div class="na-carousel" id="carousel-{{ section.id }}-{{ forloop.index }}">
+          {% assign collection = collections[block.settings.tab_collection] %}
+          {% if collection != blank %}
+            {% for product in collection.products limit: section.settings.products_to_show %}
+              <div class="na-card">
+                <div class="na-qv-icon js-open-qv" data-handle="{{ product.handle }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <a href="{{ product.url }}" class="na-img-link">
+                  <img src="{{ product.featured_image | img_url: '600x' }}" alt="{{ product.title }}" loading="lazy">
+                </a>
+                <div class="na-card-info">
+                  <a href="{{ product.url }}" class="na-card-title">{{ product.title }}</a>
+                  <div class="na-card-price">{{ product.price | money }}</div>
+                  
+                  {% if product.variants.size > 1 %}
+                    <button class="na-atc-btn" onclick="window.location.href='{{ product.url }}'">Options</button>
+                  {% else %}
+                    <button class="na-atc-btn js-na-atc" data-vid="{{ product.variants[0].id }}">Add to Cart</button>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="na-nav">
+          <button class="na-nav-btn js-na-prev" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❮</button>
+          <button class="na-nav-btn js-na-next" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❯</button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div id="qvModal-{{ section.id }}" class="qv-wrapper">
+  <div class="qv-inner">
+    <button class="qv-close">&times;</button>
+    <div class="qv-left"><img class="qv-img" src="" alt=""></div>
+    <div class="qv-right">
+      <h2 class="qv-title"></h2>
+      <p class="qv-price" style="font-weight:bold; margin: 10px 0;"></p>
+      <div class="qv-desc" style="font-size:14px; color:#555; margin-bottom:20px;"></div>
+      <button class="na-atc-btn qv-atc-btn">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sId = "{{ section.id }}";
+  const scope = document.getElementById(`section-${sId}`);
+  const modal = document.getElementById(`qvModal-${sId}`);
+  if (!scope) return;
+
+  // Tabs
+  scope.querySelectorAll('.na-tab-btn').forEach(t => {
+    t.addEventListener('click', () => {
+      scope.querySelectorAll('.na-tab-btn').forEach(btn => btn.classList.remove('active'));
+      t.classList.add('active');
+      scope.querySelectorAll('.na-content-box').forEach(box => {
+        box.style.display = box.dataset.boxIdx === t.dataset.tabIdx ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Carousel
+  scope.querySelectorAll('.js-na-next').forEach(b => {
+    b.addEventListener('click', () => { document.getElementById(b.dataset.target).scrollBy({ left: 300, behavior: 'smooth' }); });
+  });
+  scope.querySelectorAll('.js-na-prev').forEach(b => {
+    b.addEventListener('click', () => { document.getElementById(b.dataset.target).scrollBy({ left: -300, behavior: 'smooth' }); });
+  });
+
+  // SHRINE PRO - Cart Function
+  async function addToCart(id, btn) {
+    if(!id || btn.classList.contains('loading')) return;
+    btn.innerText = 'Adding...';
+    btn.classList.add('loading');
+    
+    try {
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: id, quantity: 1 }] })
+      });
+      
+      const cartData = await response.json();
+      
+      // SHRINE PRO SPECIFIC TRIGGER
+      // 1. Dispatch custom event for theme's AJAX cart
+      document.dispatchEvent(new CustomEvent('cart:updated', {
+        detail: { cart: cartData }
+      }));
+
+      // 2. Refresh cart sections (Shrine Pro uses similar logic to Dawn)
+      if (window.theme && window.theme.cart) {
+          // Some versions of Shrine
+          window.theme.cart.render(); 
+      }
+
+      // 3. Open the Drawer Element directly
+      const drawer = document.querySelector('cart-drawer');
+      if (drawer) {
+          // Shrine Pro drawer typically uses an open attribute or method
+          if (typeof drawer.open === 'function') {
+            drawer.open();
+          } else {
+            drawer.setAttribute('active', '');
+            document.documentElement.classList.add('cart-drawer-open');
+          }
+      }
+
+      btn.innerText = 'Added!';
+    } catch (e) { 
+      btn.innerText = 'Error';
+    }
+    setTimeout(() => { btn.innerText = 'Add to Cart'; btn.classList.remove('loading'); }, 2000);
+  }
+
+  scope.querySelectorAll('.js-na-atc').forEach(btn => {
+    btn.addEventListener('click', () => addToCart(btn.dataset.vid, btn));
+  });
+
+  // Quick View Logic
+  if(modal) {
+    const qvImg = modal.querySelector('.qv-img');
+    const qvTitle = modal.querySelector('.qv-title');
+    const qvPrice = modal.querySelector('.qv-price');
+    const qvDesc = modal.querySelector('.qv-desc');
+    const qvAtc = modal.querySelector('.qv-atc-btn');
+
+    scope.querySelectorAll('.js-open-qv').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const h = btn.dataset.handle;
+        const r = await fetch(`/products/${h}.js`);
+        const p = await r.json();
+        qvImg.src = p.featured_image;
+        qvTitle.innerText = p.title;
+        qvPrice.innerText = (p.price/100).toFixed(2) + ' ' + (window.Shopify.currency.active || '');
+        qvDesc.innerHTML = p.description.substring(0, 150) + '...';
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('open'), 10);
+        qvAtc.onclick = () => addToCart(p.variants[0].id, qvAtc);
+      });
+    });
+
+    modal.querySelector('.qv-close').onclick = () => {
+      modal.classList.remove('open');
+      setTimeout(() => modal.style.display = 'none', 300);
+    };
+  }
+})();
+</script> {% endcomment %}
+
+
+
+
+
+
+
+
+
+{% comment %} {% schema %}
+{
+  "name": "New Arrivals V2",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Alignment Settings"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Section Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Typography & Colors"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size",
+      "default": 42
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Traditional divides between personal and professional space."
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading Font Size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Active Tab/Underline Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Product Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 3,
+      "max": 50,
+      "step": 1,
+      "label": "Products to show",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab Label",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "collection",
+          "id": "tab_collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "New Arrivals V2",
+      "blocks": [
+        { "type": "tab", "settings": { "tab_label": "New Arrivals" } },
+        { "type": "tab", "settings": { "tab_label": "Best Sellers" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+/* --- Section Wrapper Scoping --- */
+#section-{{ section.id }} {
+  padding: 60px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* --- Header & Alignment --- */
+#section-{{ section.id }} .na-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 40px;
+  text-align: {{ section.settings.content_alignment }};
+  align-items: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-title-wrapper h2 {
+  font-size: {{ section.settings.heading_size }}px;
+  color: {{ section.settings.heading_color }};
+  margin: 0 0 10px 0;
+  font-family: serif;
+  line-height: 1.2;
+}
+
+#section-{{ section.id }} .na-title-wrapper p {
+  font-size: {{ section.settings.subheading_size }}px;
+  color: {{ section.settings.subheading_color }};
+  margin: 0;
+}
+
+/* --- Tabs --- */
+#section-{{ section.id }} .na-tabs {
+  display: flex;
+  gap: 32px;
+  margin-top: 25px;
+  flex-wrap: wrap;
+  justify-content: {% if section.settings.content_alignment == 'center' %}center{% elsif section.settings.content_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+}
+
+#section-{{ section.id }} .na-tab-btn {
+  background: none;
+  border: none;
+  padding: 0 0 8px 0;
+  font-size: 16px;
+  color: #888;
+  cursor: pointer;
+  position: relative;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+#section-{{ section.id }} .na-tab-btn.active {
+  color: {{ section.settings.tab_active_color }};
+}
+
+#section-{{ section.id }} .na-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: {{ section.settings.tab_active_color }};
+}
+
+/* --- Carousel Layout --- */
+#section-{{ section.id }} .na-carousel-wrapper { position: relative; }
+#section-{{ section.id }} .na-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 10px 0 30px 0;
+}
+#section-{{ section.id }} .na-carousel::-webkit-scrollbar { display: none; }
+
+#section-{{ section.id }} .na-nav {
+  position: absolute;
+  top: -65px;
+  right: 0;
+  display: flex;
+  gap: 10px;
+}
+#section-{{ section.id }} .na-nav-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+}
+#section-{{ section.id }} .na-nav-btn:hover { background: #000; color: #fff; border-color: #000; }
+
+/* --- Product Card --- */
+#section-{{ section.id }} .na-card {
+  flex: 0 0 280px;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 15px;
+  position: relative;
+  transition: 0.3s;
+}
+#section-{{ section.id }} .na-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.07); }
+
+#section-{{ section.id }} .na-img-link {
+  display: block;
+  position: relative;
+  padding-top: 100%;
+  background: #fdfdfd;
+  overflow: hidden;
+  border-radius: 4px;
+}
+#section-{{ section.id }} .na-img-link img {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: 0.5s;
+}
+#section-{{ section.id }} .na-card:hover img { transform: translate(-50%, -50%) scale(1.08); }
+
+#section-{{ section.id }} .na-card-info { text-align: center; margin-top: 15px; }
+#section-{{ section.id }} .na-card-title { font-size: 15px; font-weight: 500; margin: 10px 0; color: #1a1a1a; text-decoration: none; display: block; height: 40px; overflow: hidden; }
+#section-{{ section.id }} .na-card-price { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+
+#section-{{ section.id }} .na-atc-btn {
+  width: 100%;
+  padding: 12px;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.3s;
+}
+#section-{{ section.id }} .na-atc-btn:hover { background: #444; }
+
+/* Quick View Icon */
+#section-{{ section.id }} .na-qv-icon {
+  position: absolute; top: 10px; right: 10px;
+  background: white; width: 35px; height: 35px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; opacity: 0; transition: 0.3s;
+}
+#section-{{ section.id }} .na-card:hover .na-qv-icon { opacity: 1; }
+
+/* Modal Styles Scoped */
+#qvModal-{{ section.id }} {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); z-index: 9999; display: none;
+  justify-content: center; align-items: center; opacity: 0; transition: 0.3s;
+}
+#qvModal-{{ section.id }}.open { opacity: 1; }
+.qv-inner { background: white; width: 90%; max-width: 800px; display: flex; border-radius: 10px; position: relative; overflow: hidden; }
+.qv-close { position: absolute; top: 10px; right: 10px; font-size: 24px; cursor: pointer; border: none; background: none; z-index: 5; }
+.qv-left { width: 50%; background: #f9f9f9; }
+.qv-left img { width: 100%; height: 100%; object-fit: cover; }
+.qv-right { width: 50%; padding: 40px; }
+
+@media (max-width: 768px) {
+  #section-{{ section.id }} .na-nav { display: none; }
+  #section-{{ section.id }} .na-card { flex: 0 0 240px; }
+  .qv-inner { flex-direction: column; }
+  .qv-left, .qv-right { width: 100%; }
+}
+</style>
+
+<div id="section-{{ section.id }}">
+  <div class="na-header">
+    <div class="na-title-wrapper">
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.subheading }}</p>
+    </div>
+    
+    {% if section.blocks.size > 0 %}
+    <div class="na-tabs">
+      {% for block in section.blocks %}
+        <button class="na-tab-btn {% if forloop.first %}active{% endif %}" data-tab-idx="{{ forloop.index }}">
+          {{ block.settings.tab_label }}
+        </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% for block in section.blocks %}
+    <div class="na-content-box" data-box-idx="{{ forloop.index }}" style="{% unless forloop.first %}display:none;{% endunless %}">
+      <div class="na-carousel-wrapper">
+        <div class="na-carousel" id="carousel-{{ section.id }}-{{ forloop.index }}">
+          {% assign collection = collections[block.settings.tab_collection] %}
+          {% if collection != blank %}
+            {% for product in collection.products limit: section.settings.products_to_show %}
+              <div class="na-card">
+                <div class="na-qv-icon js-open-qv" data-handle="{{ product.handle }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <a href="{{ product.url }}" class="na-img-link">
+                  <img src="{{ product.featured_image | img_url: '600x' }}" alt="{{ product.title }}" loading="lazy">
+                </a>
+                <div class="na-card-info">
+                  <a href="{{ product.url }}" class="na-card-title">{{ product.title }}</a>
+                  <div class="na-card-price">{{ product.price | money }}</div>
+                  
+                  {% if product.variants.size > 1 %}
+                    <button class="na-atc-btn" onclick="window.location.href='{{ product.url }}'">Options</button>
+                  {% else %}
+                    <button class="na-atc-btn js-na-atc" data-vid="{{ product.variants[0].id }}">Add to Cart</button>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="na-nav">
+          <button class="na-nav-btn js-na-prev" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❮</button>
+          <button class="na-nav-btn js-na-next" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❯</button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div id="qvModal-{{ section.id }}" class="qv-wrapper">
+  <div class="qv-inner">
+    <button class="qv-close">&times;</button>
+    <div class="qv-left"><img class="qv-img" src="" alt=""></div>
+    <div class="qv-right">
+      <h2 class="qv-title"></h2>
+      <p class="qv-price" style="font-weight:bold; margin: 10px 0;"></p>
+      <div class="qv-desc" style="font-size:14px; color:#555; margin-bottom:20px;"></div>
+      <button class="na-atc-btn qv-atc-btn">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sId = "{{ section.id }}";
+  const scope = document.getElementById(`section-${sId}`);
+  const modal = document.getElementById(`qvModal-${sId}`);
+  if (!scope) return;
+
+  // Tab Logic
+  const tabs = scope.querySelectorAll('.na-tab-btn');
+  const boxes = scope.querySelectorAll('.na-content-box');
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      tabs.forEach(btn => btn.classList.remove('active'));
+      t.classList.add('active');
+      boxes.forEach(box => {
+        box.style.display = box.dataset.boxIdx === t.dataset.tabIdx ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Carousel Logic
+  scope.querySelectorAll('.js-na-next').forEach(b => {
+    b.addEventListener('click', () => {
+      document.getElementById(b.dataset.target).scrollBy({ left: 300, behavior: 'smooth' });
+    });
+  });
+  scope.querySelectorAll('.js-na-prev').forEach(b => {
+    b.addEventListener('click', () => {
+      document.getElementById(b.dataset.target).scrollBy({ left: -300, behavior: 'smooth' });
+    });
+  });
+
+  // Add to Cart Function
+  async function addToCart(id, btn) {
+    if(!id || btn.disabled) return;
+    btn.innerText = 'Adding...';
+    btn.disabled = true;
+    
+    try {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: id, quantity: 1 }] })
+      });
+      if(res.ok) {
+        btn.innerText = 'Added!';
+        // Refresh cart drawer if exists
+        if(document.querySelector('cart-drawer')) {
+           window.location.reload(); 
+        }
+      }
+    } catch (e) { console.error(e); }
+    setTimeout(() => { btn.innerText = 'Add to Cart'; btn.disabled = false; }, 2000);
+  }
+
+  scope.querySelectorAll('.js-na-atc').forEach(btn => {
+    btn.addEventListener('click', () => addToCart(btn.dataset.vid, btn));
+  });
+
+  // Quick View Logic
+  if(modal) {
+    const qvImg = modal.querySelector('.qv-img');
+    const qvTitle = modal.querySelector('.qv-title');
+    const qvPrice = modal.querySelector('.qv-price');
+    const qvDesc = modal.querySelector('.qv-desc');
+    const qvAtc = modal.querySelector('.qv-atc-btn');
+
+    scope.querySelectorAll('.js-open-qv').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const h = btn.dataset.handle;
+        const r = await fetch(`/products/${h}.js`);
+        const p = await r.json();
+        
+        qvImg.src = p.featured_image;
+        qvTitle.innerText = p.title;
+        qvPrice.innerText = (p.price/100).toFixed(2) + ' ' + window.Shopify.currency.active;
+        qvDesc.innerHTML = p.description.substring(0, 150) + '...';
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('open'), 10);
+        
+        qvAtc.onclick = () => addToCart(p.variants[0].id, qvAtc);
+      });
+    });
+
+    modal.querySelector('.qv-close').onclick = () => {
+      modal.classList.remove('open');
+      setTimeout(() => modal.style.display = 'none', 300);
+    };
+  }
+})();
+</script>
+
+
+ {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% schema %}
+{
+  "name": "New Arrivals V2",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Traditional divides between personal and professional space."
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 3,
+      "max": 50,
+      "step": 1,
+      "label": "Products to show",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab Label",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "collection",
+          "id": "tab_collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "New Arrivals V2",
+      "blocks": [
+        { "type": "tab", "settings": { "tab_label": "New Arrivals" } },
+        { "type": "tab", "settings": { "tab_label": "Best Sellers" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+/* --- Section-specific wrapping using ID to avoid global conflict --- */
+#section-{{ section.id }} { padding: 60px 20px; max-width: 1400px; margin: 0 auto; overflow: hidden; }
+#section-{{ section.id }} .na-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; flex-wrap: wrap; gap: 20px; }
+#section-{{ section.id }} .na-title-wrapper h2 { font-size: 42px; font-weight: 400; margin: 0 0 8px 0; color: #1a1a1a; font-family: serif; }
+#section-{{ section.id }} .na-tabs { display: flex; gap: 32px; }
+#section-{{ section.id }} .na-tab-btn { background: none; border: none; padding: 0 0 12px 0; font-size: 15px; color: #666; cursor: pointer; position: relative; font-weight: 500; }
+#section-{{ section.id }} .na-tab-btn.active { color: #1a1a1a; }
+#section-{{ section.id }} .na-tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: #1a1a1a; }
+
+/* --- Carousel --- */
+#section-{{ section.id }} .na-carousel-wrapper { position: relative; }
+#section-{{ section.id }} .na-carousel { display: flex; gap: 20px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding-block: 20px; }
+#section-{{ section.id }} .na-carousel::-webkit-scrollbar { display: none; }
+#section-{{ section.id }} .na-nav { position: absolute; right: 0; display: flex; gap: 10px; }
+#section-{{ section.id }} .na-nav-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ddd; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+#section-{{ section.id }} .na-nav-btn:hover { background: #f5f5f5; }
+
+/* --- Product Card --- */
+#section-{{ section.id }} .na-product-card { flex: 0 0 280px; background: #fff; border: 1px solid #eee; border-radius: 8px; padding:20px; overflow: hidden; position: relative; transition: all 0.3s ease; }
+#section-{{ section.id }} .na-product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+#section-{{ section.id }} .na-img-mask { display: block; position: relative; padding-top: 100%; background: #f9f9f9; overflow: hidden; }
+#section-{{ section.id }} .na-img-mask img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+#section-{{ section.id }} .na-product-card:hover img { transform: translate(-50%, -50%) scale(1.05); }
+
+#section-{{ section.id }} .na-icons { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 3; }
+#section-{{ section.id }} .na-icon-btn { width: 36px; height: 36px; border-radius: 50%; background: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+#section-{{ section.id }} .na-icon-btn:hover { background: #1a1a1a; color: white; }
+
+#section-{{ section.id }} .na-info { text-align: center; }
+#section-{{ section.id }} .na-title-link { text-decoration: none; color: #1a1a1a; display: block; margin: 10px 0; }
+#section-{{ section.id }} .na-title { font-size: 16px; font-weight: 500; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+#section-{{ section.id }} .na-price { font-size: 17px; font-weight: 700; color: #1a1a1a; }
+
+#section-{{ section.id }} .na-atc-btn { width: 100%; padding: 12px; background: #0a2540; color: white; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+#section-{{ section.id }} .na-atc-btn:hover { background: #000; }
+#section-{{ section.id }} .na-atc-btn.loading { opacity: 0.7; cursor: not-allowed; }
+
+@media (max-width: 768px) { 
+  #section-{{ section.id }} .na-product-card { flex: 0 0 220px; } 
+  #section-{{ section.id }} .na-nav { display: none; } 
+}
+
+/* --- Modal CSS (Localized by ID) --- */
+#quickViewModal-{{ section.id }} {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6); z-index: 9999; display: none;
+  justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease;
+}
+#quickViewModal-{{ section.id }}.open { opacity: 1; }
+#quickViewModal-{{ section.id }} .qv-content {
+  background: white; width: 90%; max-width: 800px; max-height: 90vh;
+  border-radius: 8px; display: flex; position: relative; overflow: hidden;
+  transform: scale(0.9); transition: transform 0.3s ease;
+}
+#quickViewModal-{{ section.id }}.open .qv-content { transform: scale(1); }
+#quickViewModal-{{ section.id }} .qv-close {
+  position: absolute; top: 15px; right: 15px; background: white; border: none;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 10;
+}
+#quickViewModal-{{ section.id }} .qv-img-col { width: 50%; background: #f4f4f4; position: relative; }
+#quickViewModal-{{ section.id }} .qv-img-col img { width: 100%; height: 100%; object-fit: cover; }
+#quickViewModal-{{ section.id }} .qv-info-col { width: 50%; padding: 40px; overflow-y: auto; }
+</style>
+
+<div class="na-main-wrapper" id="section-{{ section.id }}">
+  <div class="na-header">
+    <div class="na-title-wrapper">
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.subheading }}</p>
+    </div>
+    
+    {% if section.blocks.size > 0 %}
+    <div class="na-tabs">
+      {% for block in section.blocks %}
+        <button class="na-tab-btn {% if forloop.first %}active{% endif %}" data-tab-id="{{ forloop.index }}">
+          {{ block.settings.tab_label }}
+        </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% for block in section.blocks %}
+    <div class="na-tab-content-box" data-content-id="{{ forloop.index }}" style="{% unless forloop.first %}display:none;{% endunless %}">
+      <div class="na-carousel-wrapper">
+        <div class="na-carousel" id="carousel-{{ section.id }}-{{ forloop.index }}">
+          {% assign collection = collections[block.settings.tab_collection] %}
+          {% if collection != blank %}
+            {% for product in collection.products limit: section.settings.products_to_show %}
+              <div class="na-product-card">
+                <a href="{{ product.url }}" class="na-img-mask">
+                  <img src="{{ product.featured_image | img_url: '500x' }}" alt="{{ product.title }}" loading="lazy">
+                </a>
+
+                <div class="na-icons">
+                  <button class="na-icon-btn js-qv-open" data-handle="{{ product.handle }}">
+                    <svg fill="none" stroke="currentColor" width="18" height="18" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+                </div>
+
+                <div class="na-info">
+                  <a href="{{ product.url }}" class="na-title-link">
+                    <h3 class="na-title">{{ product.title }}</h3>
+                  </a>
+                  <div class="na-price">{{ product.price | money }}</div>
+                  
+                  {% if product.variants.size > 1 %}
+                    <button class="na-atc-btn" onclick="window.location.href='{{ product.url }}'">Select Options</button>
+                  {% else %}
+                    <button class="na-atc-btn js-na-add-to-cart" data-v-id="{{ product.selected_or_first_available_variant.id }}">Add to Cart</button>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="na-nav">
+          <button class="na-nav-btn js-prev" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❮</button>
+          <button class="na-nav-btn js-next" data-target="carousel-{{ section.id }}-{{ forloop.index }}">❯</button>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div id="quickViewModal-{{ section.id }}" class="qv-modal-wrapper">
+  <div class="qv-content">
+    <button class="qv-close">&times;</button>
+    <div class="qv-img-col"><img class="qv-img" src="" alt=""></div>
+    <div class="qv-info-col">
+      <h2 class="qv-title qv-product-title"></h2>
+      <span class="qv-price qv-product-price"></span>
+      <div class="qv-desc qv-product-desc"></div>
+      <button type="button" class="qv-atc-btn na-atc-btn">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sId = "{{ section.id }}";
+  const scope = document.getElementById(`section-${sId}`);
+  const modal = document.getElementById(`quickViewModal-${sId}`);
+  if (!scope) return;
+
+  // 1. Scoped Tab Logic
+  const tabBtns = scope.querySelectorAll('.na-tab-btn');
+  const tabBoxes = scope.querySelectorAll('.na-tab-content-box');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const targetId = btn.dataset.tabId;
+      tabBoxes.forEach(box => {
+        box.style.display = box.dataset.contentId === targetId ? 'block' : 'none';
+      });
+    });
+  });
+
+  // 2. Scoped Carousel Logic
+  scope.querySelectorAll('.js-next').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const carousel = document.getElementById(btn.dataset.target);
+      if(carousel) carousel.scrollBy({ left: 300, behavior: 'smooth' });
+    });
+  });
+
+  scope.querySelectorAll('.js-prev').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const carousel = document.getElementById(btn.dataset.target);
+      if(carousel) carousel.scrollBy({ left: -300, behavior: 'smooth' });
+    });
+  });
+
+  // 3. Add to Cart Helper
+  function localAddToCart(vId, btn) {
+    if(!vId || btn.classList.contains('loading')) return;
+    const oldText = btn.innerText;
+    btn.innerText = 'Adding...';
+    btn.classList.add('loading');
+
+    fetch(window.Shopify.routes.root + 'cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 'items': [{ 'id': vId, 'quantity': 1 }] })
+    })
+    .then(res => res.json())
+    .then(() => {
+       // Optional: Trigger theme refresh
+       if(document.querySelector('cart-drawer')) {
+          location.reload(); // Simple way to update cart
+       }
+       btn.innerText = 'Added!';
+       setTimeout(() => { btn.innerText = oldText; btn.classList.remove('loading'); }, 2000);
+    })
+    .catch(() => {
+       btn.innerText = 'Error';
+       setTimeout(() => { btn.innerText = oldText; btn.classList.remove('loading'); }, 2000);
+    });
+  }
+
+  scope.querySelectorAll('.js-na-add-to-cart').forEach(btn => {
+    btn.addEventListener('click', () => localAddToCart(btn.dataset.vId, btn));
+  });
+
+  // 4. Quick View Logic
+  if(modal) {
+    const qvImg = modal.querySelector('.qv-img');
+    const qvTitle = modal.querySelector('.qv-title');
+    const qvPrice = modal.querySelector('.qv-price');
+    const qvDesc = modal.querySelector('.qv-desc');
+    const qvAtc = modal.querySelector('.qv-atc-btn');
+
+    scope.querySelectorAll('.js-qv-open').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const handle = btn.dataset.handle;
+        fetch(`/products/${handle}.js`)
+          .then(r => r.json())
+          .then(p => {
+            qvImg.src = p.featured_image;
+            qvTitle.innerText = p.title;
+            qvPrice.innerText = (p.price/100).toFixed(2);
+            qvDesc.innerHTML = p.description.substring(0, 120) + '...';
+            
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('open'), 10);
+
+            qvAtc.onclick = () => localAddToCart(p.variants[0].id, qvAtc);
+          });
+      });
+    });
+
+    modal.querySelector('.qv-close').onclick = () => {
+      modal.classList.remove('open');
+      setTimeout(() => modal.style.display = 'none', 300);
+    };
+  }
+})();
+</script> {% endcomment %}
