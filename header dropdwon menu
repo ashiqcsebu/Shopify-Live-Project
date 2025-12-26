@@ -1,0 +1,1241 @@
+
+
+
+ 
+{% schema %}
+{
+  "name": "Luxury Mega Menu",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000" 
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury Mega Menu"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* --- CSS Variables & Reset --- */
+  :root {
+    --mm-bg: {{ section.settings.bg_color }};
+    --mm-text: {{ section.settings.text_color }}; /* Now defaults to Black */
+    --mm-pink: #ff007f; /* Hover/Active Color */
+    --mm-font: var(--font-body-family, sans-serif);
+    --mm-ease: cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+
+  .amm-wrapper {
+    background: var(--mm-bg);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    z-index: 1000;
+    font-family: var(--mm-font);
+  }
+
+  .amm-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* --- Main Menu (Header) --- */
+  .amm-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    height: 80px;
+  }
+
+  .amm-nav-item {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: static;
+  }
+
+  /* Bridge for Hover Stability */
+  .amm-nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    pointer-events: none;
+  }
+  .amm-nav-item:hover::after { pointer-events: auto; }
+
+  .amm-nav-link {
+    text-decoration: none;
+    color: var(--mm-text); /* BLACK */
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    cursor: pointer;
+    transition: color 0.3s var(--mm-ease);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1002;
+  }
+
+  /* --- 1. NO SHAKE TECHNIQUE (Main Menu) --- */
+  .amm-txt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500; /* Normal Weight */
+    position: relative;
+  }
+
+  /* This invisible pseudo-element reserves space for bold text */
+  .amm-txt::after {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    height: 0;
+    visibility: hidden;
+    overflow: hidden;
+    user-select: none;
+    pointer-events: none;
+    font-weight: 700; 
+  }
+
+  /* Pink Underline */
+  .amm-nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background: var(--mm-pink);
+    transition: width 0.3s var(--mm-ease);
+  }
+
+  /* Hover Effects */
+  .amm-nav-item:hover .amm-nav-link { color: var(--mm-pink); }
+  .amm-nav-item:hover .amm-nav-link::before { width: 100%; }
+  
+  /* Make Text Bold on Hover without Shaking */
+  .amm-nav-item:hover .amm-txt { font-weight: 700; }
+
+  .amm-chevron {
+    font-size: 8px;
+    transition: transform 0.3s var(--mm-ease);
+    opacity: 0.6;
+    color: var(--mm-text); /* Chevron also Black */
+  }
+  .amm-nav-item:hover .amm-chevron { transform: rotate(180deg); opacity: 1; color: var(--mm-pink); }
+
+
+  /* --- Dropdown Area --- */
+  .amm-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.98); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0,0,0,0.03);
+    box-shadow: 0 30px 60px -10px rgba(0,0,0,0.08); 
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.4s var(--mm-ease);
+    pointer-events: none;
+    z-index: 1001;
+    height: auto;
+    overflow: hidden;
+  }
+
+  .amm-nav-item:hover .amm-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .amm-dropdown-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0 0 0; 
+  }
+
+  /* --- Sub Menu Tabs --- */
+  .amm-tabs-wrapper {
+    width: 100%;
+    padding: 0 20px;
+    margin-bottom: 0; 
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .amm-tabs-list {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 25px; 
+  }
+
+  /* --- 2. NO SHAKE TECHNIQUE (Sub Menu) --- */
+  .amm-tab-item {
+    padding: 5px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mm-text); /* BLACK by default */
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s var(--mm-ease);
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Invisible bold text reserver */
+  .amm-tab-item::before {
+    display: block;
+    content: attr(title); 
+    font-weight: 700;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  /* Underline (Pink) */
+  .amm-tab-item::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--mm-pink);
+    transition: width 0.3s var(--mm-ease);
+  }
+
+  /* Active/Hover Actions */
+  .amm-tab-item:hover, .amm-tab-item.active { 
+    color: var(--mm-pink); 
+    font-weight: 700; 
+  }
+  .amm-tab-item:hover::after, .amm-tab-item.active::after { width: 100%; }
+
+
+  /* --- Content Grid --- */
+  .amm-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px; 
+  }
+
+  .amm-grid {
+    display: none;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    justify-content: center;
+    gap: 20px; 
+    padding: 40px 0 60px 0; 
+    animation: ammFadeUp 0.5s var(--mm-ease) forwards;
+  }
+
+  .amm-grid.active { display: grid; }
+  
+  /* HIDE EMPTY GRIDS COMPLETELY */
+  .amm-grid:empty {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 0 !important;
+  }
+
+  /* --- Cards --- */
+  .amm-card {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    group: hover;
+  }
+
+  .amm-img-wrap {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f4f4f4;
+    position: relative;
+    transition: transform 0.4s var(--mm-ease), box-shadow 0.4s var(--mm-ease);
+  }
+
+  .amm-card:hover .amm-img-wrap {
+    transform: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+
+  .amm-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--mm-ease);
+  }
+
+  .amm-card:hover .amm-img { transform: scale(1.08); }
+
+  .amm-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mm-text); /* BLACK */
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+    transition: color 0.3s ease;
+  }
+  
+  .amm-card:hover .amm-title { color: var(--mm-pink); }
+
+  @keyframes ammFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 990px) {
+    .amm-wrapper { display: none; }
+  }
+</style>
+
+<div class="amm-wrapper" role="navigation" aria-label="Main Navigation">
+  <div class="amm-container">
+    <ul class="amm-nav">
+      {% for link in linklists[section.settings.menu].links %}
+        
+        {% assign has_mega = false %}
+        {% if link.links != blank %}
+          {% assign has_mega = true %}
+        {% endif %}
+
+        <li class="amm-nav-item" {% if has_mega %}aria-haspopup="true"{% endif %}>
+          <a href="{{ link.url }}" class="amm-nav-link">
+            {%- comment -%} Added wrapper .amm-txt for No Shake {%- endcomment -%}
+            <span class="amm-txt" data-text="{{ link.title | escape }}">
+              {{ link.title }}
+            </span>
+            {% if has_mega %}<span class="amm-chevron">▼</span>{% endif %}
+          </a>
+
+          {% if has_mega %}
+            <div class="amm-dropdown">
+              <div class="amm-dropdown-inner">
+                
+                <div class="amm-tabs-wrapper">
+                  <div class="amm-tabs-list">
+                    {% for child in link.links %}
+                      {%- comment -%} Added title attribute for No Shake {%- endcomment -%}
+                      <div class="amm-tab-item {% if forloop.first %}active{% endif %}" 
+                           data-target="tab-{{ link.handle }}-{{ forloop.index }}"
+                           title="{{ child.title | escape }}">
+                        {{ child.title }}
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="amm-content">
+                  {% for child in link.links %}
+                    <div id="tab-{{ link.handle }}-{{ forloop.index }}" class="amm-grid {% if forloop.first %}active{% endif %}">
+                      {%- if child.links != blank -%}
+                        {%- for grandchild in child.links -%}
+                          
+                          {%- assign img_src = blank -%}
+                          {%- if grandchild.type == 'collection_link' and grandchild.object.image -%}
+                            {%- assign img_src = grandchild.object.image -%}
+                          {%- elsif grandchild.type == 'collection_link' and grandchild.object.products.first.featured_image -%}
+                             {%- assign img_src = grandchild.object.products.first.featured_image -%}
+                          {%- elsif grandchild.type == 'product_link' and grandchild.object.featured_image -%}
+                            {%- assign img_src = grandchild.object.featured_image -%}
+                          {%- endif -%}
+
+                          <a href="{{ grandchild.url }}" class="amm-card">
+                            <div class="amm-img-wrap">
+                              {%- if img_src -%}
+                                <img src="{{ img_src | image_url: width: 300, height: 300, crop: 'center' }}" 
+                                     alt="{{ grandchild.title | escape }}" 
+                                     class="amm-img" 
+                                     width="150" height="150"
+                                     loading="lazy">
+                              {%- else -%}
+                                {{ 'image' | placeholder_svg_tag: 'amm-img' }}
+                              {%- endif -%}
+                            </div>
+                            <span class="amm-title">{{ grandchild.title }}</span>
+                          </a>
+
+                        {%- endfor -%}
+                      {%- endif -%}
+                    </div>
+                  {% endfor %}
+                </div>
+
+              </div>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.amm-tab-item');
+    let hoverTimer;
+
+    tabs.forEach(tab => {
+      tab.addEventListener('mouseenter', function() {
+        clearTimeout(hoverTimer);
+        const self = this;
+        
+        hoverTimer = setTimeout(function() {
+          const container = self.closest('.amm-dropdown-inner');
+          if(!container) return;
+          
+          container.querySelectorAll('.amm-tab-item').forEach(t => t.classList.remove('active'));
+          self.classList.add('active');
+
+          container.querySelectorAll('.amm-grid').forEach(g => g.classList.remove('active'));
+          
+          const targetId = self.getAttribute('data-target');
+          const targetGrid = document.getElementById(targetId);
+          if (targetGrid) {
+              targetGrid.classList.add('active');
+          }
+        }, 500); 
+      });
+    });
+  });
+</script>  
+
+
+
+
+
+{% comment %} {% schema %}
+{
+  "name": "Luxury Mega Menu",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury Mega Menu"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  :root {
+    --mm-bg: {{ section.settings.bg_color }};
+    --mm-text: {{ section.settings.text_color }};
+    --mm-accent: {{ section.settings.accent_color }};
+    --mm-font: var(--font-body-family, sans-serif);
+  }
+
+  .amm-wrapper {
+    background: var(--mm-bg);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 1000;
+    font-family: var(--mm-font);
+  }
+
+  .amm-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px; /* Wider side padding */
+  }
+
+  /* --- Main Menu (Header) --- */
+  .amm-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    gap: 45px; /* Increased Gap for Luxury Feel */
+    height: 80px; /* Taller Header */
+  }
+
+  .amm-nav-item {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: static;
+  }
+
+  /* Invisible Bridge (Keeps dropdown open) */
+  .amm-nav-item::after {
+    content: '';
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: transparent;
+    z-index: 900;
+    pointer-events: none;
+  }
+  .amm-nav-item:hover::after { pointer-events: auto; }
+
+  .amm-nav-link {
+    text-decoration: none;
+    color: var(--mm-text);
+    font-weight: 500;
+    font-size: 13px; /* Slightly smaller, more elegant */
+    text-transform: uppercase;
+    letter-spacing: 1px; /* Wide spacing = Luxury */
+    cursor: pointer;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1001;
+  }
+  
+  .amm-nav-link:hover { color: var(--mm-accent); }
+
+  /* --- Dropdown Box --- */
+  .amm-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--mm-bg);
+    /* Soft, diffused shadow */
+    box-shadow: 0 20px 40px -5px rgba(0,0,0,0.05); 
+    border-top: 1px solid rgba(0,0,0,0.03);
+    
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .amm-nav-item:hover .amm-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .amm-dropdown-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* Generous Padding for airy feel */
+    padding: 40px 0 60px 0; 
+  }
+
+  /* --- Tabs (Sub Menu) --- */
+  .amm-tabs-wrapper {
+    width: 100%;
+    /* Removed gray background for cleaner look */
+    background-color: transparent; 
+    padding: 0 20px;
+    margin-bottom: 50px; /* Increased space between tabs and images */
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .amm-tabs-list {
+    display: flex;
+    justify-content: center;
+    gap: 50px; /* More space between tabs */
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 0;
+  }
+
+  .amm-tab-item {
+    padding: 0 0 15px 0; /* Padding bottom for underline spacing */
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  /* Luxury Underline Effect */
+  .amm-tab-item::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; /* Sits exactly on the border line */
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--mm-accent);
+    transition: width 0.3s ease;
+  }
+
+  .amm-tab-item:hover, .amm-tab-item.active {
+    color: var(--mm-accent);
+  }
+
+  .amm-tab-item:hover::after, .amm-tab-item.active::after {
+    width: 100%;
+  }
+
+  /* --- Grid Content --- */
+  .amm-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    min-height: 250px;
+  }
+
+  .amm-grid {
+    display: none;
+    /* Clean grid: Items min 140px, max 1fr */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    justify-content: center;
+    /* Significant gap for clean look */
+    gap: 50px 40px; 
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .amm-grid.active {
+    display: grid;
+  }
+
+  /* --- Circular Card --- */
+  .amm-card {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 18px; /* Space between image and text */
+    group: hover;
+  }
+
+  .amm-img-wrap {
+    width: 100%;
+    max-width: 160px; /* Limit circle size for elegance */
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f9f9f9;
+    position: relative;
+    /* Very subtle shadow */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .amm-card:hover .amm-img-wrap {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  }
+
+  .amm-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  
+  .amm-card:hover .amm-img {
+    transform: scale(1.1); /* Subtle zoom inside circle */
+  }
+
+  .amm-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mm-text);
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 990px) {
+    .amm-wrapper { display: none; }
+  }
+</style>
+
+<div class="amm-wrapper">
+  <div class="amm-container">
+    <ul class="amm-nav">
+      {% for link in linklists[section.settings.menu].links %}
+        
+        {% assign has_mega = false %}
+        {% if link.links != blank %}
+          {% assign has_mega = true %}
+        {% endif %}
+
+        <li class="amm-nav-item">
+          <a href="{{ link.url }}" class="amm-nav-link">
+            {{ link.title }}
+            {% if has_mega %}<span style="font-size: 8px; margin-top: 2px;">▼</span>{% endif %}
+          </a>
+
+          {% if has_mega %}
+            <div class="amm-dropdown">
+              <div class="amm-dropdown-inner">
+                
+                <div class="amm-tabs-wrapper">
+                  <div class="amm-tabs-list">
+                    {% for child in link.links %}
+                      <div class="amm-tab-item {% if forloop.first %}active{% endif %}" 
+                           data-target="tab-{{ link.handle }}-{{ forloop.index }}">
+                        {{ child.title }}
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="amm-content">
+                  {% for child in link.links %}
+                    <div id="tab-{{ link.handle }}-{{ forloop.index }}" class="amm-grid {% if forloop.first %}active{% endif %}">
+                      
+                      {% if child.links != blank %}
+                        {% for grandchild in child.links %}
+                          
+                          {% assign img_src = blank %}
+                          {% if grandchild.type == 'collection_link' %}
+                            {% assign img_src = grandchild.object.image %}
+                            {% if img_src == blank %}
+                              {% assign img_src = grandchild.object.products.first.featured_image %}
+                            {% endif %}
+                          {% elsif grandchild.type == 'product_link' %}
+                            {% assign img_src = grandchild.object.featured_image %}
+                          {% endif %}
+
+                          <a href="{{ grandchild.url }}" class="amm-card">
+                            <div class="amm-img-wrap">
+                              {% if img_src %}
+                                <img src="{{ img_src | image_url: width: 400, height: 400, crop: 'center' }}" 
+                                     alt="{{ grandchild.title }}" 
+                                     class="amm-img" 
+                                     loading="lazy">
+                              {% else %}
+                                {{ 'image' | placeholder_svg_tag: 'amm-img' }}
+                              {% endif %}
+                            </div>
+                            <span class="amm-title">{{ grandchild.title }}</span>
+                          </a>
+
+                        {% endfor %}
+                      {% else %}
+                         <p style="grid-column: 1/-1; text-align:center; color:#999; margin-top: 30px; font-weight:300;">
+                           No collections found in {{ child.title }}
+                         </p>
+                      {% endif %}
+
+                    </div>
+                  {% endfor %}
+                </div>
+
+              </div>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.amm-tab-item');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('mouseenter', function() {
+        const container = this.closest('.amm-dropdown-inner');
+        
+        container.querySelectorAll('.amm-tab-item').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        container.querySelectorAll('.amm-grid').forEach(g => g.classList.remove('active'));
+        
+        const targetId = this.getAttribute('data-target');
+        const targetGrid = document.getElementById(targetId);
+        if (targetGrid) targetGrid.classList.add('active');
+      });
+    });
+  });
+</script> {% endcomment %}
+
+
+
+{% comment %} 
+
+{% schema %}
+{
+  "name": "Luxury Mega Menu",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Luxury Mega Menu"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* --- CSS Variables & Reset --- */
+  :root {
+    --mm-bg: {{ section.settings.bg_color }};
+    --mm-text: {{ section.settings.text_color }};
+    --mm-accent: {{ section.settings.accent_color }};
+    --mm-font: var(--font-body-family, sans-serif);
+    --mm-ease: cubic-bezier(0.4, 0.0, 0.2, 1); /* Luxury easing */
+  }
+
+  .amm-wrapper {
+    background: var(--mm-bg);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    position: relative;
+    z-index: 1000;
+    font-family: var(--mm-font);
+  }
+
+  .amm-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* --- Main Menu (Header) --- */
+  .amm-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center; /* CENTERED: Main Menu */
+    gap: 50px;
+    height: 80px;
+  }
+
+  .amm-nav-item {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: static; /* Allows full-width dropdown */
+  }
+
+  /* Bridge to keep hover active */
+  .amm-nav-item::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    pointer-events: none;
+  }
+  .amm-nav-item:hover::after { pointer-events: auto; }
+
+  .amm-nav-link {
+    text-decoration: none;
+    color: var(--mm-text);
+    font-weight: 500;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    cursor: pointer;
+    transition: color 0.3s var(--mm-ease);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 1002;
+  }
+
+  /* Hover Line Effect for Main Links */
+  .amm-nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background: var(--mm-accent);
+    transition: width 0.3s var(--mm-ease);
+  }
+
+  .amm-nav-item:hover .amm-nav-link { color: var(--mm-accent); }
+  .amm-nav-item:hover .amm-nav-link::before { width: 100%; }
+
+  /* Chevron Icon */
+  .amm-chevron {
+    font-size: 8px;
+    transition: transform 0.3s var(--mm-ease);
+    opacity: 0.6;
+  }
+  .amm-nav-item:hover .amm-chevron { transform: rotate(180deg); opacity: 1; }
+
+
+  /* --- Dropdown Area --- */
+  .amm-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--mm-bg);
+    /* Glassmorphism Effect */
+    background: rgba(255, 255, 255, 0.98); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    border-top: 1px solid rgba(0,0,0,0.03);
+    box-shadow: 0 30px 60px -10px rgba(0,0,0,0.08); 
+    
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.4s var(--mm-ease);
+    pointer-events: none;
+    z-index: 1001;
+  }
+
+  .amm-nav-item:hover .amm-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .amm-dropdown-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0 60px 0;
+  }
+
+  /* --- Sub Menu Tabs --- */
+  .amm-tabs-wrapper {
+    width: 100%;
+    padding: 0 20px;
+    margin-bottom: 45px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .amm-tabs-list {
+    display: flex;
+    justify-content: center; /* CENTERED: Sub Menu Tabs */
+    gap: 40px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .amm-tab-item {
+    padding: 15px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s var(--mm-ease);
+  }
+
+  .amm-tab-item::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--mm-accent);
+    transition: width 0.3s var(--mm-ease);
+  }
+
+  .amm-tab-item:hover, .amm-tab-item.active { color: var(--mm-accent); }
+  .amm-tab-item:hover::after, .amm-tab-item.active::after { width: 100%; }
+
+
+  /* --- Content Grid --- */
+  .amm-content {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    min-height: 280px; /* Prevents jumping height */
+  }
+
+  .amm-grid {
+    display: none;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    justify-content: center;
+    gap: 40px;
+    animation: ammFadeUp 0.5s var(--mm-ease) forwards;
+  }
+
+  .amm-grid.active { display: grid; }
+
+
+  /* --- Circular Cards --- */
+  .amm-card {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+    group: hover;
+  }
+
+  .amm-img-wrap {
+    width: 100px; /* Fixed elegant size */
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f4f4f4;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    transition: transform 0.4s var(--mm-ease), box-shadow 0.4s var(--mm-ease);
+  }
+
+  .amm-card:hover .amm-img-wrap {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  }
+
+  .amm-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--mm-ease);
+  }
+
+  .amm-card:hover .amm-img { transform: scale(1.1); }
+
+  .amm-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mm-text);
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+    transition: color 0.3s ease;
+  }
+  
+  .amm-card:hover .amm-title { color: var(--mm-accent); }
+
+  @keyframes ammFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile Hide */
+  @media (max-width: 990px) {
+    .amm-wrapper { display: none; }
+  }
+</style>
+
+<div class="amm-wrapper" role="navigation" aria-label="Main Navigation">
+  <div class="amm-container">
+    <ul class="amm-nav">
+      {% for link in linklists[section.settings.menu].links %}
+        
+        {% assign has_mega = false %}
+        {% if link.links != blank %}
+          {% assign has_mega = true %}
+        {% endif %}
+
+        <li class="amm-nav-item" {% if has_mega %}aria-haspopup="true"{% endif %}>
+          <a href="{{ link.url }}" class="amm-nav-link">
+            {{ link.title }}
+            {% if has_mega %}<span class="amm-chevron">▼</span>{% endif %}
+          </a>
+
+          {% if has_mega %}
+            <div class="amm-dropdown">
+              <div class="amm-dropdown-inner">
+                
+                <div class="amm-tabs-wrapper">
+                  <div class="amm-tabs-list">
+                    {% for child in link.links %}
+                      <div class="amm-tab-item {% if forloop.first %}active{% endif %}" 
+                           data-target="tab-{{ link.handle }}-{{ forloop.index }}">
+                        {{ child.title }}
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="amm-content">
+                  {% for child in link.links %}
+                    <div id="tab-{{ link.handle }}-{{ forloop.index }}" class="amm-grid {% if forloop.first %}active{% endif %}">
+                      
+                      {% if child.links != blank %}
+                        {% for grandchild in child.links %}
+                          
+                          {% assign img_src = blank %}
+                          {% if grandchild.type == 'collection_link' and grandchild.object.image %}
+                            {% assign img_src = grandchild.object.image %}
+                          {% elsif grandchild.type == 'collection_link' and grandchild.object.products.first.featured_image %}
+                             {% assign img_src = grandchild.object.products.first.featured_image %}
+                          {% elsif grandchild.type == 'product_link' and grandchild.object.featured_image %}
+                            {% assign img_src = grandchild.object.featured_image %}
+                          {% endif %}
+
+                          <a href="{{ grandchild.url }}" class="amm-card">
+                            <div class="amm-img-wrap">
+                              {% if img_src %}
+                                <img src="{{ img_src | image_url: width: 300, height: 300, crop: 'center' }}" 
+                                     alt="{{ grandchild.title | escape }}" 
+                                     class="amm-img" 
+                                     width="150" height="150"
+                                     loading="lazy">
+                              {% else %}
+                                {{ 'image' | placeholder_svg_tag: 'amm-img' }}
+                              {% endif %}
+                            </div>
+                            <span class="amm-title">{{ grandchild.title }}</span>
+                          </a>
+
+                        {% endfor %}
+                      {% else %}
+                         <div style="grid-column: 1/-1; text-align:center; padding: 40px 0; color: #aaa;">
+                           <p>No items found in {{ child.title }}</p>
+                         </div>
+                      {% endif %}
+
+                    </div>
+                  {% endfor %}
+                </div>
+
+              </div>
+            </div>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.amm-tab-item');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('mouseenter', function() {
+        // Find parent container to scope selection
+        const container = this.closest('.amm-dropdown-inner');
+        if(!container) return;
+        
+        // Remove active class from siblings
+        container.querySelectorAll('.amm-tab-item').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        // Hide all grids in this container
+        container.querySelectorAll('.amm-grid').forEach(g => g.classList.remove('active'));
+        
+        // Show target grid
+        const targetId = this.getAttribute('data-target');
+        const targetGrid = document.getElementById(targetId);
+        if (targetGrid) {
+            targetGrid.classList.add('active');
+        }
+      });
+    });
+  });
+</script>
+ {% endcomment %}
