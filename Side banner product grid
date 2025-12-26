@@ -1,0 +1,2171 @@
+https://prnt.sc/FAHfDy9wsnul
+
+https://themes.shopify.com/themes/hyper/presets/ceramide
+
+{% comment %}
+  Shrine Pro Style Slider V6 - Ultimate Alignment
+  - Content Alignment Controls (Card, Header, Banner)
+  - Full Color & Typography Customization
+  - AJAX Cart & Drawer Support
+  - Carousel Navigation
+{% endcomment %}
+
+{%- assign collection = collections[section.settings.collection] -%}
+
+<style>
+  /* --- DYNAMIC THEME SETTINGS --- */
+  #shopify-section-{{ section.id }} {
+    /* Layout & Spacing */
+    --pt: {{ section.settings.padding_top }}px;
+    --pb: {{ section.settings.padding_bottom }}px;
+    
+    /* Alignments */
+    --card-align: {{ section.settings.card_align }};
+    --header-align: {{ section.settings.header_align }};
+    --banner-align: {{ section.settings.banner_align }};
+    
+    /* Colors */
+    --bg-color: {{ section.settings.bg_color }};
+    --text-color: {{ section.settings.text_color }};
+    --price-color: {{ section.settings.price_color }};
+    --border-color: {{ section.settings.border_color }};
+    
+    /* Buttons */
+    --btn-bg: {{ section.settings.btn_bg }};
+    --btn-text: {{ section.settings.btn_text }};
+    --btn-hover-bg: {{ section.settings.btn_hover_bg }};
+    --btn-hover-text: {{ section.settings.btn_hover_text }};
+    
+    /* Badges */
+    --badge-sale: {{ section.settings.badge_sale_color }};
+    --badge-new: {{ section.settings.badge_new_color }};
+    --badge-fast-bg: {{ section.settings.badge_fast_bg }};
+    --badge-fast-text: {{ section.settings.badge_fast_text }};
+
+    /* Typography */
+    --fs-heading: {{ section.settings.fs_heading }}px;
+    --fs-title: {{ section.settings.fs_title }}px;
+    --fs-price: {{ section.settings.fs_price }}px;
+    
+    /* Card Design */
+    --card-radius: {{ section.settings.card_radius }}px;
+    --border-width: {{ section.settings.border_width }}px;
+    
+    padding-top: var(--pt);
+    padding-bottom: var(--pb);
+    background-color: var(--bg-color);
+  }
+
+  .shrine-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* --- HEADER ALIGNMENT LOGIC --- */
+  .shrine-header {
+    display: flex;
+    margin-bottom: 25px;
+    position: relative;
+  }
+  
+  /* Left Alignment (Default: Split) */
+  .shrine-header[data-align="left"] {
+    justify-content: space-between;
+    align-items: flex-end;
+    text-align: left;
+  }
+  
+  /* Center Alignment (Stacked) */
+  .shrine-header[data-align="center"] {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  /* Right Alignment (Stacked) */
+  .shrine-header[data-align="right"] {
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: 10px;
+  }
+
+  .shrine-title {
+    font-size: var(--fs-heading);
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+    line-height: 1.2;
+  }
+  
+  .shrine-header-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    text-decoration: none;
+    display: none;
+    opacity: 0.8;
+  }
+  @media(min-width: 768px) { .shrine-header-link { display: block; } }
+
+  /* --- SLIDER GRID --- */
+  .shrine-grid {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 30px;
+    scrollbar-width: none; 
+    align-items: stretch;
+    scroll-behavior: smooth;
+  }
+  .shrine-grid::-webkit-scrollbar { display: none; }
+
+  /* --- FOOTER NAV --- */
+  .shrine-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Always right for nav arrows */
+    margin-top: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+  }
+  .shrine-nav-btns { display: flex; gap: 10px; }
+  .shrine-nav-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid #e5e5e5;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s ease; color: #333;
+  }
+  .shrine-nav-btn:hover { border-color: #000; color: #000; background: #f9f9f9; }
+  .shrine-nav-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+  /* --- CARD STYLES --- */
+  .shrine-card, .shrine-banner-card {
+    flex: 0 0 75%; 
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  @media(min-width: 768px) { .shrine-card, .shrine-banner-card { flex: 0 0 40%; } }
+  @media(min-width: 1024px) { .shrine-card, .shrine-banner-card { flex: 0 0 23%; } }
+
+  /* --- BANNER --- */
+  .shrine-banner-card {
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    position: relative;
+    background: #000;
+    border: var(--border-width) solid var(--border-color);
+  }
+  .shrine-banner-wrapper {
+    position: relative; width: 100%; height: 100%; display: block;
+    text-decoration: none; color: white;
+  }
+  .shrine-banner-wrapper img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;
+  }
+  .shrine-banner-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%);
+    z-index: 2;
+  }
+  .shrine-banner-content {
+    position: relative; z-index: 3; height: 100%;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 25px; box-sizing: border-box;
+    /* Banner Alignment Control */
+    text-align: var(--banner-align);
+    align-items: var(--banner-align); 
+  }
+  /* Fix alignment for banner flex items */
+  .shrine-banner-content[style*="left"] { align-items: flex-start; }
+  .shrine-banner-content[style*="center"] { align-items: center; }
+  .shrine-banner-content[style*="right"] { align-items: flex-end; }
+  
+  .banner-top-text { display: flex; flex-direction: column; gap: 5px; }
+  .banner-heading { font-size: 26px; font-weight: 700; line-height: 1.2; margin: 0; }
+
+  /* --- MEDIA WRAPPER --- */
+  .shrine-media-wrapper { position: relative; }
+  .shrine-media {
+    position: relative;
+    width: 100%;
+    padding-bottom: 110%; 
+    background-color: #f4f4f4;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    border: var(--border-width) solid var(--border-color);
+    box-sizing: border-box;
+  }
+  .shrine-media img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .shrine-img-secondary { opacity: 0; z-index: 1; }
+  .shrine-card:hover .shrine-img-secondary { opacity: 1; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary { opacity: 0; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary:only-child { opacity: 1; }
+
+  /* --- BADGES --- */
+  .shrine-badge {
+    position: absolute; top: 10px; left: 10px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    color: white; z-index: 2;
+  }
+  .badge-sale { background-color: var(--badge-sale); }
+  .badge-new { background-color: var(--badge-new); }
+
+  /* --- AJAX CART ICON --- */
+  .shrine-cart-trigger {
+    position: absolute; top: 10px; right: 10px;
+    width: 35px; height: 35px; background: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); opacity: 0;
+    transform: translateX(10px); transition: all 0.3s ease;
+    cursor: pointer; z-index: 5; border: none; padding: 0;
+  }
+  .shrine-card:hover .shrine-cart-trigger { opacity: 1; transform: translateX(0); }
+  .shrine-cart-trigger:hover { background-color: #f0f0f0; }
+  .shrine-cart-trigger svg { width: 18px; height: 18px; fill: none; stroke: black; }
+  
+  .shrine-spinner {
+    display: none; width: 16px; height: 16px;
+    border: 2px solid #ccc; border-top: 2px solid #000;
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  .shrine-cart-trigger.is-loading svg { display: none; }
+  .shrine-cart-trigger.is-loading .shrine-spinner { display: block; }
+
+  /* --- BUTTON --- */
+  .shrine-atc-btn {
+    position: absolute; bottom: 15px; left: 50%;
+    transform: translate(-50%, 100%); width: 85%;
+    background: var(--btn-bg); color: var(--btn-text);
+    border: none; padding: 12px 0; border-radius: 30px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); opacity: 0; z-index: 3;
+    text-align: center; text-decoration: none;
+    display: flex; justify-content: center; align-items: center;
+    overflow: hidden; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .shrine-atc-btn::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 0%; height: 100%; background: var(--btn-hover-bg);
+    z-index: -1; transition: width 0.3s ease-in-out;
+  }
+  .shrine-card:hover .shrine-atc-btn { opacity: 1; transform: translate(-50%, 0); }
+  .shrine-atc-btn:hover::before { width: 100%; }
+  .shrine-atc-btn:hover { color: var(--btn-hover-text); }
+
+  /* --- TICKER --- */
+  .shrine-ticker {
+    background: var(--badge-fast-bg); color: var(--badge-fast-text);
+    overflow: hidden; white-space: nowrap; padding: 6px 0;
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+    position: relative; margin-top: -5px;
+    border-radius: 0 0 var(--card-radius) var(--card-radius);
+    z-index: 2;
+  }
+  .shrine-ticker-inner { display: inline-block; padding-left: 100%; animation: marquee 8s linear infinite; }
+  .shrine-ticker span { display: inline-block; padding-right: 20px; }
+  @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+  /* --- TEXT INFO & ALIGNMENT --- */
+  .shrine-info { 
+    padding-top: 15px; 
+    text-align: var(--card-align); /* Dynamic Alignment */
+  }
+  .shrine-vendor { font-size: 10px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+  .shrine-product-title { 
+    font-size: var(--fs-title); font-weight: 600; 
+    color: var(--text-color); text-decoration: none; 
+    display: block; margin-bottom: 5px; 
+  }
+  .shrine-price { font-size: var(--fs-price); color: var(--price-color); }
+  .shrine-compare { text-decoration: line-through; opacity: 0.6; margin-right: 6px; }
+
+</style>
+
+<div class="shrine-container">
+  {% if section.settings.title != blank %}
+    <div class="shrine-header" data-align="{{ section.settings.header_align }}">
+      <h2 class="shrine-title">{{ section.settings.title }}</h2>
+      {% if section.settings.link_text != blank %}
+        <a href="{{ section.settings.link_url }}" class="shrine-header-link">{{ section.settings.link_text }} &rsaquo;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="shrine-grid" id="shrine-slider-{{ section.id }}">
+    
+    {% if section.settings.banner_img != blank %}
+      <div class="shrine-banner-card">
+        <a href="{{ section.settings.banner_link }}" class="shrine-banner-wrapper">
+          <div class="shrine-banner-overlay"></div>
+          <img src="{{ section.settings.banner_img | image_url: width: 800 }}" loading="lazy" width="800" height="1000" alt="Banner">
+          <div class="shrine-banner-content" style="align-items: {{ section.settings.banner_align }}; text-align: {{ section.settings.banner_align }};">
+             <div class="banner-top-text">
+               {% if section.settings.banner_subheading != blank %}
+                 <span style="font-size:13px; font-style:italic; opacity:0.9;">{{ section.settings.banner_subheading }}</span>
+               {% endif %}
+               {% if section.settings.banner_heading != blank %}<h3 class="banner-heading">{{ section.settings.banner_heading }}</h3>{% endif %}
+             </div>
+             {% if section.settings.banner_btn_text != blank %}
+               <div style="font-size:14px; font-weight:600;">{{ section.settings.banner_btn_text }} &rsaquo;</div>
+             {% endif %}
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% for product in collection.products limit: section.settings.limit %}
+      <div class="shrine-card">
+        <div class="shrine-media-wrapper">
+          <a href="{{ product.url }}">
+            <div class="shrine-media">
+              <img class="shrine-img-primary" src="{{ product.featured_image | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% if product.media[1] != blank %}
+                <img class="shrine-img-secondary" src="{{ product.media[1] | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% endif %}
+
+              {% if product.compare_at_price > product.price %}
+                <span class="shrine-badge badge-sale">Sale</span>
+              {% elsif product.tags contains 'New' or product.tags contains 'new' %}
+                <span class="shrine-badge badge-new">New</span>
+              {% endif %}
+
+              {% if product.available %}
+                 <button class="shrine-cart-trigger" type="button" data-variant-id="{{ product.variants.first.id }}">
+                   <svg viewBox="0 0 24 24"><path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                   <span class="shrine-spinner"></span>
+                 </button>
+              {% endif %}
+
+              {% if product.available %}
+                {% if product.variants.size > 1 %}
+                  <a href="{{ product.url }}" class="shrine-atc-btn">Choose Options</a>
+                {% else %}
+                  <form method="post" action="/cart/add" class="shrine-atc-form">
+                    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                    <button type="submit" class="shrine-atc-btn">Add to Cart</button>
+                  </form>
+                {% endif %}
+              {% else %}
+                <button class="shrine-atc-btn" disabled style="background:#eee; color:#999;">Sold Out</button>
+              {% endif %}
+            </div>
+          </a>
+          
+          {% if product.tags contains section.settings.ticker_tag %}
+            <div class="shrine-ticker"><div class="shrine-ticker-inner"><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span></div></div>
+          {% endif %}
+        </div>
+
+        <div class="shrine-info">
+          <div class="shrine-vendor">{{ product.type }}</div>
+          <a href="{{ product.url }}" class="shrine-product-title">{{ product.title }}</a>
+          <div class="shrine-price">
+            {% if product.compare_at_price > product.price %}<span class="shrine-compare">{{ product.compare_at_price | money }}</span>{% endif %}
+            {{ product.price | money }}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p style="padding: 20px;">Please select a collection.</p>
+    {% endfor %}
+  </div>
+
+  <div class="shrine-footer">
+    <div class="shrine-nav-btns">
+      <button class="shrine-nav-btn" id="shrine-prev-{{ section.id }}"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+      <button class="shrine-nav-btn" id="shrine-next-{{ section.id }}"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. AJAX Cart
+    document.querySelectorAll('.shrine-cart-trigger').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const variantId = this.dataset.variantId;
+        this.classList.add('is-loading');
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 'items': [{ 'id': variantId, 'quantity': 1 }] })
+        })
+        .then(r => r.json())
+        .then(d => {
+          this.classList.remove('is-loading');
+          document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+          let drawer = document.querySelector('cart-drawer') || document.querySelector('#CartDrawer');
+          if (drawer && drawer.open) drawer.open();
+          else {
+             document.documentElement.dispatchEvent(new CustomEvent('cart-drawer:open', { bubbles: true }));
+             document.documentElement.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
+          }
+        }).catch(e => { console.error(e); this.classList.remove('is-loading'); });
+      });
+    });
+
+    // 2. Navigation
+    const slider = document.getElementById('shrine-slider-{{ section.id }}');
+    const prev = document.getElementById('shrine-prev-{{ section.id }}');
+    const next = document.getElementById('shrine-next-{{ section.id }}');
+    if(slider && prev && next) {
+      next.addEventListener('click', () => slider.scrollBy({ left: slider.querySelector('.shrine-card').offsetWidth + 20, behavior: 'smooth' }));
+      prev.addEventListener('click', () => slider.scrollBy({ left: -(slider.querySelector('.shrine-card').offsetWidth + 20), behavior: 'smooth' }));
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Shrine Pro Custom V6",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Daily Essentials" },
+    { "type": "text", "id": "link_text", "label": "Link Text", "default": "Shop All" },
+    { "type": "url", "id": "link_url", "label": "Link URL" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "limit", "min": 4, "max": 30, "default": 8, "label": "Product Limit" },
+    { "type": "text", "id": "ticker_tag", "label": "Tag for 'Selling Fast'", "default": "fast" },
+
+    {
+      "type": "header",
+      "content": "Alignment Settings (NEW)"
+    },
+    {
+      "type": "select",
+      "id": "header_align",
+      "label": "Section Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left (Standard)" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "card_align",
+      "label": "Product Card Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "banner_align",
+      "label": "Banner Text Alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "flex-start"
+    },
+
+    {
+      "type": "header",
+      "content": "Banner Content"
+    },
+    { "type": "image_picker", "id": "banner_img", "label": "Banner Image" },
+    { "type": "text", "id": "banner_subheading", "label": "Subheading", "default": "Big Saving" },
+    { "type": "text", "id": "banner_heading", "label": "Heading", "default": "On Holiday Sets" },
+    { "type": "text", "id": "banner_btn_text", "label": "Button Label", "default": "Explore Now" },
+    { "type": "url", "id": "banner_link", "label": "Banner Link" },
+
+    {
+      "type": "header",
+      "content": "Design & Colors"
+    },
+    { "type": "color", "id": "bg_color", "label": "Section Background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#111111" },
+    { "type": "color", "id": "price_color", "label": "Price Color", "default": "#333333" },
+    
+    {
+      "type": "header",
+      "content": "Card Styling"
+    },
+    { "type": "range", "id": "card_radius", "min": 0, "max": 20, "default": 8, "label": "Card Border Radius (px)" },
+    { "type": "range", "id": "border_width", "min": 0, "max": 5, "default": 0, "label": "Card Border Width (px)" },
+    { "type": "color", "id": "border_color", "label": "Card Border Color", "default": "#e5e5e5" },
+
+    {
+      "type": "header",
+      "content": "Buttons & Badges"
+    },
+    { "type": "color", "id": "btn_bg", "label": "Button Background", "default": "#ffffff" },
+    { "type": "color", "id": "btn_text", "label": "Button Text", "default": "#000000" },
+    { "type": "color", "id": "btn_hover_bg", "label": "Button Hover Background", "default": "#000000" },
+    { "type": "color", "id": "btn_hover_text", "label": "Button Hover Text", "default": "#ffffff" },
+    { "type": "color", "id": "badge_sale_color", "label": "Sale Badge Color", "default": "#d32f2f" },
+    { "type": "color", "id": "badge_new_color", "label": "New Badge Color", "default": "#4caf50" },
+    { "type": "color", "id": "badge_fast_bg", "label": "Ticker Background", "default": "#fff176" },
+    { "type": "color", "id": "badge_fast_text", "label": "Ticker Text", "default": "#000000" },
+
+    {
+      "type": "header",
+      "content": "Typography (Font Sizes)"
+    },
+    { "type": "range", "id": "fs_heading", "min": 16, "max": 40, "default": 24, "label": "Section Heading (px)" },
+    { "type": "range", "id": "fs_title", "min": 12, "max": 24, "default": 15, "label": "Product Title (px)" },
+    { "type": "range", "id": "fs_price", "min": 12, "max": 24, "default": 14, "label": "Price (px)" },
+
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "default": 40, "label": "Top Padding" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "default": 40, "label": "Bottom Padding" }
+  ],
+  "presets": [
+    { "name": "Shrine Pro Custom V6" }
+  ]
+}
+{% endschema %}
+
+
+
+
+{% comment %} {% comment %}
+  Shrine Pro Style Slider V5 - Ultimate Customization
+  - Fully Controls via Theme Editor (Colors, Fonts, Borders)
+  - AJAX Cart & Drawer Support
+  - Carousel Navigation
+{% endcomment %}
+
+{%- assign collection = collections[section.settings.collection] -%}
+
+<style>
+  /* --- DYNAMIC THEME SETTINGS --- */
+  #shopify-section-{{ section.id }} {
+    /* Layout & Spacing */
+    --pt: {{ section.settings.padding_top }}px;
+    --pb: {{ section.settings.padding_bottom }}px;
+    
+    /* Colors */
+    --bg-color: {{ section.settings.bg_color }};
+    --text-color: {{ section.settings.text_color }};
+    --price-color: {{ section.settings.price_color }};
+    --border-color: {{ section.settings.border_color }};
+    
+    /* Buttons */
+    --btn-bg: {{ section.settings.btn_bg }};
+    --btn-text: {{ section.settings.btn_text }};
+    --btn-hover-bg: {{ section.settings.btn_hover_bg }};
+    --btn-hover-text: {{ section.settings.btn_hover_text }};
+    
+    /* Badges */
+    --badge-sale: {{ section.settings.badge_sale_color }};
+    --badge-new: {{ section.settings.badge_new_color }};
+    --badge-fast-bg: {{ section.settings.badge_fast_bg }};
+    --badge-fast-text: {{ section.settings.badge_fast_text }};
+
+    /* Typography */
+    --fs-heading: {{ section.settings.fs_heading }}px;
+    --fs-title: {{ section.settings.fs_title }}px;
+    --fs-price: {{ section.settings.fs_price }}px;
+    
+    /* Card Design */
+    --card-radius: {{ section.settings.card_radius }}px;
+    --border-width: {{ section.settings.border_width }}px;
+    
+    padding-top: var(--pt);
+    padding-bottom: var(--pb);
+    background-color: var(--bg-color);
+  }
+
+  .shrine-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* --- HEADER --- */
+  .shrine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 25px;
+  }
+  
+  .shrine-title {
+    font-size: var(--fs-heading);
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+    line-height: 1.2;
+  }
+  
+  .shrine-header-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    text-decoration: none;
+    display: none;
+    opacity: 0.8;
+  }
+  @media(min-width: 768px) { .shrine-header-link { display: block; } }
+
+  /* --- SLIDER GRID --- */
+  .shrine-grid {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 30px;
+    scrollbar-width: none; 
+    align-items: stretch;
+    scroll-behavior: smooth;
+  }
+  .shrine-grid::-webkit-scrollbar { display: none; }
+
+  /* --- CAROUSEL NAV (Footer) --- */
+  .shrine-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5;
+  }
+  .shrine-nav-btns { display: flex; gap: 10px; }
+  .shrine-nav-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid #e5e5e5;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s ease; color: #333;
+  }
+  .shrine-nav-btn:hover { border-color: #000; color: #000; background: #f9f9f9; }
+  .shrine-nav-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+  /* --- CARD LAYOUT --- */
+  .shrine-card, .shrine-banner-card {
+    flex: 0 0 75%; 
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  @media(min-width: 768px) { .shrine-card, .shrine-banner-card { flex: 0 0 40%; } }
+  @media(min-width: 1024px) { .shrine-card, .shrine-banner-card { flex: 0 0 23%; } }
+
+  /* --- BANNER --- */
+  .shrine-banner-card {
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    position: relative;
+    background: #000;
+    border: var(--border-width) solid var(--border-color);
+  }
+  .shrine-banner-wrapper {
+    position: relative; width: 100%; height: 100%; display: block;
+    text-decoration: none; color: white;
+  }
+  .shrine-banner-wrapper img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;
+  }
+  .shrine-banner-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%);
+    z-index: 2;
+  }
+  .shrine-banner-content {
+    position: relative; z-index: 3; height: 100%;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 25px; box-sizing: border-box;
+  }
+  .banner-heading { font-size: 26px; font-weight: 700; line-height: 1.2; margin: 0; }
+
+  /* --- MEDIA (IMAGE) WRAPPER --- */
+  .shrine-media-wrapper { position: relative; }
+  .shrine-media {
+    position: relative;
+    width: 100%;
+    padding-bottom: 110%; 
+    background-color: #f4f4f4;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    /* User Requested Border */
+    border: var(--border-width) solid var(--border-color);
+    box-sizing: border-box;
+  }
+  .shrine-media img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .shrine-img-secondary { opacity: 0; z-index: 1; }
+  .shrine-card:hover .shrine-img-secondary { opacity: 1; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary { opacity: 0; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary:only-child { opacity: 1; }
+
+  /* --- BADGES --- */
+  .shrine-badge {
+    position: absolute; top: 10px; left: 10px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    color: white; z-index: 2;
+  }
+  .badge-sale { background-color: var(--badge-sale); }
+  .badge-new { background-color: var(--badge-new); }
+
+  /* --- CART ICON --- */
+  .shrine-cart-trigger {
+    position: absolute; top: 10px; right: 10px;
+    width: 35px; height: 35px; background: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); opacity: 0;
+    transform: translateX(10px); transition: all 0.3s ease;
+    cursor: pointer; z-index: 5; border: none; padding: 0;
+  }
+  .shrine-card:hover .shrine-cart-trigger { opacity: 1; transform: translateX(0); }
+  .shrine-cart-trigger:hover { background-color: #f0f0f0; }
+  .shrine-cart-trigger svg { width: 18px; height: 18px; fill: none; stroke: black; }
+  
+  .shrine-spinner {
+    display: none; width: 16px; height: 16px;
+    border: 2px solid #ccc; border-top: 2px solid #000;
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  .shrine-cart-trigger.is-loading svg { display: none; }
+  .shrine-cart-trigger.is-loading .shrine-spinner { display: block; }
+
+  /* --- BUTTON --- */
+  .shrine-atc-btn {
+    position: absolute; bottom: 15px; left: 50%;
+    transform: translate(-50%, 100%); width: 85%;
+    background: var(--btn-bg); color: var(--btn-text);
+    border: none; padding: 12px 0; border-radius: 30px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); opacity: 0; z-index: 3;
+    text-align: center; text-decoration: none;
+    display: flex; justify-content: center; align-items: center;
+    overflow: hidden; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .shrine-atc-btn::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 0%; height: 100%; background: var(--btn-hover-bg);
+    z-index: -1; transition: width 0.3s ease-in-out;
+  }
+  .shrine-card:hover .shrine-atc-btn { opacity: 1; transform: translate(-50%, 0); }
+  .shrine-atc-btn:hover::before { width: 100%; }
+  .shrine-atc-btn:hover { color: var(--btn-hover-text); }
+
+  /* --- TICKER --- */
+  .shrine-ticker {
+    background: var(--badge-fast-bg); color: var(--badge-fast-text);
+    overflow: hidden; white-space: nowrap; padding: 6px 0;
+    font-size: 11px; font-weight: 800; text-transform: uppercase;
+    position: relative; margin-top: -5px;
+    border-radius: 0 0 var(--card-radius) var(--card-radius);
+    z-index: 2;
+  }
+  .shrine-ticker-inner { display: inline-block; padding-left: 100%; animation: marquee 8s linear infinite; }
+  .shrine-ticker span { display: inline-block; padding-right: 20px; }
+  @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+  /* --- TEXT INFO --- */
+  .shrine-info { padding-top: 15px; }
+  .shrine-vendor { font-size: 10px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+  .shrine-product-title { 
+    font-size: var(--fs-title); font-weight: 600; 
+    color: var(--text-color); text-decoration: none; 
+    display: block; margin-bottom: 5px; 
+  }
+  .shrine-price { font-size: var(--fs-price); color: var(--price-color); }
+  .shrine-compare { text-decoration: line-through; opacity: 0.6; margin-right: 6px; }
+
+</style>
+
+<div class="shrine-container">
+  {% if section.settings.title != blank %}
+    <div class="shrine-header">
+      <h2 class="shrine-title">{{ section.settings.title }}</h2>
+      {% if section.settings.link_text != blank %}
+        <a href="{{ section.settings.link_url }}" class="shrine-header-link">{{ section.settings.link_text }} &rsaquo;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="shrine-grid" id="shrine-slider-{{ section.id }}">
+    
+    {% if section.settings.banner_img != blank %}
+      <div class="shrine-banner-card">
+        <a href="{{ section.settings.banner_link }}" class="shrine-banner-wrapper">
+          <div class="shrine-banner-overlay"></div>
+          <img src="{{ section.settings.banner_img | image_url: width: 800 }}" loading="lazy" width="800" height="1000" alt="Banner">
+          <div class="shrine-banner-content">
+             <div class="banner-top-text">
+               {% if section.settings.banner_subheading != blank %}
+                 <span style="font-size:13px; font-style:italic; opacity:0.9;">{{ section.settings.banner_subheading }}</span>
+               {% endif %}
+               {% if section.settings.banner_heading != blank %}<h3 class="banner-heading">{{ section.settings.banner_heading }}</h3>{% endif %}
+             </div>
+             {% if section.settings.banner_btn_text != blank %}
+               <div style="font-size:14px; font-weight:600;">{{ section.settings.banner_btn_text }} &rsaquo;</div>
+             {% endif %}
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% for product in collection.products limit: section.settings.limit %}
+      <div class="shrine-card">
+        <div class="shrine-media-wrapper">
+          <a href="{{ product.url }}">
+            <div class="shrine-media">
+              <img class="shrine-img-primary" src="{{ product.featured_image | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% if product.media[1] != blank %}
+                <img class="shrine-img-secondary" src="{{ product.media[1] | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% endif %}
+
+              {% if product.compare_at_price > product.price %}
+                <span class="shrine-badge badge-sale">Sale</span>
+              {% elsif product.tags contains 'New' or product.tags contains 'new' %}
+                <span class="shrine-badge badge-new">New</span>
+              {% endif %}
+
+              {% if product.available %}
+                 <button class="shrine-cart-trigger" type="button" data-variant-id="{{ product.variants.first.id }}">
+                   <svg viewBox="0 0 24 24"><path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                   <span class="shrine-spinner"></span>
+                 </button>
+              {% endif %}
+
+              {% if product.available %}
+                {% if product.variants.size > 1 %}
+                  <a href="{{ product.url }}" class="shrine-atc-btn">Choose Options</a>
+                {% else %}
+                  <form method="post" action="/cart/add" class="shrine-atc-form">
+                    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                    <button type="submit" class="shrine-atc-btn">Add to Cart</button>
+                  </form>
+                {% endif %}
+              {% else %}
+                <button class="shrine-atc-btn" disabled style="background:#eee; color:#999;">Sold Out</button>
+              {% endif %}
+            </div>
+          </a>
+          
+          {% if product.tags contains section.settings.ticker_tag %}
+            <div class="shrine-ticker"><div class="shrine-ticker-inner"><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span></div></div>
+          {% endif %}
+        </div>
+
+        <div class="shrine-info">
+          <div class="shrine-vendor">{{ product.type }}</div>
+          <a href="{{ product.url }}" class="shrine-product-title">{{ product.title }}</a>
+          <div class="shrine-price">
+            {% if product.compare_at_price > product.price %}<span class="shrine-compare">{{ product.compare_at_price | money }}</span>{% endif %}
+            {{ product.price | money }}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p style="padding: 20px;">Please select a collection.</p>
+    {% endfor %}
+  </div>
+
+  <div class="shrine-footer">
+    <div class="shrine-nav-btns">
+      <button class="shrine-nav-btn" id="shrine-prev-{{ section.id }}"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+      <button class="shrine-nav-btn" id="shrine-next-{{ section.id }}"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. AJAX Cart
+    document.querySelectorAll('.shrine-cart-trigger').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const variantId = this.dataset.variantId;
+        this.classList.add('is-loading');
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 'items': [{ 'id': variantId, 'quantity': 1 }] })
+        })
+        .then(r => r.json())
+        .then(d => {
+          this.classList.remove('is-loading');
+          document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+          let drawer = document.querySelector('cart-drawer') || document.querySelector('#CartDrawer');
+          if (drawer && drawer.open) drawer.open();
+          else {
+             document.documentElement.dispatchEvent(new CustomEvent('cart-drawer:open', { bubbles: true }));
+             document.documentElement.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
+          }
+        }).catch(e => { console.error(e); this.classList.remove('is-loading'); });
+      });
+    });
+
+    // 2. Navigation
+    const slider = document.getElementById('shrine-slider-{{ section.id }}');
+    const prev = document.getElementById('shrine-prev-{{ section.id }}');
+    const next = document.getElementById('shrine-next-{{ section.id }}');
+    if(slider && prev && next) {
+      next.addEventListener('click', () => slider.scrollBy({ left: slider.querySelector('.shrine-card').offsetWidth + 20, behavior: 'smooth' }));
+      prev.addEventListener('click', () => slider.scrollBy({ left: -(slider.querySelector('.shrine-card').offsetWidth + 20), behavior: 'smooth' }));
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Shrine Pro Custom V5",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Daily Essentials" },
+    { "type": "text", "id": "link_text", "label": "Link Text", "default": "Shop All" },
+    { "type": "url", "id": "link_url", "label": "Link URL" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "limit", "min": 4, "max": 12, "default": 8, "label": "Product Limit" },
+    { "type": "text", "id": "ticker_tag", "label": "Tag for 'Selling Fast'", "default": "fast" },
+
+    {
+      "type": "header",
+      "content": "Banner Settings"
+    },
+    { "type": "image_picker", "id": "banner_img", "label": "Banner Image" },
+    { "type": "text", "id": "banner_subheading", "label": "Subheading", "default": "Big Saving" },
+    { "type": "text", "id": "banner_heading", "label": "Heading", "default": "On Holiday Sets" },
+    { "type": "text", "id": "banner_btn_text", "label": "Button Label", "default": "Explore Now" },
+    { "type": "url", "id": "banner_link", "label": "Banner Link" },
+
+    {
+      "type": "header",
+      "content": "Design & Colors"
+    },
+    { "type": "color", "id": "bg_color", "label": "Section Background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#111111" },
+    { "type": "color", "id": "price_color", "label": "Price Color", "default": "#333333" },
+    
+    {
+      "type": "header",
+      "content": "Card Styling"
+    },
+    { "type": "range", "id": "card_radius", "min": 0, "max": 20, "default": 8, "label": "Card Border Radius (px)" },
+    { "type": "range", "id": "border_width", "min": 0, "max": 5, "default": 0, "label": "Card Border Width (px)" },
+    { "type": "color", "id": "border_color", "label": "Card Border Color", "default": "#e5e5e5" },
+
+    {
+      "type": "header",
+      "content": "Buttons & Badges"
+    },
+    { "type": "color", "id": "btn_bg", "label": "Button Background", "default": "#ffffff" },
+    { "type": "color", "id": "btn_text", "label": "Button Text", "default": "#000000" },
+    { "type": "color", "id": "btn_hover_bg", "label": "Button Hover Background", "default": "#000000" },
+    { "type": "color", "id": "btn_hover_text", "label": "Button Hover Text", "default": "#ffffff" },
+    { "type": "color", "id": "badge_sale_color", "label": "Sale Badge Color", "default": "#d32f2f" },
+    { "type": "color", "id": "badge_new_color", "label": "New Badge Color", "default": "#4caf50" },
+    { "type": "color", "id": "badge_fast_bg", "label": "Ticker Background", "default": "#fff176" },
+    { "type": "color", "id": "badge_fast_text", "label": "Ticker Text", "default": "#000000" },
+
+    {
+      "type": "header",
+      "content": "Typography (Font Sizes)"
+    },
+    { "type": "range", "id": "fs_heading", "min": 16, "max": 40, "default": 24, "label": "Section Heading (px)" },
+    { "type": "range", "id": "fs_title", "min": 12, "max": 24, "default": 15, "label": "Product Title (px)" },
+    { "type": "range", "id": "fs_price", "min": 12, "max": 24, "default": 14, "label": "Price (px)" },
+
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "default": 40, "label": "Top Padding" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "default": 40, "label": "Bottom Padding" }
+  ],
+  "presets": [
+    { "name": "Shrine Pro Custom V5" }
+  ]
+}
+{% endschema %}
+ {% endcomment %}
+
+
+
+
+{% comment %} 
+
+{% comment %}
+  Shrine Pro Style Slider V4 - Final
+  - Carousel Navigation Arrows (Bottom Right)
+  - AJAX Add to Cart (Side Drawer)
+  - Banner with Overlay
+  - Hover Effects & Animations
+{% endcomment %}
+
+{%- assign collection = collections[section.settings.collection] -%}
+
+<style>
+  /* --- CSS VARIABLES --- */
+  #shopify-section-{{ section.id }} {
+    --bg-color: #ffffff;
+    --text-color: #111111;
+    --btn-bg: #ffffff;
+    --btn-text: #000000;
+    --btn-hover-bg: #000000;
+    --btn-hover-text: #ffffff;
+    --badge-sale: #d32f2f;
+    --badge-new: #4caf50;
+    --badge-fast-bg: #fff176;
+    --badge-fast-text: #000000;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  .shrine-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .shrine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 25px;
+  }
+  
+  .shrine-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+  }
+  
+  .shrine-header-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    text-decoration: none;
+    display: none; /* Hidden on mobile usually */
+  }
+  @media(min-width: 768px) { .shrine-header-link { display: block; } }
+
+  /* --- GRID / SLIDER --- */
+  .shrine-grid {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 30px;
+    scrollbar-width: none; 
+    align-items: stretch;
+    scroll-behavior: smooth; /* Native smooth scroll */
+  }
+  
+  .shrine-grid::-webkit-scrollbar { display: none; }
+
+  /* --- CAROUSEL CONTROLS (FOOTER) --- */
+  .shrine-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align right */
+    margin-top: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e5e5; /* The line from screenshot */
+    position: relative;
+  }
+
+  .shrine-nav-btns {
+    display: flex;
+    gap: 10px;
+  }
+
+  .shrine-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #e5e5e5;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #333;
+  }
+
+  .shrine-nav-btn:hover {
+    border-color: #000;
+    color: #000;
+    background: #f9f9f9;
+  }
+  
+  .shrine-nav-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* --- COMMON CARD STYLES --- */
+  .shrine-card, .shrine-banner-card {
+    flex: 0 0 75%; /* Mobile */
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media(min-width: 768px) {
+    .shrine-card, .shrine-banner-card { flex: 0 0 40%; }
+  }
+
+  @media(min-width: 1024px) {
+    .shrine-card, .shrine-banner-card { flex: 0 0 23%; }
+  }
+
+  /* --- BANNER CARD --- */
+  .shrine-banner-card {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+  }
+
+  .shrine-banner-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .shrine-banner-wrapper img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  .shrine-banner-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%);
+    z-index: 2;
+  }
+
+  .shrine-banner-content {
+    position: relative;
+    z-index: 3;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 25px;
+    box-sizing: border-box;
+  }
+
+  .banner-top-text { display: flex; flex-direction: column; gap: 5px; }
+  .banner-subheading { font-size: 13px; font-weight: 500; font-style: italic; opacity: 0.9; }
+  .banner-heading { font-size: 26px; font-weight: 700; line-height: 1.2; margin: 0; }
+  .banner-btn-text { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+  /* --- IMAGE & HOVER --- */
+  .shrine-media-wrapper { position: relative; }
+  .shrine-media {
+    position: relative;
+    width: 100%;
+    padding-bottom: 110%; 
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .shrine-media img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .shrine-img-secondary { opacity: 0; z-index: 1; }
+  .shrine-card:hover .shrine-img-secondary { opacity: 1; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary { opacity: 0; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary:only-child { opacity: 1; }
+
+  /* --- BADGES --- */
+  .shrine-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    z-index: 2;
+  }
+  .badge-sale { background-color: var(--badge-sale); }
+  .badge-new { background-color: var(--badge-new); }
+
+  /* --- AJAX CART ICON --- */
+  .shrine-cart-trigger {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 35px; height: 35px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    z-index: 5;
+    border: none;
+    padding: 0;
+  }
+  .shrine-card:hover .shrine-cart-trigger { opacity: 1; transform: translateX(0); }
+  .shrine-cart-trigger:hover { background-color: #f0f0f0; }
+  .shrine-cart-trigger svg { width: 18px; height: 18px; fill: none; stroke: black; stroke-width: 1.5; }
+  
+  .shrine-spinner {
+    display: none;
+    width: 16px; height: 16px;
+    border: 2px solid #ccc;
+    border-top: 2px solid #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  .shrine-cart-trigger.is-loading svg { display: none; }
+  .shrine-cart-trigger.is-loading .shrine-spinner { display: block; }
+
+  /* --- SLIDE UP BUTTON --- */
+  .shrine-atc-btn {
+    position: absolute;
+    bottom: 15px; left: 50%;
+    transform: translate(-50%, 100%);
+    width: 85%;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 12px 0;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    opacity: 0;
+    z-index: 3;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .shrine-atc-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0%; height: 100%;
+    background: var(--btn-hover-bg);
+    z-index: -1;
+    transition: width 0.3s ease-in-out;
+  }
+  .shrine-card:hover .shrine-atc-btn { opacity: 1; transform: translate(-50%, 0); }
+  .shrine-atc-btn:hover::before { width: 100%; }
+  .shrine-atc-btn:hover { color: var(--btn-hover-text); }
+
+  /* --- TICKER --- */
+  .shrine-ticker {
+    background: var(--badge-fast-bg);
+    color: var(--badge-fast-text);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 6px 0;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    position: relative;
+    margin-top: -5px;
+    border-radius: 0 0 8px 8px;
+    z-index: 2;
+  }
+  .shrine-ticker-inner { display: inline-block; padding-left: 100%; animation: marquee 8s linear infinite; }
+  .shrine-ticker span { display: inline-block; padding-right: 20px; }
+  @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+  /* --- INFO --- */
+  .shrine-info { padding-top: 15px; }
+  .shrine-vendor { font-size: 10px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+  .shrine-product-title { font-size: 15px; font-weight: 600; color: var(--text-color); text-decoration: none; display: block; margin-bottom: 5px; }
+  .shrine-price { font-size: 14px; color: #333; }
+  .shrine-compare { text-decoration: line-through; color: #999; margin-right: 6px; }
+
+</style>
+
+<div class="shrine-container">
+  {% if section.settings.title != blank %}
+    <div class="shrine-header">
+      <h2 class="shrine-title">{{ section.settings.title }}</h2>
+      {% if section.settings.link_text != blank %}
+        <a href="{{ section.settings.link_url }}" class="shrine-header-link">{{ section.settings.link_text }} &rsaquo;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="shrine-grid" id="shrine-slider-{{ section.id }}">
+    
+    {% if section.settings.banner_img != blank %}
+      <div class="shrine-banner-card">
+        <a href="{{ section.settings.banner_link }}" class="shrine-banner-wrapper">
+          <div class="shrine-banner-overlay"></div>
+          <img src="{{ section.settings.banner_img | image_url: width: 800 }}" loading="lazy" width="800" height="1000" alt="Collection Banner">
+          <div class="shrine-banner-content">
+             <div class="banner-top-text">
+               {% if section.settings.banner_subheading != blank %}<span class="banner-subheading">{{ section.settings.banner_subheading }}</span>{% endif %}
+               {% if section.settings.banner_heading != blank %}<h3 class="banner-heading">{{ section.settings.banner_heading }}</h3>{% endif %}
+             </div>
+             {% if section.settings.banner_btn_text != blank %}
+               <div class="banner-btn-text">{{ section.settings.banner_btn_text }} <span>&rsaquo;</span></div>
+             {% endif %}
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% for product in collection.products limit: section.settings.limit %}
+      <div class="shrine-card">
+        <div class="shrine-media-wrapper">
+          <a href="{{ product.url }}">
+            <div class="shrine-media">
+              <img class="shrine-img-primary" src="{{ product.featured_image | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% if product.media[1] != blank %}
+                <img class="shrine-img-secondary" src="{{ product.media[1] | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% endif %}
+
+              {% if product.compare_at_price > product.price %}
+                <span class="shrine-badge badge-sale">Sale</span>
+              {% elsif product.tags contains 'New' or product.tags contains 'new' %}
+                <span class="shrine-badge badge-new">New</span>
+              {% endif %}
+
+              {% if product.available %}
+                 <button class="shrine-cart-trigger" type="button" data-variant-id="{{ product.variants.first.id }}" aria-label="Add to cart">
+                   <svg viewBox="0 0 24 24"><path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                   <span class="shrine-spinner"></span>
+                 </button>
+              {% endif %}
+
+              {% if product.available %}
+                {% if product.variants.size > 1 %}
+                  <a href="{{ product.url }}" class="shrine-atc-btn">Choose Options</a>
+                {% else %}
+                  <form method="post" action="/cart/add" class="shrine-atc-form">
+                    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                    <button type="submit" class="shrine-atc-btn">Add to Cart</button>
+                  </form>
+                {% endif %}
+              {% else %}
+                <button class="shrine-atc-btn" disabled style="background:#eee; color:#999;">Sold Out</button>
+              {% endif %}
+            </div>
+          </a>
+          {% if product.tags contains section.settings.ticker_tag %}
+            <div class="shrine-ticker"><div class="shrine-ticker-inner"><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span></div></div>
+          {% endif %}
+        </div>
+        <div class="shrine-info">
+          <div class="shrine-vendor">{{ product.type }}</div>
+          <a href="{{ product.url }}" class="shrine-product-title">{{ product.title }}</a>
+          <div class="shrine-price">
+            {% if product.compare_at_price > product.price %}<span class="shrine-compare">{{ product.compare_at_price | money }}</span>{% endif %}
+            {{ product.price | money }}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p style="padding: 20px;">Please select a collection.</p>
+    {% endfor %}
+  </div>
+
+  <div class="shrine-footer">
+    <div class="shrine-nav-btns">
+      <button class="shrine-nav-btn" id="shrine-prev-{{ section.id }}" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="shrine-nav-btn" id="shrine-next-{{ section.id }}" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. AJAX Cart Logic
+    const cartButtons = document.querySelectorAll('.shrine-cart-trigger');
+    cartButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const variantId = this.dataset.variantId;
+        this.classList.add('is-loading');
+        let formData = { 'items': [{ 'id': variantId, 'quantity': 1 }] };
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          this.classList.remove('is-loading');
+          document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+          let cartDrawer = document.querySelector('cart-drawer') || document.querySelector('#CartDrawer');
+          if (cartDrawer && cartDrawer.open) cartDrawer.open();
+          else {
+             document.documentElement.dispatchEvent(new CustomEvent('cart-drawer:open', { bubbles: true }));
+             document.documentElement.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
+          }
+        })
+        .catch((error) => { console.error('Error:', error); this.classList.remove('is-loading'); });
+      });
+    });
+
+    // 2. Carousel Arrow Logic
+    const slider = document.getElementById('shrine-slider-{{ section.id }}');
+    const prevBtn = document.getElementById('shrine-prev-{{ section.id }}');
+    const nextBtn = document.getElementById('shrine-next-{{ section.id }}');
+
+    if(slider && prevBtn && nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        const cardWidth = slider.querySelector('.shrine-card').offsetWidth;
+        const gap = 20; // Matches CSS gap
+        slider.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+      });
+
+      prevBtn.addEventListener('click', function() {
+        const cardWidth = slider.querySelector('.shrine-card').offsetWidth;
+        const gap = 20; 
+        slider.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Shrine Pro Slider V4",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Daily Essentials"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Header Link Text",
+      "default": "Shop All Products"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Header Link URL"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "header",
+      "content": "Banner Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_img",
+      "label": "Banner Image"
+    },
+    {
+      "type": "text",
+      "id": "banner_subheading",
+      "label": "Banner Subheading",
+      "default": "Big Saving"
+    },
+    {
+      "type": "text",
+      "id": "banner_heading",
+      "label": "Banner Heading",
+      "default": "On Holiday Sets"
+    },
+    {
+      "type": "text",
+      "id": "banner_btn_text",
+      "label": "Button Label",
+      "default": "Explore Now"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Banner Link"
+    },
+    {
+      "type": "header",
+      "content": "Product Settings"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "min": 4,
+      "max": 12,
+      "default": 8,
+      "label": "Product Limit"
+    },
+    {
+      "type": "text",
+      "id": "ticker_tag",
+      "label": "Tag for 'Selling Fast'",
+      "default": "fast"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "label": "Top Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "label": "Bottom Padding"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shrine Pro Slider V4"
+    }
+  ]
+}
+{% endschema %}
+
+
+ {% endcomment %}
+
+
+
+
+
+
+
+
+
+{% comment %} {% comment %}
+  Shrine Pro Style Slider V3 - Final
+  - AJAX Add to Cart (Opens Drawer)
+  - Banner with Text Overlay & Button
+  - Hover Second Image
+  - Button Slide Animation
+{% endcomment %}
+
+{%- assign collection = collections[section.settings.collection] -%}
+
+<style>
+  /* --- CSS VARIABLES --- */
+  #shopify-section-{{ section.id }} {
+    --bg-color: #ffffff;
+    --text-color: #111111;
+    --btn-bg: #ffffff;
+    --btn-text: #000000;
+    --btn-hover-bg: #000000;
+    --btn-hover-text: #ffffff;
+    --badge-sale: #d32f2f;
+    --badge-new: #4caf50;
+    --badge-fast-bg: #fff176;
+    --badge-fast-text: #000000;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  .shrine-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .shrine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+  
+  .shrine-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+  }
+
+  /* --- GRID / SLIDER --- */
+  .shrine-grid {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 30px;
+    scrollbar-width: none; 
+    align-items: stretch;
+  }
+  
+  .shrine-grid::-webkit-scrollbar { display: none; }
+
+  /* --- COMMON CARD STYLES --- */
+  .shrine-card, .shrine-banner-card {
+    flex: 0 0 75%; /* Mobile */
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media(min-width: 768px) {
+    .shrine-card, .shrine-banner-card { flex: 0 0 40%; }
+  }
+
+  @media(min-width: 1024px) {
+    .shrine-card, .shrine-banner-card { flex: 0 0 23%; }
+  }
+
+  /* --- BANNER CARD STYLES (NEW) --- */
+  .shrine-banner-card {
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #000; /* Fallback */
+  }
+
+  .shrine-banner-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .shrine-banner-wrapper img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  /* Overlay Gradient for Readability */
+  .shrine-banner-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%);
+    z-index: 2;
+  }
+
+  /* Banner Text Content */
+  .shrine-banner-content {
+    position: relative;
+    z-index: 3;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 25px;
+    box-sizing: border-box;
+  }
+
+  .banner-top-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .banner-subheading {
+    font-size: 13px;
+    font-weight: 500;
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  .banner-heading {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .banner-btn-text {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* --- PRODUCT IMAGE AREA --- */
+  .shrine-media-wrapper { position: relative; }
+
+  .shrine-media {
+    position: relative;
+    width: 100%;
+    padding-bottom: 110%; 
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .shrine-media img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Image Swap Logic */
+  .shrine-img-secondary { opacity: 0; z-index: 1; }
+  .shrine-card:hover .shrine-img-secondary { opacity: 1; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary { opacity: 0; transform: scale(1.06); }
+  .shrine-card:hover .shrine-img-primary:only-child { opacity: 1; }
+
+  /* --- BADGES --- */
+  .shrine-badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    z-index: 2;
+  }
+  .badge-sale { background-color: var(--badge-sale); }
+  .badge-new { background-color: var(--badge-new); }
+
+  /* --- AJAX CART ICON (Top Right) --- */
+  .shrine-cart-trigger {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 35px; height: 35px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    z-index: 5;
+    border: none;
+    padding: 0;
+  }
+  
+  .shrine-card:hover .shrine-cart-trigger {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .shrine-cart-trigger:hover {
+    background-color: #f0f0f0;
+  }
+
+  .shrine-cart-trigger svg {
+    width: 18px; height: 18px;
+    fill: none; stroke: black; stroke-width: 1.5;
+  }
+  
+  /* Loading Spinner for Ajax */
+  .shrine-spinner {
+    display: none;
+    width: 16px; height: 16px;
+    border: 2px solid #ccc;
+    border-top: 2px solid #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+  .shrine-cart-trigger.is-loading svg { display: none; }
+  .shrine-cart-trigger.is-loading .shrine-spinner { display: block; }
+
+  /* --- SLIDE UP BUTTON --- */
+  .shrine-atc-btn {
+    position: absolute;
+    bottom: 15px; left: 50%;
+    transform: translate(-50%, 100%);
+    width: 85%;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 12px 0;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    opacity: 0;
+    z-index: 3;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .shrine-atc-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0%; height: 100%;
+    background: var(--btn-hover-bg);
+    z-index: -1;
+    transition: width 0.3s ease-in-out;
+  }
+
+  .shrine-card:hover .shrine-atc-btn { opacity: 1; transform: translate(-50%, 0); }
+  .shrine-atc-btn:hover::before { width: 100%; }
+  .shrine-atc-btn:hover { color: var(--btn-hover-text); }
+
+  /* --- TICKER --- */
+  .shrine-ticker {
+    background: var(--badge-fast-bg);
+    color: var(--badge-fast-text);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 6px 0;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    position: relative;
+    margin-top: -5px;
+    border-radius: 0 0 8px 8px;
+    z-index: 2;
+  }
+  .shrine-ticker-inner { display: inline-block; padding-left: 100%; animation: marquee 8s linear infinite; }
+  .shrine-ticker span { display: inline-block; padding-right: 20px; }
+  @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+  /* --- INFO --- */
+  .shrine-info { padding-top: 15px; }
+  .shrine-vendor { font-size: 10px; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+  .shrine-product-title { font-size: 15px; font-weight: 600; color: var(--text-color); text-decoration: none; display: block; margin-bottom: 5px; }
+  .shrine-price { font-size: 14px; color: #333; }
+  .shrine-compare { text-decoration: line-through; color: #999; margin-right: 6px; }
+
+</style>
+
+<div class="shrine-container">
+  {% if section.settings.title != blank %}
+    <div class="shrine-header">
+      <h2 class="shrine-title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="shrine-grid">
+    
+    {% if section.settings.banner_img != blank %}
+      <div class="shrine-banner-card">
+        <a href="{{ section.settings.banner_link }}" class="shrine-banner-wrapper">
+          <div class="shrine-banner-overlay"></div>
+          <img src="{{ section.settings.banner_img | image_url: width: 800 }}" 
+               loading="lazy" 
+               width="800" height="1000"
+               alt="Collection Banner">
+          
+          <div class="shrine-banner-content">
+             <div class="banner-top-text">
+               {% if section.settings.banner_subheading != blank %}
+                 <span class="banner-subheading">{{ section.settings.banner_subheading }}</span>
+               {% endif %}
+               {% if section.settings.banner_heading != blank %}
+                 <h3 class="banner-heading">{{ section.settings.banner_heading }}</h3>
+               {% endif %}
+             </div>
+             
+             {% if section.settings.banner_btn_text != blank %}
+               <div class="banner-btn-text">
+                 {{ section.settings.banner_btn_text }} <span>&rsaquo;</span>
+               </div>
+             {% endif %}
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% for product in collection.products limit: section.settings.limit %}
+      <div class="shrine-card">
+        <div class="shrine-media-wrapper">
+          <a href="{{ product.url }}">
+            <div class="shrine-media">
+              
+              <img class="shrine-img-primary" src="{{ product.featured_image | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% if product.media[1] != blank %}
+                <img class="shrine-img-secondary" src="{{ product.media[1] | image_url: width: 600 }}" loading="lazy" width="600" height="660" alt="{{ product.title }}">
+              {% endif %}
+
+              {% if product.compare_at_price > product.price %}
+                <span class="shrine-badge badge-sale">Sale</span>
+              {% elsif product.tags contains 'New' or product.tags contains 'new' %}
+                <span class="shrine-badge badge-new">New</span>
+              {% endif %}
+
+              {% if product.available %}
+                 <button class="shrine-cart-trigger" 
+                         type="button" 
+                         data-variant-id="{{ product.variants.first.id }}"
+                         aria-label="Add to cart">
+                   <svg viewBox="0 0 24 24"><path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                   <span class="shrine-spinner"></span>
+                 </button>
+              {% endif %}
+
+              {% if product.available %}
+                {% if product.variants.size > 1 %}
+                  <a href="{{ product.url }}" class="shrine-atc-btn">Choose Options</a>
+                {% else %}
+                  <form method="post" action="/cart/add" class="shrine-atc-form">
+                    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+                    <button type="submit" class="shrine-atc-btn">Add to Cart</button>
+                  </form>
+                {% endif %}
+              {% else %}
+                <button class="shrine-atc-btn" disabled style="background:#eee; color:#999;">Sold Out</button>
+              {% endif %}
+            </div>
+          </a>
+
+          {% if product.tags contains section.settings.ticker_tag %}
+            <div class="shrine-ticker"><div class="shrine-ticker-inner"><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span><span>⚡ Selling Fast</span></div></div>
+          {% endif %}
+        </div>
+
+        <div class="shrine-info">
+          <div class="shrine-vendor">{{ product.type }}</div>
+          <a href="{{ product.url }}" class="shrine-product-title">{{ product.title }}</a>
+          <div class="shrine-price">
+            {% if product.compare_at_price > product.price %}
+              <span class="shrine-compare">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+            {{ product.price | money }}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p style="padding: 20px;">Please select a collection.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cartButtons = document.querySelectorAll('.shrine-cart-trigger');
+
+    cartButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const variantId = this.dataset.variantId;
+        const iconSvg = this.querySelector('svg');
+        const spinner = this.querySelector('.shrine-spinner');
+
+        // Show loading state
+        this.classList.add('is-loading');
+
+        let formData = {
+          'items': [{
+            'id': variantId,
+            'quantity': 1
+          }]
+        };
+
+        fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          // Reset loading state
+          this.classList.remove('is-loading');
+
+          // Trigger Theme Specific Cart Drawer Open Events
+          // Try multiple common methods used by Shopify themes
+          
+          // Method 1: Update Cart Bubble
+          document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', {
+             bubbles: true
+          }));
+
+          // Method 2: Open Drawer (Common in Dawn/Shrine)
+          let cartDrawer = document.querySelector('cart-drawer') || document.querySelector('#CartDrawer');
+          if (cartDrawer && cartDrawer.open) {
+             cartDrawer.open();
+          } else {
+             // Fallback: Dispatch common event names
+             document.documentElement.dispatchEvent(new CustomEvent('cart-drawer:open', { bubbles: true }));
+             document.documentElement.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
+             
+             // If ajax-cart-drawer component exists
+             const ajaxCart = document.querySelector('ajax-cart');
+             if(ajaxCart) ajaxCart.classList.add('active');
+          }
+
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          this.classList.remove('is-loading');
+        });
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Shrine Pro Slider V3",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Daily Essentials"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "header",
+      "content": "Banner Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_img",
+      "label": "Banner Image"
+    },
+    {
+      "type": "text",
+      "id": "banner_subheading",
+      "label": "Banner Subheading",
+      "default": "Big Saving"
+    },
+    {
+      "type": "text",
+      "id": "banner_heading",
+      "label": "Banner Heading",
+      "default": "On Holiday Sets"
+    },
+    {
+      "type": "text",
+      "id": "banner_btn_text",
+      "label": "Button Label",
+      "default": "Explore Now"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Banner Link"
+    },
+    {
+      "type": "header",
+      "content": "Product Settings"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "min": 4,
+      "max": 12,
+      "default": 8,
+      "label": "Product Limit"
+    },
+    {
+      "type": "text",
+      "id": "ticker_tag",
+      "label": "Tag for 'Selling Fast'",
+      "default": "fast"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "label": "Top Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "label": "Bottom Padding"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shrine Pro Slider V3"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+
+
