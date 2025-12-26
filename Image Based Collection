@@ -1,0 +1,458 @@
+https://prnt.sc/RmOezeXSNamx
+
+
+https://themes.shopify.com/themes/hyper/presets/ceramide
+
+
+{% schema %}
+{
+  "name": "Custom Promo & Grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max Container Width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Grid Card Design"
+    },
+    {
+      "type": "range",
+      "id": "card_font_size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Category Name Size",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Category Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "select",
+      "id": "text_pos_vertical",
+      "label": "Vertical Alignment",
+      "options": [
+        {"value": "flex-start", "label": "Top"},
+        {"value": "center", "label": "Center"},
+        {"value": "flex-end", "label": "Bottom"}
+      ],
+      "default": "flex-end"
+    },
+    {
+      "type": "select",
+      "id": "text_pos_horizontal",
+      "label": "Horizontal Alignment",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"}
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 10,
+      "unit": "%",
+      "label": "Image Overlay Opacity",
+      "default": 20,
+      "info": "Darkens the image so text is readable"
+    },
+    {
+      "type": "range",
+      "id": "grid_cols_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Grid Columns (Desktop)",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Left Banner Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Background Image"
+    },
+    {
+      "type": "text",
+      "id": "banner_subtitle",
+      "label": "Subtitle",
+      "default": "Countdown Is On"
+    },
+    {
+      "type": "text",
+      "id": "banner_title",
+      "label": "Title",
+      "default": "Holiday Season Sale"
+    },
+    {
+      "type": "text",
+      "id": "countdown_date",
+      "label": "Countdown Date (MM/DD/YYYY)",
+      "default": "12/31/2025"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "Shop The Sale"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "banner_text_color",
+      "label": "Banner Text Color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category_card",
+      "name": "Category Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "cat_image",
+          "label": "Background Image"
+        },
+        {
+          "type": "text",
+          "id": "cat_title",
+          "label": "Category Name",
+          "default": "New Category"
+        },
+        {
+          "type": "url",
+          "id": "cat_link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Promo & Grid",
+      "blocks": [
+        {"type": "category_card"},
+        {"type": "category_card"},
+        {"type": "category_card"},
+        {"type": "category_card"},
+        {"type": "category_card"},
+        {"type": "category_card"},
+        {"type": "category_card"},
+        {"type": "category_card"}
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  #section-{{ section.id }} {
+    padding-top: {{ section.settings.section_padding_top }}px;
+    padding-bottom: {{ section.settings.section_padding_bottom }}px;
+  }
+
+  .cpg-container {
+    max-width: {{ section.settings.container_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* --- LEFT BANNER STYLES --- */
+  .cpg-banner {
+    flex: 1 1 400px;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: {{ section.settings.banner_text_color }};
+    background-color: #6da385;
+  }
+
+  .cpg-banner img.bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  .cpg-banner-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+    width: 100%;
+  }
+
+  .cpg-subtitle {
+    font-size: 14px;
+    font-style: italic;
+    margin-bottom: 10px;
+    opacity: 0.9;
+    letter-spacing: 0.5px;
+  }
+
+  .cpg-title {
+    font-size: 36px;
+    font-weight: 500;
+    font-family: serif;
+    margin-bottom: 25px;
+    line-height: 1.2;
+    color: {{ section.settings.banner_text_color }};
+  }
+
+  .cpg-countdown {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-family: monospace, serif;
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 400;
+  }
+  .cpg-time-block { display: flex; align-items: center; }
+  .cpg-colon { margin-left: 15px; opacity: 0.7; }
+
+  .cpg-btn {
+    display: inline-block;
+    background-color: #fff;
+    color: #000;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .cpg-btn:hover { transform: scale(1.05); }
+
+  /* --- RIGHT GRID STYLES (UPDATED) --- */
+  .cpg-grid-wrapper {
+    flex: 2 1 600px;
+  }
+
+  .cpg-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.grid_cols_desktop }}, 1fr);
+    gap: 15px;
+    height: 100%;
+  }
+
+  .cpg-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    text-decoration: none;
+    aspect-ratio: 1 / 1;
+    display: block;
+    background-color: #f0f0f0;
+  }
+
+  .cpg-card:hover .cpg-card-bg-img {
+    transform: scale(1.05);
+  }
+
+  /* Background Image */
+  .cpg-card-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    transition: transform 0.5s ease;
+  }
+
+  /* Overlay */
+  .cpg-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Content Wrapper */
+  .cpg-card-content {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    /* User Controlled Settings */
+    justify-content: {{ section.settings.text_pos_vertical }};
+    text-align: {{ section.settings.text_pos_horizontal }};
+  }
+
+  .cpg-card-title {
+    display: block;
+    width: 100%;
+    font-weight: 600;
+    font-size: {{ section.settings.card_font_size }}px;
+    color: {{ section.settings.card_text_color }};
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Slight shadow for readability */
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .cpg-container {
+      flex-direction: column;
+    }
+    .cpg-banner {
+      min-height: 400px;
+    }
+    .cpg-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<div id="section-{{ section.id }}">
+  <div class="cpg-container">
+    
+    <div class="cpg-banner">
+      {% if section.settings.banner_image != blank %}
+        {{ section.settings.banner_image | image_url: width: 800 | image_tag: class: 'bg-img', loading: 'lazy' }}
+      {% endif %}
+      
+      <div class="cpg-banner-content">
+        {% if section.settings.banner_subtitle != blank %}
+          <div class="cpg-subtitle">{{ section.settings.banner_subtitle }}</div>
+        {% endif %}
+        
+        {% if section.settings.banner_title != blank %}
+          <h2 class="cpg-title">{{ section.settings.banner_title }}</h2>
+        {% endif %}
+
+        {% if section.settings.countdown_date != blank %}
+          <div class="cpg-countdown" id="timer-{{ section.id }}" data-date="{{ section.settings.countdown_date }}">
+            <span class="cpg-time-block"><span class="days">00</span><span class="cpg-colon">:</span></span>
+            <span class="cpg-time-block"><span class="hours">00</span><span class="cpg-colon">:</span></span>
+            <span class="cpg-time-block"><span class="minutes">00</span><span class="cpg-colon">:</span></span>
+            <span class="cpg-time-block"><span class="seconds">00</span></span>
+          </div>
+        {% endif %}
+
+        {% if section.settings.btn_text != blank %}
+          <a href="{{ section.settings.btn_link }}" class="cpg-btn">{{ section.settings.btn_text }}</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="cpg-grid-wrapper">
+      <div class="cpg-grid">
+        {% for block in section.blocks %}
+          <a href="{{ block.settings.cat_link }}" class="cpg-card" {{ block.shopify_attributes }}>
+            {% if block.settings.cat_image != blank %}
+              {{ block.settings.cat_image | image_url: width: 400 | image_tag: class: 'cpg-card-bg-img', loading: 'lazy' }}
+            {% else %}
+              {{ 'collection-1' | placeholder_svg_tag: 'cpg-card-bg-img' }}
+            {% endif %}
+
+            <div class="cpg-card-overlay"></div>
+
+            <div class="cpg-card-content">
+              <span class="cpg-card-title">{{ block.settings.cat_title }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const timerContainer = document.getElementById('timer-{{ section.id }}');
+  if (!timerContainer) return;
+
+  const targetDateStr = timerContainer.getAttribute('data-date');
+  const targetDate = new Date(targetDateStr).getTime();
+
+  const updateTimer = () => {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    if (distance < 0) {
+      timerContainer.innerHTML = "EXPIRED";
+      return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    timerContainer.querySelector('.days').innerText = days < 10 ? '0' + days : days;
+    timerContainer.querySelector('.hours').innerText = hours < 10 ? '0' + hours : hours;
+    timerContainer.querySelector('.minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+    timerContainer.querySelector('.seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+  };
+
+  setInterval(updateTimer, 1000);
+  updateTimer();
+});
+</script>
