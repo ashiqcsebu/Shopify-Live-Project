@@ -1,0 +1,516 @@
+Layout : https://prnt.sc/3DCzec9TUK-b
+
+{% schema %}
+{
+  "name": "Boxed Split (50/50)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "min": 800,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Section Max Width",
+      "default": 1000,
+      "info": "Sets the maximum width of the content area."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Top Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Bottom Padding",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Desktop Image Settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "Image will take exactly 50% of the section width."
+    },
+    {
+      "type": "image_picker",
+      "id": "profile_image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "desktop_image_height",
+      "min": 300,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "label": "Image Fixed Height (px)",
+      "default": 500
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "sub_heading",
+      "label": "Sub Heading",
+      "default": "HUMBLE BEGINNINGS"
+    },
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Main Heading",
+      "default": "Tell a Story"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "min": 10,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Size (Desktop)",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Size (Mobile)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Top Padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Bottom Padding",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Author Signature"
+    },
+    {
+      "type": "text",
+      "id": "author_name",
+      "label": "Author Name",
+      "default": "ALI ARDAKANI"
+    },
+    {
+      "type": "text",
+      "id": "author_title",
+      "label": "Author Title",
+      "default": "Founder & Managing Director"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Name/Dash Color",
+      "default": "#5dafd8"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "author_size_desktop",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Author Text Size",
+      "default": 14
+    }
+  ],
+  "blocks": [
+    {
+      "type": "simple_text",
+      "name": "Paragraph Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text Content",
+          "default": "<p>By showcasing a product, collection, or your brand.</p>"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "font_size",
+          "min": 12,
+          "max": 60,
+          "step": 1,
+          "unit": "px",
+          "label": "Font Size",
+          "default": 16
+        }
+      ]
+    },
+    {
+      "type": "icon_text",
+      "name": "Text with Icon",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon",
+          "options": [
+            { "label": "--- Basic ---", "value": "none" },
+            { "value": "check", "label": "Checkmark" },
+            { "value": "arrow", "label": "Arrow Right" },
+            { "value": "star", "label": "Star" },
+            { "value": "shipping", "label": "Truck / Shipping" },
+            { "value": "box", "label": "Box / Package" }
+          ],
+          "default": "check"
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Icon Color",
+          "default": "#5dafd8"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "List Text",
+          "default": "Feature point here"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "font_size",
+          "min": 12,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Font Size",
+          "default": 16
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Boxed Split (50/50)",
+      "category": "Custom",
+      "blocks": [
+        { "type": "simple_text" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% style %}
+  /* --- Section Wrapper --- */
+  .section-{{ section.id }}-wrapper {
+    background-color: {{ section.settings.bg_color }};
+    padding-top: {{ section.settings.padding_top_desktop }}px;
+    padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+  }
+
+  /* --- Main Container --- */
+  .wwa-boxed-container {
+    width: 100%;
+    /* Max Width Controlled by User (Default 1000px) */
+    max-width: {{ section.settings.section_max_width }}px; 
+    margin: 0 auto;
+    padding: 0 20px; /* Safe padding from edges */
+    display: flex;
+    align-items: center; /* Vertical Center */
+    /* Dynamic Image Position */
+    flex-direction: {% if section.settings.image_position == 'right' %}row-reverse{% else %}row{% endif %};
+    gap: 0; 
+  }
+
+  /* --- Image Column (Exactly 50%) --- */
+  .wwa-image-col {
+    width: 50%;
+    /* Fixed Height from Schema */
+    height: {{ section.settings.desktop_image_height }}px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wwa-image-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Keeps rectangle shape */
+    display: block;
+  }
+
+  /* --- Text Column (Exactly 50%) --- */
+  .wwa-text-col {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 40px; /* Spacing between image and text */
+    
+    align-items: {% if section.settings.text_alignment == 'center' %}center{% elsif section.settings.text_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+    text-align: {{ section.settings.text_alignment }};
+  }
+
+  /* Typography */
+  .wwa-sub-heading {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: {{ section.settings.heading_color }};
+    opacity: 0.8;
+  }
+
+  .wwa-heading {
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: {{ section.settings.heading_color }};
+    font-size: {{ section.settings.heading_size_desktop }}px;
+    line-height: 1.2;
+    width: 100%;
+  }
+
+  .wwa-block-simple {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    width: 100%;
+  }
+  
+  .wwa-block-simple p {
+    margin: 0;
+    font-size: inherit; 
+    color: inherit;    
+  }
+
+  .wwa-block-icon-item {
+    display: flex;
+    align-items: flex-start; 
+    gap: 12px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  
+  {% if section.settings.text_alignment == 'center' %}
+    .wwa-block-icon-item { align-items: center; }
+  {% elsif section.settings.text_alignment == 'right' %}
+    .wwa-block-icon-item { flex-direction: row-reverse; text-align: right; }
+  {% endif %}
+
+  .wwa-icon-svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .wwa-icon-svg svg { width: 100%; height: 100%; fill: currentColor; }
+
+  .wwa-author-meta {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    align-items: {% if section.settings.text_alignment == 'center' %}center{% elsif section.settings.text_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+  }
+  .wwa-author-name {
+    font-weight: 700;
+    text-transform: uppercase;
+    color: {{ section.settings.accent_color }};
+    font-size: {{ section.settings.author_size_desktop }}px;
+  }
+  .wwa-author-title {
+    font-weight: 600;
+    font-size: {{ section.settings.author_size_desktop }}px;
+    color: {{ section.settings.title_color }};
+  }
+
+
+  /* ------------------------------------- */
+  /* --- MOBILE STYLES (Stacked 100%) --- */
+  /* ------------------------------------- */
+  @media screen and (max-width: 768px) {
+    .section-{{ section.id }}-wrapper {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+
+    .wwa-boxed-container {
+      flex-direction: column !important; /* Always Stack */
+      gap: 30px;
+    }
+
+    .wwa-image-col {
+      width: 100%;
+      height: auto !important; /* Natural Height on Mobile */
+    }
+    
+    .wwa-image-col img {
+      height: auto;
+    }
+
+    .wwa-text-col {
+      width: 100%;
+      padding: 0 !important;
+      align-items: center; 
+      text-align: center;
+    }
+
+    .wwa-heading {
+      font-size: {{ section.settings.heading_size_mobile }}px;
+    }
+    
+    .wwa-block-icon-item {
+       flex-direction: row;
+       align-items: center;
+    }
+    
+    .wwa-author-meta {
+      align-items: center;
+    }
+  }
+{% endstyle %}
+
+<div class="section-{{ section.id }}-wrapper">
+  
+  <div class="wwa-boxed-container">
+    
+    <div class="wwa-image-col">
+      {%- if section.settings.profile_image != blank -%}
+        {{ section.settings.profile_image | image_url: width: 1000 | image_tag: loading: 'lazy', alt: section.settings.author_name }}
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+
+    <div class="wwa-text-col">
+      
+      {%- if section.settings.sub_heading != blank -%}
+        <div class="wwa-sub-heading">{{ section.settings.sub_heading }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.section_heading != blank -%}
+        <h2 class="wwa-heading">{{ section.settings.section_heading }}</h2>
+      {%- endif -%}
+
+      <div class="wwa-blocks-container">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            
+            {%- when 'simple_text' -%}
+              <div class="wwa-block-simple" style="color: {{ block.settings.text_color }}; font-size: {{ block.settings.font_size }}px;" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </div>
+
+            {%- when 'icon_text' -%}
+              <div class="wwa-block-icon-item" {{ block.shopify_attributes }}>
+                <div class="wwa-icon-svg" style="color: {{ block.settings.icon_color }};">
+                  {%- case block.settings.icon_type -%}
+                    {%- when 'check' -%}<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    {%- when 'arrow' -%}<svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                    {%- when 'star' -%}<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    {%- when 'shipping' -%}<svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                    {%- when 'box' -%}<svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>
+                  {%- endcase -%}
+                </div>
+                <div class="wwa-icon-text" style="color: {{ block.settings.text_color }}; font-size: {{ block.settings.font_size }}px;">
+                  {{ block.settings.text }}
+                </div>
+              </div>
+
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+
+      <div class="wwa-author-meta">
+        <span class="wwa-author-name">{{ section.settings.author_name }}</span>
+        {%- if section.settings.author_title != blank -%}
+          <div class="wwa-author-title">{{ section.settings.author_title }}</div>
+        {%- endif -%}
+      </div>
+
+    </div>
+
+  </div>
+</div>
