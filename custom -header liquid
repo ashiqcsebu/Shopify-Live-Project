@@ -1,0 +1,333 @@
+Live Site : https://www.darlynx.com/pages/contact-us
+
+ {% schema %}
+{
+  "name": "Darlynx Pro Header Final",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout & Logo Settings"
+    },
+    {
+      "type": "range",
+      "id": "container_max_width",
+      "min": 1000,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Desktop Max Width",
+      "default": 1500
+    },
+    {
+      "type": "range",
+      "id": "padding_v",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Header Padding (Top/Bottom)",
+      "default": 20
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "range",
+      "id": "logo_w_pc",
+      "min": 50,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Logo Width",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "logo_w_mob",
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Logo Width",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Menu & Colors"
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Select Menu"
+    },
+    {
+      "type": "range",
+      "id": "fs_pc",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Menu Font Size (PC)",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "bg_c",
+      "label": "Header Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "txt_c",
+      "label": "Header Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "active_c",
+      "label": "Active/Hover Color",
+      "default": "#70e1f5"
+    },
+    {
+      "type": "header",
+      "content": "Search Box (Dropdown)"
+    },
+    {
+      "type": "color",
+      "id": "search_bg",
+      "label": "Search Background Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "search_txt",
+      "label": "Search Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    { "name": "Darlynx Pro Header Final" }
+  ]
+}
+{% endschema %}
+
+
+
+ <header class="dx-header-wrapper" style="position: sticky; top: 0; z-index: 1000;"> 
+
+  <div class="dx-header-main" style="background-color: {{ section.settings.bg_c }};">
+    <div class="dx-container" style="max-width: {{ section.settings.container_max_width }}px; padding-top: {{ section.settings.padding_v }}px; padding-bottom: {{ section.settings.padding_v }}px;">
+      
+      <div class="dx-left">
+        <button class="dx-hamburger" onclick="toggleNav()" aria-label="Menu">
+          <span style="background: {{ section.settings.txt_c }};"></span>
+          <span style="background: {{ section.settings.txt_c }};"></span>
+        </button>
+        <div class="dx-logo-pc">
+          <a href="/">
+            {% if section.settings.logo != blank %}
+              <img src="{{ section.settings.logo | img_url: '400x' }}" alt="{{ shop.name }}" style="width: {{ section.settings.logo_w_pc }}px;">
+            {% else %}
+              <span class="dx-txt-logo" style="color: {{ section.settings.txt_c }};">{{ shop.name }}</span>
+            {% endif %}
+          </a>
+        </div>
+      </div>
+
+      <div class="dx-center">
+        <div class="dx-logo-mob">
+          <a href="/">
+            {% if section.settings.logo != blank %}
+              <img src="{{ section.settings.logo | img_url: '300x' }}" alt="{{ shop.name }}" style="width: {{ section.settings.logo_w_mob }}px;">
+            {% else %}
+              <span class="dx-txt-logo" style="color: {{ section.settings.txt_c }}; font-size: 20px;">{{ shop.name }}</span>
+            {% endif %}
+          </a>
+        </div>
+        <nav class="dx-pc-nav">
+          <ul class="dx-menu">
+            {% for link in linklists[section.settings.main_menu].links %}
+              <li class="dx-menu-item">
+                <a href="{{ link.url }}" class="dx-link {% if link.active %}active{% endif %}" style="color: {{ section.settings.txt_c }}; font-size: {{ section.settings.fs_pc }}px;">
+                  {{ link.title }}
+                  {% if link.links != blank %}
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  {% endif %}
+                </a>
+                {% if link.links != blank %}
+                  <div class="dx-dropdown" style="background: {{ section.settings.bg_c }};">
+                    {% for child in link.links %}
+                      <a href="{{ child.url }}" style="color: {{ section.settings.txt_c }};">{{ child.title }}</a>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      </div>
+
+      <div class="dx-right">
+        <button class="dx-search-trigger" onclick="toggleSearch()" aria-label="Search">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{ section.settings.txt_c }}" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dxSearchDropdown" class="dx-search-dropdown" style="background-color: {{ section.settings.search_bg }};">
+    <div class="dx-container" style="max-width: {{ section.settings.container_max_width }}px;">
+      <form action="/search" method="get" class="dx-search-form">
+        <input type="text" name="q" placeholder="SEARCH PRODUCTS..." id="dxSearchInput" style="color: {{ section.settings.search_txt }};">
+        <button type="button" onclick="toggleSearch()" class="dx-search-close" style="color: {{ section.settings.search_txt }};">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<div id="dxDrawer" class="dx-drawer" style="background: {{ section.settings.bg_c }};">
+  <button class="dx-close" onclick="toggleNav()" style="color: {{ section.settings.txt_c }};">&times;</button>
+  <ul class="dx-mob-ul">
+    {% for link in linklists[section.settings.main_menu].links %}
+      <li class="dx-mob-li">
+        <div class="dx-mob-row">
+          <a href="{{ link.url }}" style="color: {{ section.settings.txt_c }};">{{ link.title }}</a>
+          {% if link.links != blank %}<button class="dx-sub-toggle" onclick="toggleSub(this)" style="color: {{ section.settings.txt_c }};">&rsaquo;</button>{% endif %}
+        </div>
+        {% if link.links != blank %}
+          <ul class="dx-mob-sub">
+            {% for child in link.links %}
+              <li><a href="{{ child.url }}" style="color: {{ section.settings.txt_c }}; opacity: 0.8;">{{ child.title }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<style>
+  /* Header Core */
+  .dx-header-wrapper { width: 100%; margin: 0; }
+  .dx-container { display: flex; align-items: center; justify-content: space-between; margin: 0 auto; padding: 0 20px; box-sizing: border-box; width: 100%; }
+  
+  /* Layout Alignment Fixes */
+  .dx-left { flex: 1; display: flex; align-items: center; justify-content: flex-start; }
+  .dx-center { flex: 2; display: flex; justify-content: center; align-items: center; }
+  .dx-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; } /* Forced to Right */
+
+  .dx-txt-logo { font-size: 24px; font-weight: 800; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+
+  /* Desktop Menu */
+  .dx-menu { display: flex; list-style: none; gap: 30px; margin: 0; padding: 0; }
+  .dx-menu-item { position: relative; display: flex; align-items: center; }
+  .dx-link { text-decoration: none; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; gap: 6px; padding: 10px 0; transition: 0.3s; }
+  .dx-link:hover, .dx-link.active { color: {{ section.settings.active_c }} !important; }
+  
+  .dx-dropdown { position: absolute; top: 100%; left: 0; min-width: 200px; padding: 10px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 10; }
+  .dx-menu-item:hover .dx-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+  .dx-dropdown a { display: block; padding: 10px 20px; text-decoration: none; font-size: 13px; color: inherit; }
+  .dx-dropdown a:hover { background: rgba(255,255,255,0.05); color: {{ section.settings.active_c }} !important; }
+
+  /* Search Trigger Button Fix */
+  .dx-search-trigger { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    display: flex; 
+    padding: 10px 0 10px 10px; /* Right padding removed for perfect alignment */
+    align-items: center;
+  }
+
+  /* Search Dropdown Animation */
+  .dx-search-dropdown {
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    visibility: hidden;
+  }
+  .dx-search-dropdown.active {
+    max-height: 120px;
+    opacity: 1;
+    visibility: visible;
+    padding: 20px 0;
+  }
+  .dx-search-form { display: flex; align-items: center; width: 100%; gap: 15px; }
+  .dx-search-form input { 
+    background: transparent; border: none; width: 100%; font-size: 16px; 
+    outline: none; text-transform: uppercase; font-weight: 600; padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .dx-search-close { background: none; border: none; cursor: pointer; display: flex; align-items: center; }
+
+  /* Mobile Responsive */
+  .dx-hamburger { display: none; background: none; border: none; flex-direction: column; gap: 6px; cursor: pointer; padding: 10px 0; }
+  .dx-hamburger span { width: 25px; height: 2px; }
+  .dx-logo-mob { display: none; padding: 10px 0; }
+
+  @media (max-width: 1024px) {
+    .dx-container { padding: 10px 15px !important; min-height: 65px; }
+    .dx-pc-nav, .dx-logo-pc { display: none; }
+    .dx-hamburger, .dx-logo-mob { display: flex; }
+    
+    /* Ensuring 3-column layout on mobile too */
+    .dx-left { flex: 0 0 50px; } 
+    .dx-center { flex: 1; }
+    .dx-right { flex: 0 0 50px; justify-content: flex-end; }
+  }
+
+  /* Drawer CSS */
+  .dx-drawer { position: fixed; top: 0; left: -100%; width: 300px; height: 100%; z-index: 2000; transition: 0.4s; padding: 40px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+  .dx-drawer.open { left: 0; }
+  .dx-close { background: none; border: none; font-size: 35px; cursor: pointer; float: right; }
+  .dx-mob-ul { list-style: none; padding: 0; margin-top: 40px; clear: both; }
+  .dx-mob-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
+  .dx-mob-row a { text-decoration: none; font-weight: 600; text-transform: uppercase; font-size: 15px; }
+  .dx-sub-toggle { background: none; border: none; font-size: 24px; cursor: pointer; transition: 0.3s; }
+  .dx-mob-sub { display: none; list-style: none; padding: 0 0 15px 15px; }
+  .dx-mob-sub a { display: block; padding: 8px 0; text-decoration: none; font-size: 14px; }
+
+  div#shopify-section-sections--21263023112411__custom_header_XmrrHz {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    left: 0;
+}
+
+
+</style>
+
+<script>
+  function toggleNav() { 
+    document.getElementById("dxDrawer").classList.toggle("open"); 
+  }
+  
+  function toggleSearch() {
+    var searchDropdown = document.getElementById("dxSearchDropdown");
+    searchDropdown.classList.toggle("active");
+    if (searchDropdown.classList.contains("active")) {
+      setTimeout(function() {
+        document.getElementById("dxSearchInput").focus();
+      }, 300);
+    }
+  }
+
+  function toggleSub(btn) {
+    var sub = btn.parentElement.nextElementSibling;
+    if (sub.style.display === "block") {
+      sub.style.display = "none";
+      btn.style.transform = "rotate(0deg)";
+    } else {
+      sub.style.display = "block";
+      btn.style.transform = "rotate(90deg)";
+    }
+  }
+</script>
+ 
