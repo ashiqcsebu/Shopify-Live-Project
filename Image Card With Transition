@@ -1,0 +1,195 @@
+Layout : https://prnt.sc/xHiz-LCxTnMH
+
+
+{%- style -%}
+  .info-section-wrapper {
+    padding: 80px 20px;
+    background-color: {{ section.settings.section_bg }};
+    overflow: hidden;
+  }
+
+  .info-section-header {
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+    text-align: {{ section.settings.header_align }};
+  }
+
+  .info-heading {
+    margin: 0 0 15px 0;
+    color: {{ section.settings.h_color }};
+    font-size: {{ section.settings.h_size }}px;
+    font-weight: {{ section.settings.h_weight }};
+  }
+
+  .info-description {
+    color: {{ section.settings.desc_color }};
+    font-size: {{ section.settings.desc_size }}px;
+    line-height: 1.6;
+  }
+
+  .info-cards-flex-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  .info-card {
+    background: #ffffff;
+    padding: 60px 30px;
+    text-align: center;
+    border-radius: {{ section.settings.card_radius }}px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    flex: 0 1 calc(33.333% - 20px); 
+    min-width: 300px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(60px);
+    transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+  }
+
+  .info-card.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ইমেজ এর মতো নিখুঁত Wave/Curve স্টাইল */
+  .info-card::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    /* SVG Wave Pattern mimicking Screenshot_23.png */
+    background-image: url("data:image/svg+xml,%3Csvg width='150' height='150' viewBox='0 0 150 150' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 150C0 150 20 120 60 110C100 100 150 120 150 120' stroke='%23F0F0F0' stroke-width='2'/%3E%3Cpath d='M0 130C0 130 30 100 70 95C110 90 150 110 150 110' stroke='%23F4F4F4' stroke-width='2'/%3E%3Cpath d='M0 110C0 110 40 80 80 80C120 80 150 100 150 100' stroke='%23F8F8F8' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    z-index: -1;
+    opacity: 0.8;
+  }
+
+  .info-card-icon {
+    width: {{ section.settings.icon_width }}px;
+    height: auto;
+    margin: 0 auto 30px;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .info-card:hover .info-card-icon {
+    transform: translateY(-8px);
+  }
+
+  .info-card-icon img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .info-card h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.3;
+  }
+
+  .info-card p {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  @media (max-width: 1024px) { 
+    .info-card { flex: 0 1 calc(50% - 20px); } 
+  }
+  @media (max-width: 650px) { 
+    .info-card { flex: 0 1 100%; } 
+  }
+{%- endstyle -%}
+
+<section class="info-section-wrapper">
+  {% if section.settings.heading != blank or section.settings.description != blank %}
+    <div class="info-section-header">
+      <h2 class="info-heading">{{ section.settings.heading }}</h2>
+      <p class="info-description">{{ section.settings.description }}</p>
+    </div>
+  {% endif %}
+
+  <div class="info-cards-flex-container">
+    {%- for block in section.blocks -%}
+      <div class="info-card" {{ block.shopify_attributes }} style="transition-delay: {{ forloop.index0 | times: 150 }}ms;">
+        
+        <div class="info-card-icon">
+          {%- if block.settings.image != blank -%}
+            <img src="{{ block.settings.image | image_url: width: 300 }}" alt="{{ block.settings.title }}" loading="lazy">
+          {%- else -%}
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          {%- endif -%}
+        </div>
+
+        <h3>{{ block.settings.title }}</h3>
+        <p>{{ block.settings.text }}</p>
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+<script>
+  const observeCards = () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.info-card').forEach(card => observer.observe(card));
+  };
+  document.addEventListener("DOMContentLoaded", observeCards);
+  if (Shopify.designMode) document.addEventListener("shopify:section:load", observeCards);
+</script>
+
+{% schema %}
+{
+  "name": "Animated Wave Cards",
+  "max_blocks": 10,
+  "settings": [
+    { "type": "color", "id": "section_bg", "label": "Section Background", "default": "#ffffff" },
+    { "type": "range", "id": "card_radius", "min": 0, "max": 40, "step": 1, "unit": "px", "label": "Card Corner Radius", "default": 10 },
+    { "type": "range", "id": "icon_width", "min": 50, "max": 150, "step": 5, "unit": "px", "label": "Icon Image Width", "default": 80 },
+    { "type": "select", "id": "header_align", "label": "Header Alignment", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }], "default": "center" },
+    { "type": "header", "content": "Typography Settings" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Our Commitment" },
+    { "type": "range", "id": "h_size", "min": 24, "max": 60, "step": 1, "unit": "px", "label": "Heading Size", "default": 36 },
+    { "type": "color", "id": "h_color", "label": "Heading Color", "default": "#222" },
+    { "type": "select", "id": "h_weight", "label": "Heading Weight", "options": [{ "value": "400", "label": "Regular" }, { "value": "700", "label": "Bold" }], "default": "700" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Add your section description here." },
+    { "type": "range", "id": "desc_size", "min": 14, "max": 24, "step": 1, "unit": "px", "label": "Description Size", "default": 16 },
+    { "type": "color", "id": "desc_color", "label": "Description Color", "default": "#666" }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Icon Image" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Mission Subtitle" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "To provide health care organizations professionals with innovative therapeutic." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Animated Wave Cards" }]
+}
+{% endschema %}
+
+
+
+
+
+
