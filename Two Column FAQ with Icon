@@ -1,0 +1,289 @@
+Layout : https://prnt.sc/QOykbir5OLuo
+
+
+{% comment %}
+  FAQ Section with Smooth Grid & Professional Transitions
+{% endcomment %}
+
+<div class="faq-accordion-wrapper section-{{ section.id }}-padding" style="background-color: {{ section.settings.background_color }};">
+  <div class="faq-container page-width">
+    
+    {% if section.settings.heading != blank or section.settings.subheading != blank %}
+      <div class="faq-header-top">
+        {% if section.settings.heading != blank %}
+          <h2 class="faq-main-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <div class="faq-subheading">{{ section.settings.subheading }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="faq-accordion-grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'faq_item' %}
+          <div class="faq-item" {{ block.shopify_attributes }}>
+            <button class="faq-question" aria-expanded="false">
+              <div class="faq-question-content">
+                {% if block.settings.question_image != blank %}
+                  <div class="faq-question-image">
+                    <img src="{{ block.settings.question_image | image_url: width: 150 }}" 
+                         alt="{{ block.settings.question_image.alt | escape }}"
+                         loading="lazy"
+                         width="{{ section.settings.icon_width }}"
+                         height="{{ section.settings.icon_width }}">
+                  </div>
+                {% endif %}
+                <span class="faq-question-text">{{ block.settings.question }}</span>
+              </div>
+              <span class="faq-icon">
+                <svg class="icon-plus" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <svg class="icon-minus" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-content">
+                <div class="faq-inner-text">
+                  {{ block.settings.answer }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="faq-footer-section">
+      {% if section.settings.bottom_subheading != blank %}
+        <div class="faq-bottom-text">{{ section.settings.bottom_subheading }}</div>
+      {% endif %}
+
+      {% if section.settings.show_link and section.settings.link_text != blank %}
+        <div class="faq-link-wrapper">
+          <a href="{{ section.settings.link_url }}" class="faq-button">
+            {{ section.settings.link_text }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+/* --- Layout & Responsiveness --- */
+.section-{{ section.id }}-padding {
+  padding-top: {{ section.settings.padding_top }}px;
+  padding-bottom: {{ section.settings.padding_bottom }}px;
+}
+
+.faq-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.faq-accordion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: {{ section.settings.item_spacing }}px;
+}
+
+@media screen and (max-width: 991px) {
+  .faq-accordion-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Card Design --- */
+.faq-item {
+  background-color: {{ section.settings.item_background }};
+  border: {{ section.settings.item_border_width }}px solid {{ section.settings.item_border_color }};
+  border-radius: {{ section.settings.item_border_radius }}px;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  height: max-content;
+}
+
+.faq-item.active {
+  border-color: {{ section.settings.item_border_hover_color }};
+  box-shadow: {{ section.settings.item_hover_shadow }};
+}
+
+/* --- Smooth Answer Transition --- */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+  opacity: 0;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 1000px; /* Large enough for content */
+  opacity: 1;
+}
+
+/* --- Question Bar --- */
+.faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: {{ section.settings.question_padding_vertical }}px {{ section.settings.question_padding_horizontal }}px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.faq-question-content { display: flex; align-items: center; flex: 1; }
+
+.faq-question-image {
+  flex-shrink: 0;
+  width: {{ section.settings.icon_width }}px;
+  height: {{ section.settings.icon_width }}px;
+  margin-right: 15px;
+  display: flex; align-items: center;
+}
+.faq-question-image img { width: 100%; height: auto; object-fit: contain; }
+
+.faq-question-text {
+  font-size: {{ section.settings.question_font_size }}px;
+  font-weight: {{ section.settings.question_font_weight }};
+  color: {{ section.settings.question_color }};
+}
+
+.faq-inner-text {
+  padding: 0 {{ section.settings.question_padding_horizontal }}px {{ section.settings.question_padding_vertical }}px;
+  font-size: {{ section.settings.answer_font_size }}px;
+  color: {{ section.settings.answer_color }};
+  line-height: 1.6;
+}
+
+/* --- Icon Switch --- */
+.faq-icon { width: 24px; height: 24px; position: relative; color: {{ section.settings.icon_color }}; }
+.faq-icon svg { position: absolute; transition: transform 0.4s ease, opacity 0.4s ease; }
+.icon-minus { opacity: 0; transform: rotate(-90deg); }
+.faq-item.active .icon-plus { opacity: 0; transform: rotate(90deg); }
+.faq-item.active .icon-minus { opacity: 1; transform: rotate(0deg); }
+
+/* --- Footer & Button --- */
+.faq-header-top { text-align: center; margin-bottom: 40px; }
+.faq-footer-section { text-align: {{ section.settings.link_alignment }}; margin-top: 40px; }
+
+.faq-bottom-text {
+  font-size: {{ section.settings.footer_text_size }}px;
+  margin-bottom: 20px;
+  color: {{ section.settings.subheading_color }};
+}
+
+.faq-button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 12px 45px;
+  color: #57C1D1;
+  background-color: transparent;
+  border: 1px solid #57C1D1;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+.faq-button:hover {
+  background-color: #57C1D1;
+  color: #ffffff;
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+      const button = item.querySelector('.faq-question');
+      
+      button.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        
+        {% if section.settings.close_others %}
+          faqItems.forEach(otherItem => {
+            otherItem.classList.remove('active');
+            otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+          });
+        {% endif %}
+
+        if (!isActive) {
+          item.classList.add('active');
+          button.setAttribute('aria-expanded', 'true');
+        } else {
+          item.classList.remove('active');
+          button.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Smooth Grid",
+  "settings": [
+    { "type": "header", "content": "Section Layout" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Frequently Asked Questions" },
+    { "type": "range", "id": "heading_size", "min": 20, "max": 100, "step": 2, "unit": "px", "label": "Heading Size", "default": 40 },
+    { "type": "select", "id": "heading_weight", "label": "Heading Weight", "options": [ {"value": "400", "label": "Normal"}, {"value": "700", "label": "Bold"} ], "default": "700" },
+    { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#000000" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Find answers to your common concerns." },
+    { "type": "color", "id": "subheading_color", "label": "Subheading Color", "default": "#666666" },
+    { "type": "range", "id": "subheading_size", "min": 14, "max": 30, "step": 1, "unit": "px", "label": "Subheading Size", "default": 18 },
+    { "type": "header", "content": "Grid & Card Design" },
+    { "type": "range", "id": "item_spacing", "min": 10, "max": 60, "step": 2, "unit": "px", "label": "Grid Gap", "default": 20 },
+    { "type": "color", "id": "item_background", "label": "Card Background", "default": "#ffffff" },
+    { "type": "color", "id": "item_border_color", "label": "Border Color", "default": "#dddddd" },
+    { "type": "color", "id": "item_border_hover_color", "label": "Border Hover Color", "default": "#57C1D1" },
+    { "type": "range", "id": "item_border_width", "min": 0, "max": 5, "step": 1, "unit": "px", "label": "Border Width", "default": 1 },
+    { "type": "range", "id": "item_border_radius", "min": 0, "max": 30, "step": 2, "unit": "px", "label": "Corner Radius", "default": 4 },
+    { "type": "text", "id": "item_hover_shadow", "label": "Hover Shadow", "default": "0 10px 30px rgba(0,0,0,0.05)" },
+    { "type": "header", "content": "Icon Styling" },
+    { "type": "range", "id": "icon_width", "min": 10, "max": 100, "step": 2, "unit": "px", "label": "Icon/Image Size", "default": 24 },
+    { "type": "color", "id": "icon_color", "label": "Plus/Minus Color", "default": "#000000" },
+    { "type": "header", "content": "Typography" },
+    { "type": "range", "id": "question_font_size", "min": 14, "max": 30, "step": 1, "unit": "px", "label": "Question Size", "default": 18 },
+    { "type": "select", "id": "question_font_weight", "label": "Question Weight", "options": [ {"value": "400", "label": "Normal"}, {"value": "600", "label": "Semi-Bold"} ], "default": "600" },
+    { "type": "color", "id": "question_color", "label": "Question Color", "default": "#000000" },
+    { "type": "range", "id": "answer_font_size", "min": 12, "max": 24, "step": 1, "unit": "px", "label": "Answer Size", "default": 16 },
+    { "type": "color", "id": "answer_color", "label": "Answer Color", "default": "#444444" },
+    { "type": "range", "id": "question_padding_vertical", "min": 5, "max": 50, "step": 1, "unit": "px", "label": "Vertical Padding", "default": 20 },
+    { "type": "range", "id": "question_padding_horizontal", "min": 5, "max": 80, "step": 1, "unit": "px", "label": "Horizontal Padding", "default": 20 },
+    { "type": "header", "content": "Button & Footer" },
+    { "type": "textarea", "id": "bottom_subheading", "label": "Footer Description", "default": "Still have questions?" },
+    { "type": "range", "id": "footer_text_size", "min": 12, "max": 40, "step": 1, "unit": "px", "label": "Footer Text Size", "default": 16 },
+    { "type": "checkbox", "id": "show_link", "label": "Show Button", "default": true },
+    { "type": "text", "id": "link_text", "label": "Button Label", "default": "See Client Stories" },
+    { "type": "url", "id": "link_url", "label": "Button Link" },
+    { "type": "select", "id": "link_alignment", "label": "Alignment", "options": [ {"value": "left", "label": "Left"}, {"value": "center", "label": "Center"}, {"value": "right", "label": "Right"} ], "default": "center" },
+    { "type": "header", "content": "Section Spacing" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Top Padding", "default": 50 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Bottom Padding", "default": 50 },
+    { "type": "checkbox", "id": "close_others", "label": "Accordion Mode (Close others)", "default": true },
+    { "type": "color", "id": "background_color", "label": "Section Background Color", "default": "#ffffff" }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        { "type": "image_picker", "id": "question_image", "label": "Icon" },
+        { "type": "text", "id": "question", "label": "Question", "default": "Write your question here?" },
+        { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Write your detailed answer here.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "FAQ Smooth Grid", "blocks": [ { "type": "faq_item" }, { "type": "faq_item" } ] }
+  ]
+}
+{% endschema %}
