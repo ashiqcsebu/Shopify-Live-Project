@@ -1,0 +1,297 @@
+Custom Footer:  https://prnt.sc/-lQ86GdP17Wg
+Live Site https://www.darlynx.com/pages/contact-us
+
+
+
+{% comment %}
+  Pharma Footer Pro v8.6 - Bottom Trust Bar Customizable
+{% endcomment %}
+
+{%- style -%}
+  .footer-v6-{{ section.id }} {
+    position: relative;
+    background-color: {{ section.settings.bg_color }};
+    {% if section.settings.bg_image != blank %}
+      background-image: url('{{ section.settings.bg_image | image_url: width: 2000 }}');
+      background-size: cover;
+      background-position: center;
+    {% endif %}
+    color: {{ section.settings.text_color }};
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+
+  .footer-v6-{{ section.id }}::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0, {{ section.settings.overlay_opacity | divided_by: 100.0 }});
+    z-index: 1;
+  }
+
+  .footer-container {
+    position: relative;
+    z-index: 2;
+    max-width: 90%;
+    padding: 0 4%;
+    margin: 0 auto;
+  }
+
+  .footer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  .footer-col-item {
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  /* Dynamic Block Styles */
+  {% for block in section.blocks %}
+    .block-{{ block.id }} .footer-heading {
+      font-size: {{ block.settings.h_size }}px !important;
+      font-weight: {{ block.settings.h_weight }} !important;
+      text-align: {{ block.settings.block_align }};
+      color: {{ section.settings.heading_color }};
+      margin-bottom: 25px;
+      display: block;
+    }
+    .block-{{ block.id }}, 
+    .block-{{ block.id }} p, 
+    .block-{{ block.id }} a, 
+    .block-{{ block.id }} li,
+    .block-{{ block.id }} span {
+      font-size: {{ block.settings.b_size }}px !important;
+      font-weight: {{ block.settings.b_weight }} !important;
+      text-align: {{ block.settings.block_align }};
+      color: inherit;
+      line-height: 1.3;
+    }
+  {% endfor %}
+
+  /* Newsletter UI */
+  .footer-newsletter-wrapper {
+    display: flex; align-items: stretch; gap: 8px; margin-top: 15px; width: 100%;
+  }
+  .newsletter-input-group { flex: 0 0 70%; position: relative; }
+  .newsletter-input-group svg {
+    position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; opacity: 0.7;
+  }
+  .footer-newsletter-wrapper input {
+    width: 100%; height: 48px; padding: 0 15px 0 45px;
+    background-color: {{ section.settings.input_bg_color }};
+    border: 1px solid {{ section.settings.border_color }};
+    border-radius: 8px; color: {{ section.settings.text_color }};
+  }
+  .footer-newsletter-wrapper button {
+    flex: 0 0 30%; height: 48px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;
+    background-color: {{ section.settings.btn_bg_color }};
+    color: {{ section.settings.btn_text_color }};
+  }
+
+  /* Availability Card */
+  .hours-card {
+    margin-top: 20px; padding: 15px; border-radius: 12px;
+    background-color: {{ section.settings.hours_bg }};
+    border: 1px solid {{ section.settings.hours_border }};
+    color: {{ section.settings.hours_text_color }} !important;
+  }
+  .hours-card strong, .hours-card div { color: {{ section.settings.hours_text_color }} !important; }
+
+  /* Bottom Trust Bar - Original Style */
+  .footer-bottom-v6 {
+    margin-top: 40px; padding-top: 30px; text-align: center;
+    border-top: 1px solid {{ section.settings.border_color }};
+  }
+  .trust-badges-container {
+    display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 25px;
+  }
+  .trust-badge-item { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .trust-badge-item img { max-height: 25px; width: auto; }
+  .trust-badge-item svg { width: 22px; height: 22px; color: {{ section.settings.heading_color }}; }
+
+  .footer-social-v6 svg { width: 22px; height: 22px; fill: {{ section.settings.text_color }}; margin: 0 10px; }
+
+  @media (max-width: 768px) {
+    .footer-col-item { width: 100% !important; margin-bottom: 30px; text-align: center !important; }
+    .trust-badges-container { gap: 15px; }
+  }
+{%- endstyle -%}
+
+<footer class="footer-v6-{{ section.id }}">
+  <div class="footer-container">
+    <div class="footer-row">
+      {% for block in section.blocks %}
+        <div class="footer-col-item block-{{ block.id }}" style="width: {{ block.settings.col_width }}%;" {{ block.shopify_attributes }}>
+          {% case block.type %}
+            {% when 'brand_info' %}
+              {% if block.settings.logo != blank %}
+                <div style="margin-bottom:20px; text-align: {{ block.settings.block_align }};">
+                  <img src="{{ block.settings.logo | image_url: width: 400 }}" width="{{ block.settings.logo_width }}" height="auto"
+                       style="display: {% if block.settings.block_align == 'center' %}inline-block{% elsif block.settings.block_align == 'right' %}block; margin-left:auto;{% else %}block{% endif %};">
+                </div>
+              {% else %}
+                <h3 class="footer-heading">{{ shop.name }}</h3>
+              {% endif %}
+              <div class="brand-text-content">
+                <p style="margin-bottom:15px;">{{ block.settings.text }}</p>
+                {% if block.settings.phone != blank %}<p style="margin-bottom:5px;">{{ block.settings.phone }}</p>{% endif %}
+                {% if block.settings.email != blank %}<p>{{ block.settings.email }}</p>{% endif %}
+              </div>
+
+            {% when 'link_list' %}
+              <h3 class="footer-heading">{{ block.settings.heading }}</h3>
+              <ul style="list-style:none; padding:0; margin:0;">
+                {% for link in block.settings.menu.links %}
+                  <li style="margin-bottom:12px;"><a href="{{ link.url }}" style="text-decoration:none;">{{ link.title }}</a></li>
+                {% endfor %}
+              </ul>
+
+            {% when 'newsletter' %}
+              <h3 class="footer-heading">{{ block.settings.heading }}</h3>
+              <p style="margin-bottom:15px;">{{ block.settings.subtext }}</p>
+              {% form 'customer' %}
+                <div class="footer-newsletter-wrapper">
+                  <div class="newsletter-input-group">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <input type="email" name="contact[email]" placeholder="Your Email" required>
+                  </div>
+                  <button type="submit">Join</button>
+                </div>
+              {% endform %}
+              {% if block.settings.show_hours %}
+                <div class="hours-card">
+                  <strong style="display:block; margin-bottom:8px;">{{ block.settings.hours_label }}</strong>
+                  <div style="opacity: 0.9;">{{ block.settings.hours_text | newline_to_br }}</div>
+                </div>
+              {% endif %}
+          {% endcase %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="footer-bottom-v6">
+      {% if section.settings.show_trust_bar %}
+        <div class="trust-badges-container">
+          {% for i in (1..5) %}
+            {% capture img_id %}badge_{{ i }}_img{% endcapture %}
+            {% capture txt_id %}badge_{{ i }}_text{% endcapture %}
+            {% if section.settings[txt_id] != blank %}
+              <div class="trust-badge-item">
+                {% if section.settings[img_id] != blank %}
+                  <img src="{{ section.settings[img_id] | image_url: width: 100 }}" alt="{{ section.settings[txt_id] }}">
+                {% else %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                {% endif %}
+                <span>{{ section.settings[txt_id] }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="footer-social-v6">
+        {% if settings.social_facebook_link != blank %}<a href="{{ settings.social_facebook_link }}"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>{% endif %}
+        {% if settings.social_instagram_link != blank %}<a href="{{ settings.social_instagram_link }}"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>{% endif %}
+      </div>
+      <p style="font-size:14px; opacity:0.7; margin-top:15px;">&copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. {{ section.settings.copyright_text }}</p>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Custom Footer",
+  "max_blocks": 5,
+  "settings": [
+    { "type": "header", "content": "Colors & Background" },
+    { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#ffffff" },
+    { "type": "image_picker", "id": "bg_image", "label": "Background Image" },
+    { "type": "range", "id": "overlay_opacity", "min": 0, "max": 90, "step": 10, "unit": "%", "label": "Overlay", "default": 0 },
+    { "type": "color", "id": "text_color", "label": "General Text Color", "default": "#333333" },
+    { "type": "color", "id": "heading_color", "label": "Heading Color", "default": "#004a99" },
+    { "type": "color", "id": "border_color", "label": "Border Color", "default": "#e0e0e0" },
+    { "type": "header", "content": "Newsletter & Button" },
+    { "type": "color", "id": "btn_bg_color", "label": "Button Background", "default": "#00aaff" },
+    { "type": "color", "id": "btn_text_color", "label": "Button Text", "default": "#ffffff" },
+    { "type": "color", "id": "input_bg_color", "label": "Input BG", "default": "#ffffff" },
+    { "type": "header", "content": "Availability Card" },
+    { "type": "color", "id": "hours_bg", "label": "Card Background", "default": "#f9f9f9" },
+    { "type": "color", "id": "hours_border", "label": "Card Border", "default": "#dddddd" },
+    { "type": "color", "id": "hours_text_color", "label": "Card Text Color", "default": "#333333" },
+    { "type": "header", "content": "Custom Trust Bar (Bottom)" },
+    { "type": "checkbox", "id": "show_trust_bar", "label": "Show Trust Bar", "default": true },
+    { "type": "image_picker", "id": "badge_1_img", "label": "Badge 1 Icon" },
+    { "type": "text", "id": "badge_1_text", "label": "Badge 1 Text", "default": "FDA Compliant" },
+    { "type": "image_picker", "id": "badge_2_img", "label": "Badge 2 Icon" },
+    { "type": "text", "id": "badge_2_text", "label": "Badge 2 Text", "default": "SSL Secured" },
+    { "type": "image_picker", "id": "badge_3_img", "label": "Badge 3 Icon" },
+    { "type": "text", "id": "badge_3_text", "label": "Badge 3 Text", "default": "Licensed Pharmacy" },
+    { "type": "image_picker", "id": "badge_4_img", "label": "Badge 4 Icon" },
+    { "type": "text", "id": "badge_4_text", "label": "Badge 4 Text" },
+    { "type": "image_picker", "id": "badge_5_img", "label": "Badge 5 Icon" },
+    { "type": "text", "id": "badge_5_text", "label": "Badge 5 Text" },
+    { "type": "header", "content": "Bottom Extras" },
+    { "type": "range", "id": "padding_top", "min": 20, "max": 100, "step": 5, "label": "Padding Top", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 20, "max": 100, "step": 5, "label": "Padding Bottom", "default": 40 },
+    { "type": "text", "id": "copyright_text", "label": "Copyright Text", "default": "All Rights Reserved." }
+  ],
+  "blocks": [
+    {
+      "type": "brand_info",
+      "name": "Brand Info",
+      "settings": [
+        { "type": "image_picker", "id": "logo", "label": "Logo" },
+        { "type": "range", "id": "logo_width", "min": 50, "max": 300, "step": 10, "label": "Logo Width", "default": 150 },
+        { "type": "textarea", "id": "text", "label": "About Text", "default": "Your trusted pharmacy partner." },
+        { "type": "text", "id": "phone", "label": "Phone" },
+        { "type": "text", "id": "email", "label": "Email" },
+        { "type": "header", "content": "Style" },
+        { "type": "range", "id": "col_width", "min": 15, "max": 50, "unit": "%", "label": "Column Width", "default": 25 },
+        { "type": "select", "id": "block_align", "label": "Align", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"}], "default": "left" },
+        { "type": "range", "id": "h_size", "min": 12, "max": 40, "label": "Heading Font Size", "default": 22 },
+        { "type": "select", "id": "h_weight", "label": "Heading Weight", "options": [{"value":"400","label":"Regular"},{"value":"700","label":"Bold"}], "default": "700" },
+        { "type": "range", "id": "b_size", "min": 10, "max": 40, "label": "Body Font Size", "default": 14 },
+        { "type": "select", "id": "b_weight", "label": "Body Weight", "options": [{"value":"400","label":"Regular"},{"value":"600","label":"Medium"}], "default": "400" }
+      ]
+    },
+    {
+      "type": "link_list",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Quick Links" },
+        { "type": "link_list", "id": "menu", "label": "Menu" },
+        { "type": "header", "content": "Style" },
+        { "type": "range", "id": "col_width", "min": 10, "max": 50, "unit": "%", "label": "Column Width", "default": 20 },
+        { "type": "select", "id": "block_align", "label": "Align", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"}], "default": "left" },
+        { "type": "range", "id": "h_size", "min": 12, "max": 40, "label": "Heading Font Size", "default": 18 },
+        { "type": "select", "id": "h_weight", "label": "Heading Weight", "options": [{"value":"400","label":"Regular"},{"value":"700","label":"Bold"}], "default": "700" },
+        { "type": "range", "id": "b_size", "min": 10, "max": 40, "label": "Link Font Size", "default": 14 },
+        { "type": "select", "id": "b_weight", "label": "Link Weight", "options": [{"value":"400","label":"Regular"},{"value":"600","label":"Medium"}], "default": "400" }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Stay Healthy" },
+        { "type": "text", "id": "subtext", "label": "Subtext", "default": "Subscribe for health tips." },
+        { "type": "checkbox", "id": "show_hours", "label": "Show Hours Card", "default": true },
+        { "type": "text", "id": "hours_label", "label": "Hours Label", "default": "Opening Hours" },
+        { "type": "textarea", "id": "hours_text", "label": "Hours Detail", "default": "Open 24/7" },
+        { "type": "header", "content": "Style" },
+        { "type": "range", "id": "col_width", "min": 15, "max": 50, "unit": "%", "label": "Column Width", "default": 30 },
+        { "type": "select", "id": "block_align", "label": "Align", "options": [{"value":"left","label":"Left"},{"value":"center","label":"Center"}], "default": "left" },
+        { "type": "range", "id": "h_size", "min": 12, "max": 40, "label": "Heading Font Size", "default": 18 },
+        { "type": "select", "id": "h_weight", "label": "Heading Weight", "options": [{"value":"400","label":"Regular"},{"value":"700","label":"Bold"}], "default": "700" },
+        { "type": "range", "id": "b_size", "min": 10, "max": 40, "label": "Body Font Size", "default": 14 },
+        { "type": "select", "id": "b_weight", "label": "Body Weight", "options": [{"value":"400","label":"Regular"},{"value":"600","label":"Medium"}], "default": "400" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Custom Footer" }]
+}
+{% endschema %}
