@@ -1,0 +1,390 @@
+https://prnt.sc/Vnc-HnI-qWCg
+
+
+
+{% comment %}
+  Modern Image with Text Section
+  - Fully dynamic and editable
+  - Uses section.id for unique styling (duplicate safe)
+{% endcomment %}
+
+{%- style -%}
+  .section-{{ section.id }}-wrapper {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    max-width: {{ section.settings.container_width }}px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .ai-image-text-container-{{ section.id }} {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: {{ section.settings.vertical_alignment }};
+    gap: {{ section.settings.content_gap }}px;
+    flex-direction: {% if section.settings.image_position == 'left' %}row{% else %}row-reverse{% endif %};
+  }
+
+  .ai-image-text-image-wrapper-{{ section.id }} {
+    flex: 1 1 calc({{ section.settings.image_width }}% - {{ section.settings.content_gap }}px);
+    max-width: {{ section.settings.image_width }}%;
+    min-width: 300px;
+  }
+
+  .ai-image-text-content-wrapper-{{ section.id }} {
+    flex: 1 1 calc(100% - {{ section.settings.image_width }}% - {{ section.settings.content_gap }}px);
+    display: flex;
+    flex-direction: column;
+    gap: {{ section.settings.text_spacing }}px;
+    text-align: {{ section.settings.text_alignment }};
+  }
+
+  .ai-image-text-image-{{ section.id }} {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: {{ section.settings.image_border_radius }}px;
+    object-fit: cover;
+    aspect-ratio: {{ section.settings.image_aspect_ratio | replace: '/', ' / ' }};
+  }
+
+  /* Typography Styles */
+  .ai-heading-{{ section.id }} {
+    margin: 0;
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: 700;
+    color: {{ section.settings.heading_color }};
+    line-height: 1.2;
+  }
+
+  .ai-text-{{ section.id }} {
+    margin: 0;
+    font-size: {{ section.settings.text_size }}px;
+    color: {{ section.settings.text_color }};
+    line-height: 1.6;
+  }
+
+  /* Button Styles */
+  .ai-button-{{ section.id }} {
+    display: inline-block;
+    text-decoration: none;
+    padding: {{ section.settings.btn_padding_v }}px {{ section.settings.btn_padding_h }}px;
+    background-color: {{ section.settings.btn_bg }};
+    color: {{ section.settings.btn_text_color }};
+    border-radius: {{ section.settings.btn_radius }}px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    align-self: {% if section.settings.text_alignment == 'center' %}center{% elsif section.settings.text_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+  }
+
+  .ai-button-{{ section.id }}:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+  }
+
+  @media screen and (max-width: 768px) {
+    .ai-image-text-container-{{ section.id }} {
+      flex-direction: column !important;
+    }
+    .ai-image-text-image-wrapper-{{ section.id }},
+    .ai-image-text-content-wrapper-{{ section.id }} {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+    .ai-heading-{{ section.id }} {
+      font-size: calc({{ section.settings.heading_size }}px * 0.8);
+    }
+  }
+
+
+  /* Heading ও Description এর ভেতরের বাড়তি মার্জিন রিমুভ করার জন্য */
+  .ai-heading-{{ section.id }} p,
+  .ai-heading-{{ section.id }} h1,
+  .ai-heading-{{ section.id }} h2,
+  .ai-heading-{{ section.id }} h3 {
+    margin: 0; 
+  }
+
+  .ai-text-{{ section.id }} p {
+    margin: 0;
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-wrapper">
+  <div class="ai-image-text-container-{{ section.id }}">
+    
+    <div class="ai-image-text-image-wrapper-{{ section.id }}">
+      {% if section.settings.image != blank %}
+        {%- capture image_class -%}ai-image-text-image-{{ section.id }}{%- endcapture -%}
+        {{ section.settings.image | image_url: width: 1500 | image_tag: 
+          loading: 'lazy', 
+          class: image_class,
+          widths: '375, 550, 750, 1100, 1500' 
+        }}
+      {% else %}
+        <div style="background: #f3f3f3; aspect-ratio: {{ section.settings.image_aspect_ratio }}; display: flex; align-items: center; justify-content: center; border-radius: {{ section.settings.image_border_radius }}px;">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-image-text-content-wrapper-{{ section.id }}">
+      {% if section.settings.heading != blank %}
+        <div class="ai-heading-{{ section.id }}">
+          {{ section.settings.heading }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.text != blank %}
+        <div class="ai-text-{{ section.id }}">
+          {{ section.settings.text }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.btn_label != blank %}
+        <a href="{{ section.settings.btn_link | default: '#' }}" class="ai-button-{{ section.id }}">
+          {{ section.settings.btn_label }}
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About Image Text",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position (Desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "label": "Section Max Width",
+      "min": 800,
+      "max": 2000,
+      "step": 50,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image Width",
+      "min": 30,
+      "max": 70,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical Alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image Shape",
+      "options": [
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "4/3", "label": "Landscape (4:3)" },
+        { "value": "16/9", "label": "Wide (16:9)" },
+        { "value": "3/4", "label": "Portrait (3:4)" }
+      ],
+      "default": "4/3"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Corner Roundness",
+      "min": 0,
+      "max": 100,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<h2>The Best Quality Products</h2>"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Size",
+      "min": 20,
+      "max": 80,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#121212"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Share information about your brand with your customers.</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Description Size",
+      "min": 14,
+      "max": 30,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Description Color",
+      "default": "#444444"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button Label",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button Roundness",
+      "min": 0,
+      "max": 50,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "btn_padding_v",
+      "label": "Button Padding (Top/Bottom)",
+      "min": 5,
+      "max": 30,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "btn_padding_h",
+      "label": "Button Padding (Left/Right)",
+      "min": 10,
+      "max": 60,
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Gap between Image and Text",
+      "min": 20,
+      "max": 100,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_spacing",
+      "label": "Spacing between Text Elements",
+      "min": 5,
+      "max": 50,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Section Top Space",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Section Bottom Space",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Image Text"
+    }
+  ]
+}
+{% endschema %}
