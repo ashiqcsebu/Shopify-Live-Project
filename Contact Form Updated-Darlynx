@@ -1,0 +1,254 @@
+{%- style -%}
+  :root {
+    --accent-color: {{ section.settings.clr }};
+    --lbl-size: {{ section.settings.lbl_fs }}px;
+    --input-size: {{ section.settings.input_fs }}px;
+    --lbl-color: {{ section.settings.lbl_clr }};
+    --input-color: {{ section.settings.input_clr }};
+    
+    --left-title-fs: {{ section.settings.left_title_fs }}px;
+    --left-desc-fs: {{ section.settings.left_desc_fs }}px;
+    --left-detail-fs: {{ section.settings.left_detail_fs }}px;
+
+    /* Mobile Variables */
+    --m-left-title-fs: {{ section.settings.m_left_title_fs }}px;
+    --m-left-desc-fs: {{ section.settings.m_left_desc_fs }}px;
+    --m-left-detail-fs: {{ section.settings.m_left_detail_fs }}px;
+    --m-lbl-size: {{ section.settings.m_lbl_fs }}px;
+    --m-input-size: {{ section.settings.m_input_fs }}px;
+  }
+
+  /* Success Modal Styles (Preserved) */
+  .contact-success-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 10001; opacity: 0; visibility: hidden; transition: opacity 0.4s ease; backdrop-filter: blur(4px); }
+  .contact-success-modal.is-active { opacity: 1; visibility: visible; }
+  .success-modal-content { background: #fff; padding: 50px 40px; border-radius: 20px; text-align: center; max-width: 450px; width: 90%; transform: translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; align-items: center; gap: 15px; }
+  .contact-success-modal.is-active .success-modal-content { transform: translateY(0); }
+  .success-modal-content .icon-circle { width: 70px; height: 70px; background: var(--accent-color); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; margin-bottom: 10px; }
+  .success-modal-content .text { font-size: 22px; font-weight: 700; color: #333; margin: 0; }
+
+  /* Layout Base */
+  .section-{{ section.id }} { padding: {{ section.settings.pad_v }}px 20px; background-color: {{ section.settings.bg }}; }
+  .form-wrap-{{ section.id }} { max-width: {{ section.settings.max_w }}px; margin: 0 auto; display: flex; flex-direction: column; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+  
+  .info-side { background: var(--accent-color); padding: {{ section.settings.info_pad }}px; color: #fff; text-align: center; }
+  .info-side h2 { color: #fff !important; font-size: var(--left-title-fs) !important; margin-bottom: 10px; }
+  .info-side .desc-text { font-size: var(--left-desc-fs) !important; opacity: 0.9; line-height: 1.5; margin: 0 auto; max-width: 700px; }
+  
+  .contact-details-wrap { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+  .contact-details-wrap p { font-size: var(--left-detail-fs) !important; margin: 0; display: flex; align-items: center; gap: 8px; color: #fff; }
+
+  .form-side { padding: {{ section.settings.form_pad }}px; position: relative; width: 100%; box-sizing: border-box; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px 20px; }
+  .field-box { border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+  .field-box.full { grid-column: span 2; }
+  .field-box label { display: block; font-size: var(--lbl-size); font-weight: 700; color: var(--lbl-color); text-transform: uppercase; margin-bottom: 5px; }
+  .field-box input:not([type="checkbox"]):not([type="radio"]), .field-box select, .field-box textarea { width: 100%; border: none; outline: none; padding: 5px 0; font-size: var(--input-size); background: transparent; color: var(--input-color); }
+
+  .row-opt { grid-column: span 2; margin-top: 15px; }
+  .row-opt-lbl { font-weight: 700; font-size: var(--lbl-size); margin-bottom: 15px; display: block; color: var(--lbl-color); text-transform: uppercase;}
+  .row-flex { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 15px 10px !important; align-items: center !important; }
+  .row-item { display: flex !important; align-items: center !important; gap: 10px !important; font-size: var(--input-size); cursor: pointer; color: var(--input-color); margin: 0 !important; }
+  .row-item input { appearance: auto !important; accent-color: var(--accent-color) !important; width: 18px !important; height: 18px !important; }
+
+  .btn-submit { background: var(--accent-color); color: #fff; border: none; padding: {{ section.settings.btn_pad_v }}px {{ section.settings.btn_pad_h }}px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s; }
+
+  /* Responsive/Mobile Styles */
+  @media (max-width: 768px) {
+    .section-{{ section.id }} { padding: {{ section.settings.m_pad_v }}px 15px; }
+    .info-side { padding: {{ section.settings.m_info_pad }}px 20px; }
+    .form-side { padding: {{ section.settings.m_form_pad }}px 20px; }
+    
+    .info-side h2 { font-size: var(--m-left-title-fs) !important; }
+    .info-side .desc-text { font-size: var(--m-left-desc-fs) !important; }
+    .contact-details-wrap p { font-size: var(--m-left-detail-fs) !important; }
+    
+    .form-grid { grid-template-columns: 1fr; gap: 20px; }
+    .field-box label, .row-opt-lbl { font-size: var(--m-lbl-size); }
+    .field-box input, .field-box select, .field-box textarea, .row-item { font-size: var(--m-input-size); }
+    
+    .row-flex { grid-template-columns: repeat(2, 1fr) !important; }
+    .contact-details-wrap { flex-direction: column; align-items: center; gap: 10px; }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}">
+  <div class="form-wrap-{{ section.id }}">
+    <div class="info-side">
+        <h2>{{ section.settings.title }}</h2>
+        <p class="desc-text">{{ section.settings.desc }}</p>
+        <div class="contact-details-wrap">
+          {% if section.settings.ph != blank %}<p>📞 {{ section.settings.ph }}</p>{% endif %}
+          {% if section.settings.em != blank %}<p>✉️ {{ section.settings.em }}</p>{% endif %}
+          {% if section.settings.addr != blank %}<p>📍 {{ section.settings.addr }}</p>{% endif %}
+        </div>
+    </div>
+
+    <div class="form-side">
+      {% form 'contact', id: 'ContactForm' %}
+        {% if form.posted_successfully? %}
+          <div id="SuccessModal-{{ section.id }}" class="contact-success-modal is-active">
+            <div class="success-modal-content">
+              <div class="icon-circle">✓</div>
+              <p class="text">{{ section.settings.success_msg }}</p>
+            </div>
+          </div>
+          <script>
+            window.addEventListener('load', function() {
+              const modal = document.getElementById('SuccessModal-{{ section.id }}');
+              if(modal) {
+                setTimeout(function() {
+                  modal.classList.remove('is-active');
+                  setTimeout(() => modal.style.display = 'none', 400);
+                }, 3000);
+              }
+            });
+          </script>
+        {% endif %}
+
+        <div class="form-grid">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'text' %}
+                <div class="field-box {% if block.settings.full %}full{% endif %}">
+                  <label>{{ block.settings.lbl }}{% if block.settings.req %} *{% endif %}</label>
+                  <input type="text" name="contact[{{ block.settings.lbl | handle }}]" placeholder="{{ block.settings.plc }}" {% if block.settings.req %}required{% endif %}>
+                </div>
+              {% when 'email' %}
+                <div class="field-box {% if block.settings.full %}full{% endif %}">
+                  <label>{{ block.settings.lbl }}{% if block.settings.req %} *{% endif %}</label>
+                  <input type="email" name="contact[email]" placeholder="{{ block.settings.plc }}" {% if block.settings.req %}required{% endif %}>
+                </div>
+              {% when 'phone' %}
+                <div class="field-box {% if block.settings.full %}full{% endif %}">
+                  <label>{{ block.settings.lbl }}{% if block.settings.req %} *{% endif %}</label>
+                  <input type="tel" name="contact[phone]" placeholder="{{ block.settings.plc }}" {% if block.settings.req %}required{% endif %}>
+                </div>
+              {% when 'dropdown' %}
+                <div class="field-box {% if block.settings.full %}full{% endif %}">
+                  <label>{{ block.settings.lbl }}{% if block.settings.req %} *{% endif %}</label>
+                  <select name="contact[{{ block.settings.lbl | handle }}]" {% if block.settings.req %}required{% endif %}>
+                    <option value="" disabled selected>{{ block.settings.plc }}</option>
+                    {% assign os = block.settings.os | split: ',' %}
+                    {% for o in os %}
+                      <option value="{{ o | strip }}">{{ o | strip }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% when 'row' %}
+                <div class="row-opt">
+                  <span class="row-opt-lbl">{{ block.settings.lbl }}{% if block.settings.req %} *{% endif %}</span>
+                  <div class="row-flex">
+                    {% assign os = block.settings.os | split: ',' %}
+                    {% for o in os %}
+                      <label class="row-item">
+                        <input type="{{ block.settings.t }}" 
+                          {% if block.settings.t == 'radio' %}
+                            name="contact[{{ block.settings.lbl | handle }}]" {% if block.settings.req %}required{% endif %}
+                          {% else %}
+                            name="contact[{{ block.settings.lbl | handle }}_{{ forloop.index }}]" 
+                          {% endif %}
+                          value="{{ o | strip }}"> {{ o | strip }}
+                      </label>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% when 'area' %}
+                <div class="field-box full">
+                  <label>{{ block.settings.lbl }}{% if block.settings.req %} *{% endif %}</label>
+                  <textarea rows="2" name="contact[msg]" placeholder="Write message..." {% if block.settings.req %}required{% endif %}></textarea>
+                </div>
+            {% endcase %}
+          {% endfor %}
+          <div class="btn-box">
+            <button type="submit" class="btn-submit">{{ section.settings.btn }}</button>
+          </div>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Full Width Stacked Form",
+  "settings": [
+    { "type": "header", "content": "Desktop Spacing" },
+    { "type": "range", "id": "pad_v", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Section Vertical Padding", "default": 60 },
+    { "type": "range", "id": "info_pad", "min": 10, "max": 100, "step": 2, "unit": "px", "label": "Info Side Padding", "default": 40 },
+    { "type": "range", "id": "form_pad", "min": 10, "max": 100, "step": 2, "unit": "px", "label": "Form Side Padding", "default": 40 },
+    
+    { "type": "header", "content": "Mobile Spacing" },
+    { "type": "range", "id": "m_pad_v", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Mobile Section Padding", "default": 30 },
+    { "type": "range", "id": "m_info_pad", "min": 10, "max": 50, "step": 2, "unit": "px", "label": "Mobile Info Padding", "default": 30 },
+    { "type": "range", "id": "m_form_pad", "min": 10, "max": 50, "step": 2, "unit": "px", "label": "Mobile Form Padding", "default": 20 },
+    
+    { "type": "header", "content": "Desktop Typography" },
+    { "type": "range", "id": "left_title_fs", "min": 10, "max": 60, "step": 1, "unit": "px", "label": "Title Font Size", "default": 28 },
+    { "type": "range", "id": "left_desc_fs", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Description Font Size", "default": 16 },
+    { "type": "range", "id": "left_detail_fs", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Details Font Size", "default": 14 },
+    { "type": "range", "id": "lbl_fs", "min": 8, "max": 30, "step": 1, "unit": "px", "label": "Label Font Size", "default": 11 },
+    { "type": "range", "id": "input_fs", "min": 10, "max": 40, "step": 1, "unit": "px", "label": "Input Font Size", "default": 14 },
+
+    { "type": "header", "content": "Mobile Typography" },
+    { "type": "range", "id": "m_left_title_fs", "min": 10, "max": 50, "step": 1, "unit": "px", "label": "Mobile Title Size", "default": 22 },
+    { "type": "range", "id": "m_left_desc_fs", "min": 10, "max": 30, "step": 1, "unit": "px", "label": "Mobile Desc Size", "default": 14 },
+    { "type": "range", "id": "m_left_detail_fs", "min": 10, "max": 30, "step": 1, "unit": "px", "label": "Mobile Details Size", "default": 13 },
+    { "type": "range", "id": "m_lbl_fs", "min": 8, "max": 25, "step": 1, "unit": "px", "label": "Mobile Label Size", "default": 10 },
+    { "type": "range", "id": "m_input_fs", "min": 10, "max": 30, "step": 1, "unit": "px", "label": "Mobile Input Size", "default": 14 },
+
+    { "type": "header", "content": "Colors & Others" },
+    { "type": "color", "id": "clr", "label": "Accent Color", "default": "#40199a" },
+    { "type": "color", "id": "bg", "label": "Section BG", "default": "#f8f9fa" },
+    { "type": "color", "id": "lbl_clr", "label": "Label Color", "default": "#40199a" },
+    { "type": "color", "id": "input_clr", "label": "Input Text Color", "default": "#333" },
+    { "type": "range", "id": "btn_pad_v", "min": 5, "max": 50, "step": 1, "label": "Button V Padding", "default": 14 },
+    { "type": "range", "id": "btn_pad_h", "min": 10, "max": 100, "step": 1, "label": "Button H Padding", "default": 40 },
+    { "type": "text", "id": "title", "label": "Title", "default": "Contact Us" },
+    { "type": "textarea", "id": "desc", "label": "Description", "default": "We'd love to hear from you." },
+    { "type": "text", "id": "ph", "label": "Phone", "default": "+123 456 789" },
+    { "type": "text", "id": "em", "label": "Email", "default": "hi@example.com" },
+    { "type": "text", "id": "addr", "label": "Address", "default": "123 Street, NY" },
+    { "type": "text", "id": "btn", "label": "Button Text", "default": "Send Message" },
+    { "type": "text", "id": "success_msg", "label": "Success Message", "default": "Sent Successfully!" },
+    { "type": "range", "id": "max_w", "min": 500, "max": 1500, "step": 10, "label": "Form Max Width", "default": 1000 }
+  ],
+  "blocks": [
+    { "type": "text", "name": "Text Input", "settings": [
+      { "type": "text", "id": "lbl", "label": "Label", "default": "First Name" },
+      { "type": "text", "id": "plc", "label": "Placeholder", "default": "John" },
+      { "type": "checkbox", "id": "full", "label": "Full Width?", "default": false },
+      { "type": "checkbox", "id": "req", "label": "Required?", "default": true }
+    ]},
+    { "type": "email", "name": "Email Field", "limit": 1, "settings": [
+      { "type": "text", "id": "lbl", "label": "Label", "default": "Email Address" },
+      { "type": "text", "id": "plc", "label": "Placeholder", "default": "hello@mail.com" },
+      { "type": "checkbox", "id": "full", "label": "Full Width?", "default": false },
+      { "type": "checkbox", "id": "req", "label": "Required?", "default": true }
+    ]},
+    { "type": "phone", "name": "Phone Field", "limit": 1, "settings": [
+      { "type": "text", "id": "lbl", "label": "Label", "default": "Phone Number" },
+      { "type": "text", "id": "plc", "label": "Placeholder", "default": "+1 234 567" },
+      { "type": "checkbox", "id": "full", "label": "Full Width?", "default": false },
+      { "type": "checkbox", "id": "req", "label": "Required?", "default": true }
+    ]},
+    { "type": "dropdown", "name": "Dropdown", "settings": [
+      { "type": "text", "id": "lbl", "label": "Label", "default": "Subject" },
+      { "type": "text", "id": "plc", "label": "Placeholder", "default": "Select One" },
+      { "type": "textarea", "id": "os", "label": "Options", "default": "Sales, Support" },
+      { "type": "checkbox", "id": "full", "label": "Full Width?", "default": false },
+      { "type": "checkbox", "id": "req", "label": "Required?", "default": true }
+    ]},
+    { "type": "row", "name": "Options Row", "settings": [
+      { "type": "text", "id": "lbl", "label": "Title", "default": "Service" },
+      { "type": "textarea", "id": "os", "label": "Options", "default": "Web, App, SEO" },
+      { "type": "select", "id": "t", "label": "Type", "options": [{"value":"radio","label":"Radio"},{"value":"checkbox","label":"Check"}], "default": "radio" },
+      { "type": "checkbox", "id": "req", "label": "Required?", "default": false }
+    ]},
+    { "type": "area", "name": "Message", "settings": [
+      { "type": "text", "id": "lbl", "label": "Label", "default": "Message" },
+      { "type": "checkbox", "id": "req", "label": "Required?", "default": false }
+    ]}
+  ],
+  "presets": [{ "name": "Stacked Form Pro" }]
+}
+{% endschema %}
