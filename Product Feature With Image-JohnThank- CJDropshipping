@@ -1,0 +1,336 @@
+Screenshot :      https://prnt.sc/hn2SPydpvFvl
+
+
+
+{%- assign heading_font = section.settings.heading_font -%}
+{%- assign body_font = section.settings.body_font -%}
+
+{{ heading_font | font_face: font_display: 'swap' }}
+{{ body_font | font_face: font_display: 'swap' }}
+
+{%- if section.settings.width_type == 'px' -%}
+  {%- assign container_max_width = section.settings.max_width_px | append: 'px' -%}
+{%- else -%}
+  {%- assign container_max_width = section.settings.max_width_percent | append: '%' -%}
+{%- endif -%}
+
+<style>
+  .custom-feature-section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.bg_color }};
+    overflow: hidden;
+  }
+
+  .cfs-container-{{ section.id }} {
+    max-width: {{ container_max_width }};
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .cfs-header-{{ section.id }} {
+    text-align: center;
+    margin-bottom: 50px;
+    opacity: 0; 
+    transform: translateY(30px);
+    will-change: transform, opacity;
+  }
+
+  .cfs-subheading-{{ section.id }} {
+    font-family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    font-size: {{ section.settings.sub_heading_size }}px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: {{ section.settings.heading_color | color_modify: 'alpha', 0.8 }};
+  }
+
+  .cfs-heading-{{ section.id }} {
+    font-family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    font-size: {{ section.settings.main_heading_size }}px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    color: {{ section.settings.heading_color }};
+  }
+
+  .cfs-description-{{ section.id }} {
+    font-family: {{ body_font.family }}, {{ body_font.fallback_families }};
+    font-size: {{ section.settings.feature_text_size | plus: 2 }}px;
+    color: {{ section.settings.text_color }};
+    max-width: 700px;
+    margin: 15px auto 0;
+    line-height: 1.6;
+  }
+
+  .cfs-body-{{ section.id }} {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    gap: {{ section.settings.column_gap }}px;
+  }
+
+  .cfs-column-{{ section.id }} {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: {{ section.settings.item_gap }}px;
+  }
+
+  .cfs-center-image-{{ section.id }} {
+    flex: 0 0 auto;
+    opacity: 0;
+    transform: scale(0.9);
+    text-align: center;
+    will-change: transform, opacity;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .cfs-image-inner-{{ section.id }} {
+    max-width: {{ section.settings.image_max_width }}px;
+    width: 100%;
+    height: auto;
+    display: inline-block;
+    object-fit: contain;
+    filter: drop-shadow(0px 15px 25px {{ section.settings.image_shadow_color }});
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s ease;
+    will-change: transform, filter;
+  }
+
+  .cfs-center-image-{{ section.id }}:hover .cfs-image-inner-{{ section.id }} {
+    transform: scale(1.06) translateY(-5px);
+    filter: drop-shadow(0px 25px 35px {{ section.settings.image_shadow_color | color_modify: 'alpha', 0.4 }});
+  }
+
+  .cfs-item-{{ section.id }} {
+    display: flex;
+    flex-direction: column;
+    opacity: 0; 
+    will-change: transform, opacity;
+  }
+
+  .gs-left-item { text-align: right; }
+  .gs-right-item { text-align: left; }
+
+  .cfs-title-wrap-{{ section.id }} {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .gs-left-item .cfs-title-wrap-{{ section.id }} { justify-content: flex-end; gap: 15px; }
+  .gs-right-item .cfs-title-wrap-{{ section.id }} { justify-content: flex-start; gap: 15px; }
+
+  .cfs-title-wrap-{{ section.id }} h3 {
+    font-family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    font-size: {{ section.settings.feature_title_size }}px;
+    font-weight: 700;
+    margin: 0;
+    color: {{ section.settings.heading_color }};
+  }
+
+  .cfs-icon-{{ section.id }} {
+    width: {{ section.settings.icon_size }}px;
+    height: {{ section.settings.icon_size }}px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: {{ section.settings.icon_color }};
+    flex-shrink: 0;
+  }
+
+  .cfs-icon-{{ section.id }} svg, .cfs-icon-{{ section.id }} img {
+    width: 100%; height: 100%; object-fit: contain; fill: currentColor;
+  }
+
+  .cfs-item-{{ section.id }} p {
+    font-family: {{ body_font.family }}, {{ body_font.fallback_families }};
+    font-size: {{ section.settings.feature_text_size }}px;
+    line-height: 1.6;
+    margin: 0;
+    color: {{ section.settings.text_color }};
+  }
+
+  @media (max-width: 989px) {
+    .cfs-body-{{ section.id }} {
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .cfs-column-left-{{ section.id }} { order: 1; }
+    .cfs-center-image-{{ section.id }} { order: 2; margin: 25px 0; }
+    .cfs-column-right-{{ section.id }} { order: 3; }
+
+    .cfs-column-{{ section.id }} { width: 100%; gap: 30px; }
+    
+    /* Global mobile feature alignment - Always icon on left */
+    .gs-left-item, .gs-right-item { text-align: left; }
+
+    .cfs-title-wrap-{{ section.id }} { 
+      flex-direction: row-reverse !important; /* Forces icon to the left of the title */
+      justify-content: flex-end !important;
+      gap: 15px !important;
+    }
+
+    /* Override for right items to match the same left-icon logic on mobile */
+    .gs-right-item .cfs-title-wrap-{{ section.id }} {
+      flex-direction: row !important;
+      justify-content: flex-start !important;
+    }
+
+    .cfs-image-inner-{{ section.id }} {
+       filter: drop-shadow(0px 20px 30px {{ section.settings.image_shadow_color | color_modify: 'alpha', 0.5 }});
+       transform: scale(1.02);
+    }
+  }
+
+  .shopify-design-mode .cfs-header-{{ section.id }},
+  .shopify-design-mode .cfs-center-image-{{ section.id }},
+  .shopify-design-mode .cfs-item-{{ section.id }} {
+    opacity: 1 !important; transform: none !important;
+  }
+</style>
+
+<div class="custom-feature-section-{{ section.id }}" id="FeatureSection-{{ section.id }}">
+  <div class="cfs-container-{{ section.id }}">
+    
+    <div class="cfs-header-{{ section.id }} gs-header">
+      {% if section.settings.subheading != blank %}<div class="cfs-subheading-{{ section.id }}">{{ section.settings.subheading }}</div>{% endif %}
+      {% if section.settings.heading != blank %}<h2 class="cfs-heading-{{ section.id }}">{{ section.settings.heading }}</h2>{% endif %}
+      {% if section.settings.description != blank %}<div class="cfs-description-{{ section.id }}">{{ section.settings.description }}</div>{% endif %}
+    </div>
+
+    <div class="cfs-body-{{ section.id }}">
+      
+      <div class="cfs-column-{{ section.id }} cfs-column-left-{{ section.id }}">
+        {% for block in section.blocks %}
+          {% if block.settings.position == 'left' %}
+            <div class="cfs-item-{{ section.id }} gs-left-item" {{ block.shopify_attributes }}>
+              <div class="cfs-title-wrap-{{ section.id }}">
+                <h3>{{ block.settings.title }}</h3>
+                <div class="cfs-icon-{{ section.id }}">
+                  {% if block.settings.custom_svg != blank %}{{ block.settings.custom_svg }}{% elsif block.settings.icon_image != blank %}<img src="{{ block.settings.icon_image | img_url: 'master' }}">{% endif %}
+                </div>
+              </div>
+              <p>{{ block.settings.text }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="cfs-center-image-{{ section.id }} gs-center-img-wrapper">
+        {% if section.settings.center_image != blank %}
+          <img class="cfs-image-inner-{{ section.id }}" 
+               src="{{ section.settings.center_image | img_url: '1000x' }}" 
+               alt="{{ section.settings.center_image.alt | default: section.settings.heading }}"
+               loading="lazy">
+        {% else %}
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {% endif %}
+      </div>
+
+      <div class="cfs-column-{{ section.id }} cfs-column-right-{{ section.id }}">
+        {% for block in section.blocks %}
+          {% if block.settings.position == 'right' %}
+            <div class="cfs-item-{{ section.id }} gs-right-item" {{ block.shopify_attributes }}>
+              <div class="cfs-title-wrap-{{ section.id }}">
+                <div class="cfs-icon-{{ section.id }}">
+                  {% if block.settings.custom_svg != blank %}{{ block.settings.custom_svg }}{% elsif block.settings.icon_image != blank %}<img src="{{ block.settings.icon_image | img_url: 'master' }}">{% endif %}
+                </div>
+                <h3>{{ block.settings.title }}</h3>
+              </div>
+              <p>{{ block.settings.text }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+<script>
+  function initFeatureGSAP_{{ section.id | replace: '-', '_' }}() {
+    if (typeof gsap === "undefined") {
+      setTimeout(initFeatureGSAP_{{ section.id | replace: '-', '_' }}, 200);
+      return;
+    }
+    gsap.registerPlugin(ScrollTrigger);
+    const sectionEl = document.getElementById("FeatureSection-{{ section.id }}");
+    if (!sectionEl || Shopify.designMode) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: { trigger: sectionEl, start: "top 80%", toggleActions: "play none none reverse" }
+    });
+
+    tl.to(sectionEl.querySelector('.gs-header'), { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" })
+      .to(sectionEl.querySelector('.gs-center-img-wrapper'), { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.2)" }, "-=0.4")
+      .to(sectionEl.querySelectorAll('.cfs-item-{{ section.id }}'), { 
+        opacity: 1, x: 0, y: 0, stagger: 0.1, duration: 0.6, ease: "power3.out" 
+      }, "-=0.5");
+  }
+  document.addEventListener("DOMContentLoaded", initFeatureGSAP_{{ section.id | replace: '-', '_' }});
+  document.addEventListener("shopify:section:load", (e) => {
+    if (e.detail.sectionId === "{{ section.id }}") initFeatureGSAP_{{ section.id | replace: '-', '_' }}();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Product Features",
+  "settings": [
+    { "type": "header", "content": "Section Header" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "AERIAL PHOTOGRAPHY" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We Capture Objects And Spaces" },
+    { "type": "textarea", "id": "description", "label": "Description", "default": "Highlight the key specifications of your product below." },
+    { "type": "image_picker", "id": "center_image", "label": "Center Product Image" },
+    { "type": "header", "content": "Layout Sizing" },
+    { "type": "radio", "id": "width_type", "label": "Max Width Unit", "options": [ { "value": "px", "label": "Pixels (px)" }, { "value": "percent", "label": "Percentage (%)" } ], "default": "px" },
+    { "type": "range", "id": "max_width_px", "min": 800, "max": 1800, "step": 20, "unit": "px", "label": "Max Width (px)", "default": 1200 },
+    { "type": "range", "id": "max_width_percent", "min": 50, "max": 100, "step": 1, "unit": "%", "label": "Max Width (%)", "default": 100 },
+    { "type": "header", "content": "Typography" },
+    { "type": "font_picker", "id": "heading_font", "label": "Heading Font", "default": "sans-serif" },
+    { "type": "font_picker", "id": "body_font", "label": "Body Text Font", "default": "sans-serif" },
+    { "type": "range", "id": "main_heading_size", "min": 20, "max": 80, "step": 2, "unit": "px", "label": "Main Heading Size", "default": 38 },
+    { "type": "range", "id": "sub_heading_size", "min": 10, "max": 30, "step": 1, "unit": "px", "label": "Subheading Size", "default": 13 },
+    { "type": "range", "id": "feature_title_size", "min": 12, "max": 36, "step": 1, "unit": "px", "label": "Feature Title Size", "default": 16 },
+    { "type": "range", "id": "feature_text_size", "min": 8, "max": 24, "step": 1, "unit": "px", "label": "Feature Text Size", "default": 14 },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#ffffff" },
+    { "type": "color", "id": "heading_color", "label": "Headings Color", "default": "#006D6C" },
+    { "type": "color", "id": "text_color", "label": "Paragraph Text Color", "default": "#7a8499" },
+    { "type": "color", "id": "icon_color", "label": "Icon Color", "default": "#006D6C" },
+    { "type": "color", "id": "image_shadow_color", "label": "Image Shadow Color", "default": "rgba(0,0,0,0.15)" },
+    { "type": "header", "content": "Spacing Controls" },
+    { "type": "range", "id": "image_max_width", "min": 200, "max": 1000, "step": 10, "unit": "px", "label": "Image Max Width", "default": 500 },
+    { "type": "range", "id": "icon_size", "min": 16, "max": 80, "step": 2, "unit": "px", "label": "Icon Size", "default": 28 },
+    { "type": "range", "id": "column_gap", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Horizontal Gap", "default": 40 },
+    { "type": "range", "id": "item_gap", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Vertical Gap (Between Features)", "default": 50 },
+    { "type": "header", "content": "Padding" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Top", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Bottom", "default": 60 }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature Block",
+      "settings": [
+        { "type": "select", "id": "position", "label": "Position", "options": [ { "value": "left", "label": "Left" }, { "value": "right", "label": "Right" } ], "default": "left" },
+        { "type": "text", "id": "title", "label": "Title", "default": "FEATURE TITLE" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Feature description detail goes here." },
+        { "type": "image_picker", "id": "icon_image", "label": "Icon Image" },
+        { "type": "html", "id": "custom_svg", "label": "Custom SVG Code" }
+      ]
+    }
+  ],
+  "presets": [ { "name": "Custom Product Features" } ]
+}
+{% endschema %}
+
+
