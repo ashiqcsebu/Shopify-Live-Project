@@ -1,0 +1,901 @@
+
+
+
+{{ 'section-faq-accordion.css' | asset_url | stylesheet_tag }}
+
+<div class="faq-accordion-wrapper section-{{ section.id }}-padding">
+  <div class="faq-container faq-container-{{ section.id }}">
+    <div class="faq-header-layout">
+      {% if section.settings.heading != blank %}
+        <h2 class="faq-heading-vertical">{{ section.settings.heading }}</h2>
+      {% endif %}
+
+      <div class="faq-accordion">
+        {% for block in section.blocks %}
+          {% if block.type == 'faq_item' %}
+            <div class="faq-item" {{ block.shopify_attributes }}>
+              <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-{{ block.id }}">
+                <span class="faq-question-text">{{ block.settings.question }}</span>
+                <span class="faq-icon">
+                  <svg class="icon-plus" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <svg class="icon-minus" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+              </button>
+              <div class="faq-answer" id="faq-answer-{{ block.id }}">
+                <div class="faq-answer-content">
+                  {{ block.settings.answer }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if section.settings.show_button and section.settings.button_text != blank %}
+      <div class="faq-button-wrapper">
+        <a href="{{ section.settings.button_url }}" class="faq-btn faq-btn-{{ section.id }}">
+          {{ section.settings.button_text }}
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  /* ── Font Family ── */
+  .section-{{ section.id }}-padding {
+    font-family: {{ section.settings.font_family }};
+  }
+
+  /* ── Section Container Width ── */
+  .faq-container-{{ section.id }} {
+    max-width: {{ section.settings.container_max_width }}{{ section.settings.container_width_unit }};
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ── Wrapper Background & Padding ── */
+  .faq-accordion-wrapper {
+    background-color: {{ section.settings.background_color }};
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+
+  /* ── Heading ── */
+  .faq-heading-vertical {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    color: {{ section.settings.heading_color }};
+    font-family: {{ section.settings.heading_font_family }};
+    margin: 0;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    line-height: 1;
+    text-transform: uppercase;
+    padding-top: 20px;
+  }
+
+  /* ── Layout ── */
+  .faq-header-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    position: relative;
+  }
+
+  .faq-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: {{ section.settings.item_spacing }}px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ── FAQ Item ── */
+  .faq-item {
+    background-color: {{ section.settings.item_background }};
+    border: {{ section.settings.item_border_width }}px solid {{ section.settings.item_border_color }};
+    border-radius: {{ section.settings.item_border_radius }}px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .faq-item:hover {
+    border-color: {{ section.settings.item_border_hover_color }};
+    box-shadow: {{ section.settings.item_hover_shadow }};
+  }
+
+  /* ── Question ── */
+  .faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: {{ section.settings.question_padding_vertical }}px {{ section.settings.question_padding_horizontal }}px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.3s ease;
+  }
+
+  .faq-question:hover {
+    background-color: {{ section.settings.question_hover_background }};
+  }
+
+  .faq-question-text {
+    font-size: {{ section.settings.question_font_size }}px;
+    font-weight: {{ section.settings.question_font_weight }};
+    color: {{ section.settings.question_color }};
+    font-family: {{ section.settings.question_font_family }};
+    line-height: 1.5;
+    flex: 1;
+    padding-right: 20px;
+  }
+
+  /* ── Icon ── */
+  .faq-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: {{ section.settings.icon_color }};
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+
+  .faq-icon svg {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 0;
+    left: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .icon-minus {
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
+
+  .faq-question[aria-expanded="true"] .icon-plus {
+    opacity: 0;
+    transform: rotate(90deg);
+  }
+
+  .faq-question[aria-expanded="true"] .icon-minus {
+    opacity: 1;
+    transform: rotate(0);
+  }
+
+  /* ── Answer ── */
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+  }
+
+  .faq-answer-content {
+    padding: 0 {{ section.settings.question_padding_horizontal }}px {{ section.settings.question_padding_vertical }}px;
+    font-size: {{ section.settings.answer_font_size }}px;
+    font-family: {{ section.settings.answer_font_family }};
+    color: {{ section.settings.answer_color }};
+    line-height: 1.6;
+  }
+
+  .faq-item.active .faq-answer {
+    max-height: 1000px;
+  }
+
+  /* ── Button ── */
+  .faq-button-wrapper {
+    margin-top: {{ section.settings.button_margin_top }}px;
+    text-align: {{ section.settings.button_alignment }};
+    margin-left: {% if section.settings.heading != blank %}140px{% else %}0{% endif %};
+  }
+
+  .faq-btn-{{ section.id }} {
+    display: inline-flex;
+    align-items: center;
+    gap: {{ section.settings.button_icon_gap }}px;
+    font-size: {{ section.settings.button_font_size }}px;
+    font-weight: {{ section.settings.button_font_weight }};
+    font-family: {{ section.settings.button_font_family }};
+    color: {{ section.settings.button_text_color }};
+    background-color: {{ section.settings.button_bg_color }};
+    text-decoration: none;
+    padding: {{ section.settings.button_padding_vertical }}px {{ section.settings.button_padding_horizontal }}px;
+    border-radius: {{ section.settings.button_border_radius }}px;
+    border: {{ section.settings.button_border_width }}px solid {{ section.settings.button_border_color }};
+    transition: all 0.3s ease;
+    cursor: pointer;
+    letter-spacing: {{ section.settings.button_letter_spacing }}em;
+  }
+
+  .faq-btn-{{ section.id }}:hover {
+    color: {{ section.settings.button_hover_text_color }};
+    background-color: {{ section.settings.button_hover_bg_color }};
+    border-color: {{ section.settings.button_hover_border_color }};
+    box-shadow: {{ section.settings.button_hover_shadow }};
+    gap: {{ section.settings.button_icon_gap | plus: 4 }}px;
+  }
+
+  .faq-btn-{{ section.id }} svg {
+    transition: transform 0.3s ease;
+  }
+
+  .faq-btn-{{ section.id }}:hover svg {
+    transform: translateX(4px);
+  }
+
+  /* ── Responsive ── */
+  @media screen and (max-width: 1024px) {
+    .faq-header-layout {
+      gap: 40px;
+    }
+    .faq-heading-vertical {
+      font-size: calc({{ section.settings.heading_size }}px * 0.8);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .faq-header-layout {
+      flex-direction: column;
+      gap: 30px;
+    }
+    .faq-heading-vertical {
+      writing-mode: horizontal-tb;
+      transform: none;
+      font-size: calc({{ section.settings.heading_size }}px * 0.7);
+      padding-top: 0;
+      text-align: left;
+    }
+    .faq-button-wrapper {
+      margin-left: 0;
+    }
+    .faq-question {
+      padding: {{ section.settings.question_padding_vertical | times: 0.8 }}px {{ section.settings.question_padding_horizontal | times: 0.8 }}px;
+    }
+    .faq-question-text {
+      font-size: calc({{ section.settings.question_font_size }}px * 0.9);
+    }
+    .faq-answer-content {
+      padding: 0 {{ section.settings.question_padding_horizontal | times: 0.8 }}px {{ section.settings.question_padding_vertical | times: 0.8 }}px;
+      font-size: calc({{ section.settings.answer_font_size }}px * 0.9);
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .faq-container-{{ section.id }} {
+      padding: 0 15px;
+    }
+    .faq-heading-vertical {
+      font-size: calc({{ section.settings.heading_size }}px * 0.6);
+    }
+    .faq-question {
+      padding: 16px;
+    }
+    .faq-answer-content {
+      padding: 0 16px 16px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const faqItems = document.querySelectorAll('.section-{{ section.id }}-padding .faq-item');
+    
+    faqItems.forEach(item => {
+      const button = item.querySelector('.faq-question');
+      
+      button.addEventListener('click', () => {
+        const isOpen = item.classList.contains('active');
+        
+        {% if section.settings.close_others %}
+          faqItems.forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('active');
+              otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+            }
+          });
+        {% endif %}
+        
+        if (isOpen) {
+          item.classList.remove('active');
+          button.setAttribute('aria-expanded', 'false');
+        } else {
+          item.classList.add('active');
+          button.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "settings": [
+    {
+      "type": "header",
+      "content": "📐 Section Width"
+    },
+    {
+      "type": "text",
+      "id": "container_max_width",
+      "label": "Max Width Value",
+      "default": "1400",
+      "info": "Enter a number. Combined with the unit below (e.g. 1400 + px = 1400px, or 90 + % = 90%)"
+    },
+    {
+      "type": "select",
+      "id": "container_width_unit",
+      "label": "Width Unit",
+      "options": [
+        { "value": "px", "label": "px (fixed pixels)" },
+        { "value": "%", "label": "% (percentage)" }
+      ],
+      "default": "px"
+    },
+    {
+      "type": "header",
+      "content": "🔤 Global Font Family"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Section Font Family",
+      "options": [
+        { "value": "inherit", "label": "Theme Default (inherit)" },
+        { "value": "'Arial', sans-serif", "label": "Arial" },
+        { "value": "'Helvetica Neue', Helvetica, sans-serif", "label": "Helvetica Neue" },
+        { "value": "'Georgia', serif", "label": "Georgia" },
+        { "value": "'Times New Roman', serif", "label": "Times New Roman" },
+        { "value": "'Courier New', monospace", "label": "Courier New" },
+        { "value": "'Trebuchet MS', sans-serif", "label": "Trebuchet MS" },
+        { "value": "'Verdana', sans-serif", "label": "Verdana" },
+        { "value": "'Gill Sans', sans-serif", "label": "Gill Sans" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "header",
+      "content": "📝 Heading Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading Text",
+      "default": "FAQ"
+    },
+    {
+      "type": "select",
+      "id": "heading_font_family",
+      "label": "Heading Font Family",
+      "options": [
+        { "value": "inherit", "label": "Inherit from Section" },
+        { "value": "'Arial', sans-serif", "label": "Arial" },
+        { "value": "'Helvetica Neue', Helvetica, sans-serif", "label": "Helvetica Neue" },
+        { "value": "'Georgia', serif", "label": "Georgia" },
+        { "value": "'Times New Roman', serif", "label": "Times New Roman" },
+        { "value": "'Trebuchet MS', sans-serif", "label": "Trebuchet MS" },
+        { "value": "'Verdana', sans-serif", "label": "Verdana" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 40,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Heading Size",
+      "default": 80
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "900"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Section Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "item_background",
+      "label": "Item Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "item_border_color",
+      "label": "Item Border Color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "item_border_hover_color",
+      "label": "Item Border Hover Color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "question_hover_background",
+      "label": "Question Hover Background",
+      "default": "#eeeeee"
+    },
+    {
+      "type": "header",
+      "content": "📐 Item Styling"
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Space Between Items",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "item_border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Item Border Width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "item_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Item Border Radius",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "item_hover_shadow",
+      "label": "Item Hover Shadow (CSS)",
+      "default": "0 2px 8px rgba(0,0,0,0.1)"
+    },
+    {
+      "type": "header",
+      "content": "❓ Question Styling"
+    },
+    {
+      "type": "select",
+      "id": "question_font_family",
+      "label": "Question Font Family",
+      "options": [
+        { "value": "inherit", "label": "Inherit from Section" },
+        { "value": "'Arial', sans-serif", "label": "Arial" },
+        { "value": "'Helvetica Neue', Helvetica, sans-serif", "label": "Helvetica Neue" },
+        { "value": "'Georgia', serif", "label": "Georgia" },
+        { "value": "'Times New Roman', serif", "label": "Times New Roman" },
+        { "value": "'Trebuchet MS', sans-serif", "label": "Trebuchet MS" },
+        { "value": "'Verdana', sans-serif", "label": "Verdana" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "question_padding_vertical",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Question Vertical Padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "question_padding_horizontal",
+      "min": 15,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Question Horizontal Padding",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "question_font_size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Question Font Size",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "question_font_weight",
+      "label": "Question Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Question Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "💬 Answer Styling"
+    },
+    {
+      "type": "select",
+      "id": "answer_font_family",
+      "label": "Answer Font Family",
+      "options": [
+        { "value": "inherit", "label": "Inherit from Section" },
+        { "value": "'Arial', sans-serif", "label": "Arial" },
+        { "value": "'Helvetica Neue', Helvetica, sans-serif", "label": "Helvetica Neue" },
+        { "value": "'Georgia', serif", "label": "Georgia" },
+        { "value": "'Times New Roman', serif", "label": "Times New Roman" },
+        { "value": "'Trebuchet MS', sans-serif", "label": "Trebuchet MS" },
+        { "value": "'Verdana', sans-serif", "label": "Verdana" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "answer_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Answer Font Size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer Text Color",
+      "default": "#555555"
+    },
+    {
+      "type": "header",
+      "content": "🔘 Button Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "View all FAQs"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL",
+      "default": "/"
+    },
+    {
+      "type": "select",
+      "id": "button_font_family",
+      "label": "Button Font Family",
+      "options": [
+        { "value": "inherit", "label": "Inherit from Section" },
+        { "value": "'Arial', sans-serif", "label": "Arial" },
+        { "value": "'Helvetica Neue', Helvetica, sans-serif", "label": "Helvetica Neue" },
+        { "value": "'Georgia', serif", "label": "Georgia" },
+        { "value": "'Trebuchet MS', sans-serif", "label": "Trebuchet MS" },
+        { "value": "'Verdana', sans-serif", "label": "Verdana" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Font Size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "button_font_weight",
+      "label": "Button Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Vertical Padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "min": 12,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Horizontal Padding",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Border Radius",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Border Width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "button_icon_gap",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Icon Gap",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "button_letter_spacing",
+      "label": "Button Letter Spacing",
+      "options": [
+        { "value": "0", "label": "None" },
+        { "value": "0.03", "label": "Small" },
+        { "value": "0.06", "label": "Medium" },
+        { "value": "0.1", "label": "Large" },
+        { "value": "0.15", "label": "Extra Large" }
+      ],
+      "default": "0"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Button Colors (Normal)"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Button Colors (Hover)"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Button Hover Background",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Button Hover Border Color",
+      "default": "#333333"
+    },
+    {
+      "type": "text",
+      "id": "button_hover_shadow",
+      "label": "Button Hover Shadow (CSS)",
+      "default": "0 4px 12px rgba(0,0,0,0.2)",
+      "info": "CSS box-shadow value"
+    },
+    {
+      "type": "header",
+      "content": "📍 Button Position"
+    },
+    {
+      "type": "range",
+      "id": "button_margin_top",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Button Top Margin",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "button_alignment",
+      "label": "Button Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "⚙️ Behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "close_others",
+      "label": "Close Other Items When Opening One",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "📏 Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is your return policy?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>We offer a 30-day return policy on all items. Please ensure products are in original condition with tags attached.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion - Diagonal",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy on all items. Please ensure products are in original condition with tags attached.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Standard shipping takes 5-7 business days. Express shipping options are available at checkout for faster delivery.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes, we ship to over 100 countries worldwide. International shipping times vary by destination.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "<p>Once your order ships, you'll receive a tracking number via email. Use this to track your package on our website or the carrier's site.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What payment methods do you accept?",
+            "answer": "<p>We accept all major credit cards, PayPal, Apple Pay, and Google Pay for your convenience.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
