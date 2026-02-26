@@ -1,0 +1,254 @@
+
+Screenshot :  https://prnt.sc/rSJVfw_tPDEI
+
+
+
+
+
+
+
+{%- style -%}
+  /* Section-specific scoping */
+  #shopify-section-{{ section.id }} .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.section_bg }};
+  }
+
+  #shopify-section-{{ section.id }} .feature-grid-wrapper {
+    max-width: {{ section.settings.container_max_width }}{{ section.settings.width_unit }};
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  #shopify-section-{{ section.id }} .feature-grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: {{ section.settings.grid_gap }}px;
+  }
+
+  #shopify-section-{{ section.id }} .feature-card {
+    background-color: {{ section.settings.card_bg }};
+    border-radius: {{ section.settings.border_radius }}px;
+    padding: {{ section.settings.card_padding }}px;
+    flex: 1;
+    min-width: {{ section.settings.min_card_width }}px;
+    max-width: {{ section.settings.max_card_width }}px;
+    text-align: left;
+    box-shadow: 0 10px 30px {{ section.settings.shadow_color }};
+    border: 1px solid rgba(0,0,0,0.05);
+    /* Transition only for non-GSAP properties to avoid shaking */
+    transition: background 0.4s ease, border 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform, box-shadow;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Force visibility in Shopify Theme Editor */
+  .shopify-design-mode #shopify-section-{{ section.id }} .feature-card {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  #shopify-section-{{ section.id }} .feature-card__badge {
+    font-size: {{ section.settings.badge_size }}px;
+    font-weight: 300;
+    color: {{ section.settings.accent_color }};
+    margin: 0;
+    line-height: 1;
+    transition: color 0.3s ease;
+  }
+
+  #shopify-section-{{ section.id }} .feature-card__icon {
+    width: {{ section.settings.icon_width }}px;
+    display: block;
+    color: {{ section.settings.accent_color }};
+    transition: color 0.3s ease;
+  }
+  
+  #shopify-section-{{ section.id }} .feature-card__icon svg { width: 100%; height: auto; fill: none; stroke: currentColor; stroke-width: 1.5; }
+  #shopify-section-{{ section.id }} .feature-card__icon img { width: 100%; height: auto; object-fit: contain; }
+
+  #shopify-section-{{ section.id }} .feature-card__title {
+    font-size: {{ section.settings.title_size }}px;
+    font-weight: 700;
+    color: {{ section.settings.heading_color }};
+    margin: {{ section.settings.title_margin_top }}px 0 {{ section.settings.title_margin_bottom }}px;
+    transition: color 0.3s ease;
+    line-height: 1.2;
+  }
+
+  #shopify-section-{{ section.id }} .feature-card__text {
+    font-size: {{ section.settings.text_size }}px;
+    color: {{ section.settings.text_color }};
+    line-height: 1.5;
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+
+  /* Hover State Background/Colors */
+  #shopify-section-{{ section.id }} .feature-card.is-hovered {
+    background-color: {{ section.settings.hover_bg }} !important;
+    border-color: {{ section.settings.hover_accent_color }};
+  }
+  #shopify-section-{{ section.id }} .feature-card.is-hovered .feature-card__title { color: {{ section.settings.hover_title_color }}; }
+  #shopify-section-{{ section.id }} .feature-card.is-hovered .feature-card__text { color: {{ section.settings.hover_text_color }}; }
+  #shopify-section-{{ section.id }} .feature-card.is-hovered .feature-card__badge,
+  #shopify-section-{{ section.id }} .feature-card.is-hovered .feature-card__icon { color: {{ section.settings.hover_accent_color }}; }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .feature-card { min-width: 100%; max-width: 100%; }
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding">
+  <div class="feature-grid-wrapper">
+    <div class="feature-grid-container" id="gsap-trigger-{{ section.id }}">
+      {%- for block in section.blocks -%}
+        <div class="feature-card js-card-{{ section.id | replace: '-', '_' }}" {{ block.shopify_attributes }}>
+          <div class="feature-card__top" style="display:flex; align-items:center; gap:15px; margin-bottom: 10px;">
+            {%- if block.settings.use_text_instead_of_icon -%}
+               <h2 class="feature-card__badge">{{ block.settings.badge_text }}</h2>
+            {%- else -%}
+              <div class="feature-card__icon">
+                {%- if block.settings.icon_svg != blank -%} {{ block.settings.icon_svg }}
+                {%- elsif block.settings.image != blank -%} {{ block.settings.image | image_url: width: 150 | image_tag }}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            <h3 class="feature-card__title">{{ block.settings.title }}</h3>
+          </div>
+          <p class="feature-card__text">{{ block.settings.sub_text }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+  function initFeatureGrid_{{ section.id | replace: '-', '_' }}() {
+    const triggerId = "#gsap-trigger-{{ section.id }}";
+    const container = document.querySelector(triggerId);
+    if(!container) return;
+    
+    const cards = container.querySelectorAll(".js-card-{{ section.id | replace: '-', '_' }}");
+    
+    // Initial Entrance Animation
+    gsap.set(cards, { opacity: 0, y: 30 });
+
+    if (!Shopify.designMode) {
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: container,
+          start: "top 85%",
+          toggleActions: "play none none none"
+        }
+      });
+    } else {
+      gsap.set(cards, { opacity: 1, y: 0 });
+    }
+
+    // Smooth Hover Logic
+    cards.forEach(card => {
+      card.addEventListener("mouseenter", () => {
+        card.classList.add('is-hovered');
+        gsap.to(card, {
+          boxShadow: "0 20px 45px {{ section.settings.shadow_hover_color }}",
+          duration: 0.4,
+          ease: "power2.out",
+          overwrite: "auto"
+        });
+      });
+      
+      card.addEventListener("mouseleave", () => {
+        card.classList.remove('is-hovered');
+        gsap.to(card, {
+          boxShadow: "0 10px 30px {{ section.settings.shadow_color }}",
+          duration: 0.4,
+          ease: "power2.out",
+          overwrite: "auto"
+        });
+      });
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", initFeatureGrid_{{ section.id | replace: '-', '_' }});
+  
+  if (Shopify.designMode) {
+    document.addEventListener("shopify:section:load", (e) => {
+      if(e.detail.sectionId === "{{ section.id }}") {
+        initFeatureGrid_{{ section.id | replace: '-', '_' }}();
+      }
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Pro Feature Grid",
+  "settings": [
+    { "type": "header", "content": "Layout Controls" },
+    { "type": "number", "id": "container_max_width", "label": "Container Max Width", "default": 1200 },
+    { "type": "select", "id": "width_unit", "label": "Width Unit", "options": [ { "value": "px", "label": "px" }, { "value": "%", "label": "%" } ], "default": "px" },
+    { "type": "range", "id": "grid_gap", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Gap Between Cards", "default": 25 },
+    { "type": "range", "id": "card_padding", "min": 10, "max": 100, "step": 5, "unit": "px", "label": "Internal Padding", "default": 35 },
+    { "type": "number", "id": "min_card_width", "label": "Min Card Width (px)", "default": 300 },
+    { "type": "number", "id": "max_card_width", "label": "Max Card Width (px)", "default": 400 },
+    { "type": "range", "id": "border_radius", "min": 0, "max": 50, "step": 2, "unit": "px", "label": "Border Radius", "default": 16 },
+    { "type": "header", "content": "Typography Settings" },
+    { "type": "range", "id": "badge_size", "min": 20, "max": 100, "step": 2, "unit": "px", "label": "Badge/Text Icon Size", "default": 48 },
+    { "type": "range", "id": "icon_width", "min": 20, "max": 150, "step": 5, "unit": "px", "label": "SVG Icon Width", "default": 50 },
+    { "type": "range", "id": "title_size", "min": 14, "max": 60, "step": 1, "unit": "px", "label": "Title Font Size", "default": 28 },
+    { "type": "range", "id": "text_size", "min": 12, "max": 30, "step": 1, "unit": "px", "label": "Sub-text Font Size", "default": 16 },
+    { "type": "number", "id": "title_margin_top", "label": "Title Margin Top", "default": 0 },
+    { "type": "number", "id": "title_margin_bottom", "label": "Title Margin Bottom", "default": 10 },
+    { "type": "header", "content": "Normal State Colors" },
+    { "type": "color", "id": "section_bg", "label": "Section Background", "default": "#ffffff" },
+    { "type": "color", "id": "card_bg", "label": "Card Background", "default": "#ffffff" },
+    { "type": "color", "id": "accent_color", "label": "Accent (Badge/Icon)", "default": "#f17070" },
+    { "type": "color", "id": "heading_color", "label": "Title Color", "default": "#3c4d7e" },
+    { "type": "color", "id": "text_color", "label": "Sub-text Color", "default": "#8e98bc" },
+    { "type": "color", "id": "shadow_color", "label": "Shadow Color", "default": "rgba(0,0,0,0.05)" },
+    { "type": "header", "content": "Hover State Colors" },
+    { "type": "color", "id": "hover_bg", "label": "Hover Background", "default": "#3c4d7e" },
+    { "type": "color", "id": "hover_title_color", "label": "Hover Title Color", "default": "#ffffff" },
+    { "type": "color", "id": "hover_text_color", "label": "Hover Sub-text Color", "default": "#e0e0e0" },
+    { "type": "color", "id": "hover_accent_color", "label": "Hover Accent Color", "default": "#f17070" },
+    { "type": "color", "id": "shadow_hover_color", "label": "Hover Shadow Color", "default": "rgba(0,0,0,0.15)" },
+    { "type": "header", "content": "Section Spacing" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Top", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 150, "step": 5, "unit": "px", "label": "Padding Bottom", "default": 60 }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Feature Card",
+      "settings": [
+        { "type": "checkbox", "id": "use_text_instead_of_icon", "label": "Use Text Badge (e.g. 4K)", "default": true },
+        { "type": "text", "id": "badge_text", "label": "Badge Text", "default": "4K" },
+        { "type": "html", "id": "icon_svg", "label": "Icon SVG Code" },
+        { "type": "image_picker", "id": "image", "label": "Icon Image" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Camera" },
+        { "type": "textarea", "id": "sub_text", "label": "Sub Text", "default": "20MP Resolution at 4k/60fps" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Pro Feature Grid", "blocks": [ { "type": "card" }, { "type": "card" }, { "type": "card" } ] }
+  ]
+}
+{% endschema %}
+
