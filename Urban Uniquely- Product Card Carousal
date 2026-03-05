@@ -1,0 +1,428 @@
+https://prnt.sc/JxmMjPFzr0H9
+
+
+
+{%- style -%}
+  .section-{{ section.id }} {
+    background-color: #ffffff;
+    padding: 40px 0;
+    --text-color: #000000;
+    --accent-color: #000000;
+    --hover-accent: #333333;
+    overflow: hidden;
+  }
+
+  .split-wrapper-{{ section.id }} {
+    display: flex;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 50px; 
+    gap: 40px;
+    align-items: stretch;
+  }
+
+  .hero-side-{{ section.id }} {
+    flex: 0 0 32%; 
+    position: relative;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .hero-side-{{ section.id }}__img {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  .hero-side-{{ section.id }}__content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+    color: #ffffff;
+    background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  }
+
+  .hero-side-{{ section.id }}__text {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .slider-side-{{ section.id }} {
+    flex: 1;
+    min-width: 0;
+    padding-right: 0;
+    overflow: hidden;
+  }
+
+  .slider-header-{{ section.id }} {
+    margin-bottom: 35px;
+  }
+
+  .slider-header-{{ section.id }} h2 {
+    font-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+    font-size: 32px !important;
+    margin: 0 0 10px 0;
+    color: var(--text-color);
+    line-height: 1.2;
+    font-weight: 400 !important;
+  }
+
+  .slider-header-{{ section.id }} p {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
+  .product-track-wrapper {
+    position: relative;
+  }
+
+  .swiper-container-{{ section.id }} {
+    width: 100%;
+    padding-bottom: 20px;
+    overflow: visible;
+  }
+
+  .swiper-container-{{ section.id }} .swiper-wrapper {
+    align-items: stretch !important;
+  }
+
+  .swiper-container-{{ section.id }} .swiper-slide {
+    height: auto !important;
+    width: 320px !important;
+  }
+
+  .product-item-{{ section.id }} {
+    width: 100%;
+    display: block;
+  }
+
+  .product-image-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .product-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-content-{{ section.id }} {
+    display: block;
+  }
+
+  .nav-btn-{{ section.id }} {
+    position: absolute;
+    top: 40%; 
+    background: #ffffff;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+  }
+
+  .nav-btn-{{ section.id }} svg { 
+    width: 16px; 
+    height: 16px; 
+    fill: var(--text-color); 
+  }
+
+  .nav-btn-{{ section.id }}:hover { 
+    background-color: var(--hover-accent); 
+    color: #ffffff; 
+  }
+
+  .nav-btn-{{ section.id }}:hover svg { 
+    fill: #ffffff; 
+  }
+
+  .btn-prev-{{ section.id }} { 
+    left: 0; 
+  }
+
+  .btn-next-{{ section.id }} { 
+    right: 0; 
+  }
+
+  .swiper-button-disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  .swiper-button-disabled:hover {
+    background-color: #ffffff !important;
+  }
+  
+  .swiper-button-disabled:hover svg {
+    fill: var(--text-color) !important;
+  }
+
+  .manual-stars { 
+    color: var(--accent-color); 
+    font-size: 14px; 
+    margin-bottom: 6px; 
+    display: block; 
+  }
+  
+  .product-meta-{{ section.id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    min-height: 40px;
+  }
+  
+  .product-meta-{{ section.id }} span:first-child {
+    flex: 1;
+    padding-right: 10px;
+  }
+
+  .atc-btn-{{ section.id }} {
+    width: 100%;
+    background: transparent;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    padding: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    cursor: pointer;
+    transition: color 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  }
+
+  .atc-btn-{{ section.id }}::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 0%; height: 100%;
+    background: var(--accent-color);
+    z-index: -1;
+    transition: width 0.4s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  }
+
+  .atc-btn-{{ section.id }}:hover { 
+    color: #ffffff; 
+  }
+
+  .atc-btn-{{ section.id }}:hover::before { 
+    width: 100%; 
+  }
+
+  @media screen and (max-width: 1024px) {
+    .split-wrapper-{{ section.id }} { 
+      flex-direction: column; 
+      padding: 0 20px; 
+    }
+    
+    .hero-side-{{ section.id }} { 
+      flex: 0 0 auto; 
+      min-height: 400px; 
+    }
+    
+    .hero-side-{{ section.id }}__content {
+      padding: 20px;
+    }
+
+    .hero-side-{{ section.id }}__text {
+      font-size: 20px !important;
+      margin-bottom: 15px;
+    }
+
+    .slider-header-{{ section.id }} h2 {
+      font-size: 32px !important;
+    }
+
+    .slider-header-{{ section.id }} p {
+      font-size: 14px !important;
+    }
+
+    .product-image-container {
+      height: 350px;
+    }
+
+    .product-meta-{{ section.id }} {
+      font-size: 13px !important;
+    }
+
+    .atc-btn-{{ section.id }} {
+      padding: 12px;
+      font-size: 11px !important;
+    }
+  }
+{%- endstyle -%}
+
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.css">
+
+<section class="section-{{ section.id }}">
+  <div class="split-wrapper-{{ section.id }}">
+    
+    <div class="hero-side-{{ section.id }}">
+      {% if section.settings.left_image != blank %}
+        <img src="{{ section.settings.left_image | image_url: width: 1200 }}" class="hero-side-{{ section.id }}__img" loading="lazy">
+      {% endif %}
+      <div class="hero-side-{{ section.id }}__content">
+        <p class="hero-side-{{ section.id }}__text">{{ section.settings.image_text }}</p>
+        <a href="{{ section.settings.btn_url }}" class="atc-btn-{{ section.id }}" style="color:#fff; border-color:#fff; display:inline-block; width:auto; padding: 12px 30px; text-decoration:none;">
+          {{ section.settings.btn_label }}
+        </a>
+      </div>
+    </div>
+
+    <div class="slider-side-{{ section.id }}">
+      <div class="slider-header-{{ section.id }}">
+        <h2>{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.subtext }}</p>
+        <a href="{{ section.settings.collection.url }}" class="shop-all-link" style="text-decoration:none; font-weight:700; border-bottom:2px solid var(--text-color); color:var(--text-color); text-transform:uppercase; font-size:12px; padding-bottom:3px;">Shop All</a>
+      </div>
+
+      <div class="product-track-wrapper" style="position:relative; ">
+        <button id="Prev-{{ section.id }}" class="nav-btn-{{ section.id }} btn-prev-{{ section.id }}" style="left: 0;">
+          <svg viewBox="0 0 100 100"><path d="M60.2,2.5L22.7,40c-5.5,5.5-5.5,14.5,0,20l37.5,37.5c1.4,1.4,3.5,1.4,4.9,0s1.4-3.5,0-4.9L27.6,50l37.5-37.5 c1.4-1.4,1.4-3.5,0-4.9S61.6,1.1,60.2,2.5z"></path></svg>
+        </button>
+
+        <div class="swiper-container-{{ section.id }}">
+          <div class="swiper-wrapper">
+            {%- for product in section.settings.collection.products limit: 12 -%}
+              <div class="swiper-slide">
+                <div class="product-item-{{ section.id }}">
+                  <div class="product-image-container">
+                    <a href="{{ product.url }}">
+                      <img src="{{ product.featured_image | image_url: width: 800 }}" alt="{{ product.title }}">
+                    </a>
+                  </div>
+                  <div class="product-content-{{ section.id }}">
+                    <span class="manual-stars">★★★★★</span>
+                    <div class="product-meta-{{ section.id }}">
+                      <span>{{ product.title }}</span>
+                      <span>{{ product.price | money_without_trailing_zeros }}</span>
+                    </div>
+                    
+                    <form action="/cart/add" method="post" enctype="multipart/form-data" class="slider-atc-form">
+                      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                      <input type="hidden" name="quantity" value="1">
+                      <button type="submit" class="atc-btn-{{ section.id }}">Add to Cart</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <button id="Next-{{ section.id }}" class="nav-btn-{{ section.id }} btn-next-{{ section.id }}" style="right: 0;">
+          <svg viewBox="0 0 100 100"><path d="M39.8,97.5l37.5-37.5c5.5-5.5,5.5-14.5,0-20L39.8,2.5c-1.4-1.4-3.5-1.4-4.9,0s-1.4,3.5,0,4.9L72.4,50L34.9,87.5 c-1.4,1.4-1.4,3.5,0,4.9S38.4,98.9,39.8,97.5z"></path></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Swiper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
+
+<script>
+(function() {
+  const sectionId = '{{ section.id }}';
+  
+  const swiper = new Swiper('.swiper-container-' + sectionId, {
+    slidesPerView: 'auto',
+    spaceBetween: 24,
+    grabCursor: true,
+    freeMode: false,
+    navigation: {
+      nextEl: '#Next-' + sectionId,
+      prevEl: '#Prev-' + sectionId,
+    },
+    breakpoints: {
+      320: {
+        slidesPerView: 1.2,
+        spaceBetween: 16,
+      },
+      640: {
+        slidesPerView: 2,
+        spaceBetween: 20,
+      },
+      1024: {
+        slidesPerView: 3,
+        spaceBetween: 24,
+      }
+    }
+  });
+
+  // Add to cart functionality
+  document.querySelectorAll('.slider-atc-form').forEach(form => {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button');
+      const originalText = btn.innerText;
+      btn.innerText = 'Adding...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+          method: 'POST',
+          body: new FormData(form)
+        });
+
+        if (response.ok) {
+          const cart = await response.json();
+          document.documentElement.dispatchEvent(new CustomEvent('cart:updated', { 
+            bubbles: true, 
+            detail: { cart: cart } 
+          }));
+          window.location.href = window.Shopify.routes.root + 'cart';
+        } else {
+          throw new Error('Add to cart failed');
+        }
+      } catch (err) {
+        console.error('Ajax Error:', err);
+        btn.innerText = 'Error';
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }, 2000);
+      }
+    };
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Slider With Redirect V3",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#000000" },
+    { "type": "image_picker", "id": "left_image", "label": "Hero Image" },
+    { "type": "textarea", "id": "image_text", "label": "Hero Text" },
+    { "type": "text", "id": "btn_label", "label": "Hero Button Label", "default": "Shop Now" },
+    { "type": "url", "id": "btn_url", "label": "Hero Link" },
+    { "type": "inline_richtext", "id": "heading", "label": "Heading", "default": "Best Sellers" },
+    { "type": "textarea", "id": "subtext", "label": "Subtext", "default": "Our top beauty picks." },
+    { "type": "collection", "id": "collection", "label": "Collection" }
+  ],
+  "presets": [{ "name": "Slider With Redirect V3" }]
+}
+{% endschema %}
