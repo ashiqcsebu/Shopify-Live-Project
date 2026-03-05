@@ -1,0 +1,447 @@
+
+https://prnt.sc/gapUX09XUYxS
+
+{%- style -%}
+  .collection-carousel-wrapper {
+    overflow: hidden;
+    padding: 40px 0px 60px 0px;
+    background-color: {{ section.settings.bg_color }};
+  }
+
+  .carousel-title-wrapper {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 0 20px;
+  }
+
+  .carousel-main-title {
+    color: {{ section.settings.title_color }};
+    margin: 0;
+   font-size: 32px !important;
+    font-weight: 500 !important;
+  }
+
+  .carousel-container {
+    display: flex;
+    overflow-x: hidden;
+    white-space: nowrap;
+    position: relative;
+    padding: 10px 0;
+  }
+
+  .carousel-track {
+    display: flex;
+    animation: scroll {{ section.settings.scroll_speed }}s linear infinite;
+    gap: {{ section.settings.gap }}px;
+    will-change: transform;
+  }
+
+  .carousel-container:hover .carousel-track {
+    animation-play-state: paused;
+  }
+
+  .collection-item {
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    min-width: fit-content;
+    padding: 10px 30px 10px 10px;
+    border-radius: 100px;
+    border: 1px solid #F8B4B7;
+    background: #FFFFFF;
+    cursor: pointer;
+    text-decoration: none;
+    gap: 15px;
+    overflow: hidden;
+    transition: border-color 0.4s ease;
+  }
+
+  .collection-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: {{ section.settings.hover_bg_color }};
+    transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+  }
+
+  .collection-item:hover::before {
+    left: 0;
+  }
+
+  .collection-item:hover {
+    border-color: {{ section.settings.hover_bg_color }};
+  }
+
+  .collection-image-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #f5f5f5;
+    position: relative;
+    z-index: 2;
+  }
+
+  .collection-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .collection-title {
+    color: {{ section.settings.text_color }};
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 0.4s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .collection-item:hover .collection-title {
+    color: #FFFFFF;
+  }
+
+  /* Products Display Section */
+  .products-display-section {
+    padding: 40px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .products-section-title {
+    text-align: center;
+    color: {{ section.settings.title_color }};
+    margin-bottom: 40px;
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .product-card {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    display: block;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .product-image-container {
+    width: 100%;
+    padding-top: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #f9f9f9;
+  }
+
+  .product-image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-info {
+    padding: 20px;
+  }
+
+  .product-name {
+    color: {{ section.settings.text_color }};
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-price {
+    color: {{ section.settings.hover_bg_color }};
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .no-products-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 18px;
+  }
+
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @media (max-width: 768px) {
+    .collection-image-wrapper { width: 40px; height: 40px; }
+    .collection-item { padding: 8px 20px 8px 8px; }
+    .collection-title { font-size: 14px; }
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    .product-info {
+      padding: 15px;
+    }
+    .product-name {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .collection-carousel-wrapper {
+      padding: 20px 0px 30px 0px;
+    }
+    .carousel-title-wrapper {
+      margin-bottom: 20px;
+    }
+    .carousel-main-title {
+      font-size: 24px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="collection-carousel-wrapper">
+  {%- if section.settings.section_title != blank -%}
+    <div class="carousel-title-wrapper">
+      <h2 class="carousel-main-title">{{ section.settings.section_title }}</h2>
+    </div>
+  {%- endif -%}
+  
+  <div class="carousel-container">
+    <div class="carousel-track">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.collection != blank -%}
+          {%- assign collection = collections[block.settings.collection] -%}
+          <a href="{{ collection.url }}" class="collection-item" {{ block.shopify_attributes }}>
+            <div class="collection-image-wrapper">
+              {%- if collection.featured_image != blank -%}
+                <img src="{{ collection.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- elsif collection.products.first.featured_image != blank -%}
+                <img src="{{ collection.products.first.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <h3 class="collection-title">{{ collection.title }}</h3>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+      
+      {% comment %} First Duplicate Set {% endcomment %}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.collection != blank -%}
+          {%- assign collection = collections[block.settings.collection] -%}
+          <a href="{{ collection.url }}" class="collection-item" aria-hidden="true">
+            <div class="collection-image-wrapper">
+              {%- if collection.featured_image != blank -%}
+                <img src="{{ collection.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- elsif collection.products.first.featured_image != blank -%}
+                <img src="{{ collection.products.first.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <h3 class="collection-title">{{ collection.title }}</h3>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {% comment %} Second Duplicate Set {% endcomment %}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.collection != blank -%}
+          {%- assign collection = collections[block.settings.collection] -%}
+          <a href="{{ collection.url }}" class="collection-item" aria-hidden="true">
+            <div class="collection-image-wrapper">
+              {%- if collection.featured_image != blank -%}
+                <img src="{{ collection.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- elsif collection.products.first.featured_image != blank -%}
+                <img src="{{ collection.products.first.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <h3 class="collection-title">{{ collection.title }}</h3>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {% comment %} Third Duplicate Set {% endcomment %}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.collection != blank -%}
+          {%- assign collection = collections[block.settings.collection] -%}
+          <a href="{{ collection.url }}" class="collection-item" aria-hidden="true">
+            <div class="collection-image-wrapper">
+              {%- if collection.featured_image != blank -%}
+                <img src="{{ collection.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- elsif collection.products.first.featured_image != blank -%}
+                <img src="{{ collection.products.first.featured_image | image_url: width: 200 }}" alt="{{ collection.title | escape }}" loading="lazy">
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <h3 class="collection-title">{{ collection.title }}</h3>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% comment %} Products Display Section {% endcomment %}
+{%- if section.settings.selected_collection != blank -%}
+  {%- assign selected_collection = collections[section.settings.selected_collection] -%}
+  <div class="products-display-section">
+    <h2 class="products-section-title">{{ selected_collection.title }}</h2>
+    
+    {%- if selected_collection.products.size > 0 -%}
+      <div class="products-grid">
+        {%- for product in selected_collection.products limit: section.settings.products_limit -%}
+          <a href="{{ product.url }}" class="product-card">
+            <div class="product-image-container">
+              {%- if product.featured_image != blank -%}
+                <img src="{{ product.featured_image | image_url: width: 500 }}" 
+                     alt="{{ product.featured_image.alt | default: product.title | escape }}" 
+                     loading="lazy">
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {%- endif -%}
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">{{ product.title }}</h3>
+              <p class="product-price">{{ product.price | money }}</p>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <p class="no-products-message">No products found in this collection.</p>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Animated Hover Carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Shop By Category"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#0b232e"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color (Normal)",
+      "default": "#0b232e"
+    },
+    {
+      "type": "color",
+      "id": "hover_bg_color",
+      "label": "Hover Fill Color",
+      "default": "#0b232e"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 10,
+      "max": 100,
+      "step": 2,
+      "unit": "s",
+      "label": "Scroll Speed",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Item Gap",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Products Display Settings"
+    },
+    {
+      "type": "collection",
+      "id": "selected_collection",
+      "label": "Select Collection to Display Products"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 4,
+      "max": 50,
+      "step": 2,
+      "label": "Number of Products to Show",
+      "default": 12
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection Item",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Animated Hover Carousel",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}
