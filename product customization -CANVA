@@ -1,0 +1,1068 @@
+{% schema %}
+{
+  "name": "Apparel Studio Designer",
+  "settings": [
+    { "type": "header", "content": "Text Settings" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Custom Apparel Studio" },
+    { "type": "font_picker", "id": "heading_font", "label": "Heading Font", "default": "sans-serif" },
+    { "type": "font_picker", "id": "body_font", "label": "Body Font", "default": "sans-serif" },
+    
+    { "type": "header", "content": "Color Settings" },
+    { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#ffffff" },
+    { "type": "color", "id": "card_color", "label": "Card Background", "default": "#ffffff" },
+    { "type": "color", "id": "card_alt_color", "label": "Secondary Background (Tabs/Buttons)", "default": "#f3f4f6" },
+    { "type": "color", "id": "accent_color", "label": "Primary Accent (Buttons/Highlights)", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Primary Text", "default": "#111827" },
+    { "type": "color", "id": "muted_color", "label": "Muted Text/Icons", "default": "#6b7280" },
+    { "type": "color", "id": "border_color", "label": "Border Color", "default": "#e5e7eb" },
+    { "type": "color", "id": "canvas_bg_color", "label": "Canvas Area Background", "default": "#f9fafb" },
+    
+    { "type": "header", "content": "Fallback Images" },
+    { "type": "image_picker", "id": "fallback_image", "label": "Fallback Product Image", "info": "Used if the product has no images." },
+
+    { "type": "header", "content": "Customization Fees (Add-ons)" },
+    { "type": "paragraph", "content": "Select a product whose variants will be used as add-on fees." },
+    { "type": "product", "id": "addon_product", "label": "Select Add-on Product" }
+  ],
+  "blocks": [
+    {
+      "type": "custom_field",
+      "name": "Custom Input Field",
+      "limit": 5,
+      "settings": [
+        { "type": "text", "id": "field_label", "label": "Field Label", "default": "Instructions or Link" },
+        { "type": "select", "id": "field_type", "label": "Field Type", "options": [ { "value": "text", "label": "Single Line Text" }, { "value": "textarea", "label": "Multi-line Text Area" } ], "default": "text" },
+        { "type": "checkbox", "id": "field_required", "label": "Make this field required", "default": false },
+        { "type": "text", "id": "field_placeholder", "label": "Placeholder Text", "default": "Enter your details here..." }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Apparel Studio Designer" }
+  ]
+}
+{% endschema %}
+
+{% style %}
+  {{ section.settings.heading_font | font_face: font_display: 'swap' }}
+  {{ section.settings.body_font | font_face: font_display: 'swap' }}
+
+  .designer-container {
+    --color-bg: {{ section.settings.bg_color }};
+    --color-card: {{ section.settings.card_color }};
+    --color-card-alt: {{ section.settings.card_alt_color }};
+    --color-accent: {{ section.settings.accent_color }};
+    --color-txt: {{ section.settings.text_color }};
+    --color-muted: {{ section.settings.muted_color }};
+    --color-border: {{ section.settings.border_color }};
+    --color-canvas: {{ section.settings.canvas_bg_color }};
+    
+    --font-heading: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    --font-body: {{ section.settings.body_font.family }}, {{ section.settings.body_font.fallback_families }};
+    
+    background-color: var(--color-bg);
+    font-family: var(--font-body);
+  }
+
+  .designer-heading { font-family: var(--font-heading); }
+{% endstyle %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Playfair+Display:wght@400;700&family=Bebas+Neue&family=Dancing+Script:wght@400;700&family=Oswald:wght@400;700&family=Lobster&family=Permanent+Marker&family=Roboto+Slab:wght@400;700&family=Pacifico&family=Caveat:wght@400;700&family=Montserrat:wght@400;700&family=Raleway:wght@400;700&family=Merriweather:wght@400;700&family=Poppins:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+  /* Base Reset & Variables */
+  .designer-container * { box-sizing: border-box; }
+  .designer-container { position: relative; min-height: 100vh; padding-top: 2rem; padding-bottom: 3rem; color: var(--color-txt); }
+  .designer-page-width { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+  
+  /* Utilities */
+  .hidden { display: none !important; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .text-center { text-align: center; }
+  .w-full { width: 100%; }
+  
+  /* Toast Container */
+  .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+  .toast { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.25rem; border-radius: 0.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); color: #fff; font-weight: 700; font-size: 0.875rem; animation: slideIn .3s ease, fadeOut .3s ease 2.7s forwards; }
+  .toast.success { background-color: #16a34a; }
+  .toast.error { background-color: #dc2626; }
+  @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } } 
+  @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
+
+  /* Header Section */
+  .designer-header { margin-bottom: 2rem; text-align: center; }
+  .designer-subtitle { color: var(--color-muted); font-size: 0.875rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; margin-top: 0; }
+  .designer-heading { font-size: 2.25rem; font-weight: 700; line-height: 1.25; margin: 0; color: var(--color-txt); }
+  .price-wrap { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1rem; }
+  .price-main { font-size: 1.875rem; font-weight: 700; color: var(--color-accent); }
+  .price-compare { color: var(--color-muted); font-size: 1.125rem; text-decoration: line-through; }
+  .price-badge { background-color: var(--color-accent); color: var(--color-card); font-size: 0.75rem; font-weight: 700; padding: 0.375rem 0.75rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.025em; }
+
+  /* Grid Layout */
+  .designer-grid { display: grid; gap: 2rem; }
+  .designer-col-left { display: flex; flex-direction: column; }
+  .designer-col-right { display: flex; flex-direction: column; }
+
+  /* Left Side: Canvas & Controls */
+  .view-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .area-tab { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 700; background: var(--color-card); border: 1px solid var(--color-border); color: var(--color-txt); box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); cursor: pointer; display: flex; align-items: center; transition: all .2s ease; }
+  .area-tab i { margin-right: 0.5rem; }
+  .area-tab.active { background: var(--color-accent); color: var(--color-card); border-color: var(--color-accent); }
+  
+  .canvas-wrap { flex-grow: 1; position: relative; background: var(--color-canvas); border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--color-border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+  .canvas-wrap canvas { display: block; width: 100% !important; height: auto !important; }
+  
+  .canvas-controls { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.75rem; margin-top: 1.25rem; }
+  .btn-control { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1rem; border-radius: 0.5rem; border: 1px solid var(--color-border); font-size: 1rem; font-weight: 500; color: var(--color-txt); background: transparent; cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); transition: all 0.2s; }
+  .btn-control:hover { background-color: var(--color-card-alt); }
+  .btn-control.btn-delete:hover { background-color: #fef2f2; border-color: #fecaca; color: #dc2626; }
+  .btn-control i.icon-muted { color: var(--color-muted); }
+  .control-divider { width: 1px; height: 2rem; background-color: var(--color-border); margin: 0 0.25rem; }
+  .control-spacer { flex: 1; display: none; }
+  .btn-preview { width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 2rem; border-radius: 0.5rem; background-color: var(--color-accent); color: var(--color-card); font-size: 0.875rem; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: opacity 0.2s; margin-top: 0.5rem; }
+  .btn-preview:hover { opacity: 0.9; }
+  .btn-label { display: none; }
+
+  /* Right Side: Properties Panel */
+  .controls-scroll { background-color: var(--color-card); border-radius: 0.75rem; border: 1px solid var(--color-border); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow-y: auto; max-height: calc(100vh - 120px); }
+  .controls-scroll::-webkit-scrollbar { width: 5px; } 
+  .controls-scroll::-webkit-scrollbar-track { background: transparent; } 
+  .controls-scroll::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; } 
+  .controls-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
+  
+  .controls-inner { padding: 1.5rem; display: flex; flex-direction: column; gap: 2rem; }
+  .section-title { font-size: 1rem; font-weight: 700; color: var(--color-txt); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 1.25rem 0; display: flex; align-items: center; gap: 0.5rem; }
+  .section-title i { color: var(--color-muted); }
+  
+  hr.custom-hr { border: none; border-top: 1px solid var(--color-border); margin: 0; }
+
+  /* Variants */
+  .variant-group { margin-bottom: 1.5rem; }
+  .variant-label { display: block; font-size: 0.875rem; font-weight: 700; color: var(--color-txt); margin-bottom: 0.75rem; }
+  .variant-options { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  
+  .variant-pill { padding: 0.625rem 1.25rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-card); color: var(--color-txt); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; min-width: 60px; text-align: center; } 
+  .variant-pill:hover { border-color: var(--color-txt); } 
+  .variant-pill.active { background: var(--color-txt); color: var(--color-card); border-color: var(--color-txt); }
+  
+  .color-swatch-modern { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--color-border); cursor: pointer; transition: all 0.2s ease; position: relative; } 
+  .color-swatch-modern:hover { transform: scale(1.05); } 
+  .color-swatch-modern.active { border-color: var(--color-txt); outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  /* Add Elements Grid */
+  .add-elements-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .btn-add-element { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.875rem 1rem; border-radius: 0.5rem; background-color: var(--color-card-alt); border: 1px solid var(--color-border); font-size: 0.8125rem; font-weight: 700; color: var(--color-txt); cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); transition: all 0.2s; }
+  .btn-add-element:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .btn-add-element i { font-size: 1.125rem; }
+
+  .upload-zone { margin-top: 1.25rem; padding: 2rem; border: 2px dashed var(--color-border); border-radius: 0.75rem; transition: all .2s ease; background: var(--color-card-alt); text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; } 
+  .upload-zone:hover { border-color: var(--color-accent); background: var(--color-card); }
+  .upload-icon-wrap { width: 4rem; height: 4rem; border-radius: 9999px; background-color: var(--color-card); display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); border: 1px solid var(--color-border); }
+  .upload-icon-wrap i { font-size: 1.5rem; color: var(--color-accent); }
+  .upload-title { font-size: 0.875rem; color: var(--color-txt); font-weight: 700; margin: 0; }
+  .upload-subtitle { font-size: 0.75rem; color: var(--color-muted); font-weight: 500; margin-top: 0.5rem; margin-bottom: 0; }
+
+  /* Editing Properties */
+  .props-panel { background-color: var(--color-card-alt); padding: 1.25rem; border-radius: 0.75rem; border: 1px solid var(--color-border); }
+  .props-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .props-title { font-size: 0.875rem; font-weight: 700; color: var(--color-txt); text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+  .props-badge { font-size: 0.75rem; background-color: var(--color-accent); color: var(--color-card); font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; }
+  
+  .prop-group { margin-bottom: 1.25rem; }
+  .prop-label { font-size: 0.75rem; font-weight: 700; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: block; }
+  .prop-row { display: flex; gap: 1rem; margin-bottom: 1.25rem; }
+  .prop-col { flex: 1; }
+  .prop-label-flex { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  .prop-val-badge { font-size: 0.75rem; background-color: var(--color-card); padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--color-border); font-family: monospace; font-weight: 700; }
+  
+  .align-group { display: flex; gap: 0.25rem; height: 44px; background-color: var(--color-card); padding: 0.25rem; border-radius: 0.5rem; border: 1px solid var(--color-border); box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
+  .align-btn { flex: 1; border-radius: 0.25rem; color: var(--color-muted); background: transparent; border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .align-btn:hover { color: var(--color-txt); }
+  .align-btn.active { background-color: var(--color-card-alt); color: var(--color-txt); }
+
+  /* Inputs & Selects */
+  .custom-input-modern { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--color-border); border-radius: 0.5rem; font-size: 0.875rem; transition: border-color 0.2s ease; background: var(--color-card); color: var(--color-txt); font-family: inherit; } 
+  .custom-input-modern:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 1px var(--color-accent); }
+  
+  .designer-select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background: var(--color-card); color: var(--color-txt); font-size: 0.875rem; font-family: inherit; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; transition: border-color 0.2s ease; } 
+  .designer-select:focus { border-color: var(--color-accent); outline: none; box-shadow: 0 0 0 1px var(--color-accent); }
+  
+  .designer-container input[type="range"] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: var(--color-border); outline: none; width: 100%; margin: 10px 0; } 
+  .designer-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--color-accent); cursor: pointer; border: 2px solid var(--color-card); box-shadow: 0 2px 4px rgba(0,0,0,.2); transition: transform 0.1s; } 
+  .designer-container input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+  
+  .designer-container input[type="color"] { -webkit-appearance: none; border: 1px solid var(--color-border); border-radius: 0.5rem; width: 100%; height: 44px; cursor: pointer; padding: 2px; background: var(--color-card); } 
+  .designer-container input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; } 
+  .designer-container input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+
+  .checkbox-modern { width: 20px; height: 20px; accent-color: var(--color-accent); cursor: pointer; margin-right: 0.5rem; }
+
+  /* Sub-panels for effects */
+  .effect-panel { background: var(--color-card); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--color-border); margin-bottom: 1rem; }
+  .effect-panel-title { font-size: 0.8125rem; font-weight: 700; margin-top: 0; margin-bottom: 1rem; color: var(--color-txt); border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; }
+
+  /* Layer Controls */
+  .layer-controls { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+  .btn-layer { flex: 1; padding: 0.5rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; background: var(--color-card); border: 1px solid var(--color-border); border-radius: 0.5rem; cursor: pointer; transition: 0.2s; color: var(--color-txt); }
+  .btn-layer:hover { background: var(--color-card-alt); border-color: var(--color-accent); }
+
+  /* Cart & Addons */
+  .custom-field-group { margin-bottom: 1.25rem; }
+  .field-label { font-size: 0.75rem; font-weight: 700; color: var(--color-txt); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: block; }
+  .required-star { color: #ef4444; }
+
+  .addon-section { margin-bottom: 2rem; }
+  .addon-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .addon-item { border: 1px solid var(--color-border); border-radius: 0.625rem; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; background: var(--color-card); }
+  .addon-item:hover { border-color: var(--color-muted); }
+  .addon-item.selected { border-color: var(--color-accent); background: var(--color-card-alt); box-shadow: 0 0 0 1px var(--color-accent); }
+  .addon-item-left { display: flex; align-items: center; gap: 0.75rem; }
+  .addon-checkbox { width: 20px; height: 20px; accent-color: var(--color-accent); cursor: pointer; }
+  .addon-label { font-size: 0.8125rem; font-weight: 700; color: var(--color-txt); }
+  .addon-price { font-size: 0.875rem; font-weight: 700; color: var(--color-muted); }
+
+  .qty-total-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; margin-top: 2rem; }
+  .qty-label { font-size: 1rem; font-weight: 700; color: var(--color-txt); text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+  .qty-control { display: flex; align-items: center; gap: 1rem; border: 1px solid var(--color-border); border-radius: 0.5rem; background-color: var(--color-card); padding: 0 0.5rem; }
+  .qty-btn { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; color: var(--color-muted); background: transparent; border: none; cursor: pointer; font-size: 1.25rem; font-weight: 500; transition: color 0.2s; }
+  .qty-btn:hover { color: var(--color-txt); }
+  .qty-input { width: 2rem; text-align: center; font-size: 1rem; font-weight: 700; background: transparent; border: none; padding: 0; color: var(--color-txt); pointer-events: none; }
+  
+  .total-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--color-border); }
+  .total-label { font-size: 1rem; font-weight: 700; color: var(--color-txt); text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+  .total-price { font-size: 1.5rem; font-weight: 700; color: var(--color-accent); margin: 0; }
+
+  .btn-submit { width: 100%; padding: 1rem; border-radius: 0.75rem; background-color: var(--color-accent); color: var(--color-card); font-weight: 700; font-size: 1.125rem; border: none; cursor: pointer; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 0.75rem; transition: all 0.2s; }
+  .btn-submit:hover { opacity: 0.9; }
+  .btn-submit:active { transform: scale(0.98); }
+
+  /* Preview Modal */
+  .preview-modal { position: fixed; inset: 0; z-index: 9000; }
+  .modal-overlay { position: absolute; inset: 0; backdrop-filter: blur(6px); background-color: rgba(0,0,0,0.6); }
+  .modal-wrap { position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; }
+  .modal-content { background-color: var(--color-card); border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); max-width: 56rem; width: 100%; overflow: hidden; border: 1px solid var(--color-border); }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; border-bottom: 1px solid var(--color-border); background-color: var(--color-card-alt); }
+  .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--color-txt); margin: 0; }
+  .btn-close-modal { width: 2.5rem; height: 2.5rem; border-radius: 9999px; background-color: var(--color-card); display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-border); cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); transition: all 0.2s; }
+  .btn-close-modal:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .modal-body { padding: 2rem; }
+  .preview-grid { display: flex; flex-direction: column; gap: 2rem; }
+  .preview-col { flex: 1; }
+  .preview-label { font-size: 1rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 1rem; text-align: center; margin-top: 0; }
+  .preview-img { width: 100%; border-radius: 0.75rem; border: 1px solid var(--color-border); background-color: var(--color-canvas); box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); display: block; }
+
+  /* Media Queries */
+  @media (min-width: 640px) {
+    .btn-label { display: inline; }
+    .preview-grid { flex-direction: row; }
+  }
+  @media (min-width: 1024px) {
+    .designer-header { text-align: left; margin-bottom: 3rem; }
+    .designer-heading { font-size: 3rem; }
+    .price-wrap { justify-content: flex-start; }
+    .designer-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3rem; }
+    .designer-col-left { grid-column: span 7 / span 7; }
+    .designer-col-right { grid-column: span 5 / span 5; }
+    .view-tabs { justify-content: flex-start; }
+    .canvas-controls { justify-content: flex-start; }
+    .control-spacer { display: block; }
+    .btn-preview { width: auto; margin-top: 0; }
+    .controls-inner { padding: 2rem; }
+  }
+</style>
+
+<div class="designer-container">
+  <div id="toast-container" class="toast-container"></div>
+
+  <div class="designer-page-width">
+    <header class="designer-header">
+      <p class="designer-subtitle">{{ section.settings.subtitle }}</p>
+      <h1 class="designer-heading">{{ product.title }}</h1>
+      <div class="price-wrap">
+        <span class="price-main" id="dynamic-price">{{ product.price | money }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span class="price-compare">{{ product.compare_at_price | money }}</span>
+          <span class="price-badge">SALE</span>
+        {% endif %}
+      </div>
+    </header>
+
+    <div class="designer-grid">
+      <div class="designer-col-left">
+        <div class="view-tabs">
+          <button class="area-tab active" data-area="front"><i class="fa-solid fa-shirt"></i>Front View</button>
+          <button class="area-tab" data-area="back"><i class="fa-solid fa-rotate"></i>Back View</button>
+        </div>
+
+        <div class="canvas-wrap" id="canvas-container">
+          <canvas id="design-canvas" width="100%" height="750"></canvas>
+        </div>
+
+        <div class="canvas-controls">
+          <button onclick="undo()" class="btn-control" title="Undo"><i class="fa-solid fa-rotate-left icon-muted"></i><span class="btn-label">Undo</span></button>
+          <button onclick="redo()" class="btn-control" title="Redo"><i class="fa-solid fa-rotate-right icon-muted"></i><span class="btn-label">Redo</span></button>
+          <div class="control-divider"></div>
+          <button onclick="deleteSelected()" class="btn-control btn-delete" title="Delete"><i class="fa-solid fa-trash-can"></i><span class="btn-label">Delete</span></button>
+          <button onclick="clearCanvas()" class="btn-control" title="Clear"><i class="fa-solid fa-broom"></i><span class="btn-label">Clear All</span></button>
+          <div class="control-spacer"></div>
+          <button onclick="showPreview()" class="btn-preview" title="Preview Design"><i class="fa-solid fa-eye"></i>Preview Design</button>
+        </div>
+      </div>
+
+      <div class="designer-col-right">
+        <div class="controls-scroll">
+          <div class="controls-inner">
+
+            {% unless product.has_only_default_variant %}
+            <section>
+              <h3 class="section-title"><i class="fa-solid fa-sliders"></i> Product Options</h3>
+              {% for option in product.options_with_values %}
+                {% assign option_name_downcase = option.name | downcase %}
+                <div class="variant-group variant-wrapper" data-option-index="option{{ forloop.index }}">
+                  <label class="variant-label">{{ option.name }}</label>
+                  {% if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %}
+                    <div class="variant-options">
+                      {% for value in option.values %}
+                        {% assign css_color = value | downcase | replace: ' ', '' %}
+                        {% if css_color == 'navy' %}{% assign css_color = '#1e3a5f' %}{% endif %}{% if css_color == 'black' %}{% assign css_color = '#1a1a1a' %}{% endif %}{% if css_color == 'white' %}{% assign css_color = '#f5f5f0' %}{% endif %}{% if css_color == 'forest' %}{% assign css_color = '#1e5631' %}{% endif %}{% if css_color == 'charcoal' %}{% assign css_color = '#36454f' %}{% endif %}{% if css_color == 'burgundy' %}{% assign css_color = '#722f37' %}{% endif %}
+                        <button type="button" class="variant-btn color-swatch-modern {% if option.selected_value == value %}active{% endif %}" style="background-color: {{ css_color }};" data-value="{{ value | escape }}" title="{{ value }}"></button>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <div class="variant-options">
+                      {% for value in option.values %}
+                        <button type="button" class="variant-btn variant-pill {% if option.selected_value == value %}active{% endif %}" data-value="{{ value | escape }}">{{ value }}</button>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                  <select class="hidden-variant-select hidden" id="Option-{{ section.id }}-{{ forloop.index0 }}">
+                    {% for value in option.values %}<option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>{% endfor %}
+                  </select>
+                </div>
+              {% endfor %}
+            </section>
+            <hr class="custom-hr">
+            {% endunless %}
+
+            <script type="application/json" id="ProductJson-{{ section.id }}">{{ product.variants | json }}</script>
+
+            <section>
+              <h3 class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Add Elements</h3>
+              <div class="add-elements-grid">
+                <button onclick="addText()" class="btn-add-element"><i class="fa-solid fa-font"></i> Add Text</button>
+                <button onclick="addCurvedText()" class="btn-add-element"><i class="fa-solid fa-text-width"></i> Curved Text</button>
+              </div>
+              <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                <div class="upload-icon-wrap"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <p class="upload-title">Upload Image / Logo</p>
+                <p class="upload-subtitle">Supported: PNG, JPG, SVG (Max 5MB)</p>
+              </div>
+              <input type="file" id="file-input" accept="image/*" class="hidden">
+            </section>
+
+            <hr class="custom-hr">
+
+            <section id="props-panel" class="props-panel hidden">
+              <div class="props-header">
+                <h3 class="props-title">Properties</h3>
+                <span id="obj-type-badge" class="props-badge"></span>
+              </div>
+
+              <div class="layer-controls">
+                <button onclick="changeLayer('up')" class="btn-layer"><i class="fa-solid fa-arrow-up"></i> Forward</button>
+                <button onclick="changeLayer('down')" class="btn-layer"><i class="fa-solid fa-arrow-down"></i> Backward</button>
+              </div>
+
+              <div class="prop-group">
+                <div class="prop-label-flex">
+                  <label class="prop-label" style="margin-bottom:0">Opacity</label>
+                  <span id="prop-opacity-val" class="prop-val-badge">100%</span>
+                </div>
+                <input type="range" id="prop-opacity" min="0" max="1" step="0.1" value="1">
+              </div>
+
+              <div class="prop-group">
+                <div class="prop-label-flex">
+                  <label class="prop-label" style="margin-bottom:0">Rotation</label>
+                  <span id="prop-angle-val" class="prop-val-badge">0°</span>
+                </div>
+                <input type="range" id="prop-angle" min="0" max="360" value="0">
+              </div>
+
+              <div id="text-properties-wrapper">
+                <div id="prop-curved-content" class="prop-group hidden">
+                  <label class="prop-label">Text Content</label>
+                  <input type="text" id="prop-curved-text" maxlength="40" class="custom-input-modern">
+                </div>
+                <div class="prop-group">
+                  <label class="prop-label">Font Family</label>
+                  <select id="prop-font" class="designer-select">
+                    <option value="Space Grotesk">Space Grotesk</option>
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Bebas Neue">Bebas Neue</option>
+                    <option value="Dancing Script">Dancing Script</option>
+                    <option value="Oswald">Oswald</option>
+                    <option value="Lobster">Lobster</option>
+                    <option value="Permanent Marker">Permanent Marker</option>
+                    <option value="Roboto Slab">Roboto Slab</option>
+                    <option value="Pacifico">Pacifico</option>
+                    <option value="Caveat">Caveat</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Raleway">Raleway</option>
+                    <option value="Merriweather">Merriweather</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Inter">Inter</option>
+                  </select>
+                </div>
+                <div class="prop-group">
+                  <div class="prop-label-flex">
+                    <label class="prop-label" style="margin-bottom:0">Size</label>
+                    <span id="prop-size-val" class="prop-val-badge">24px</span>
+                  </div>
+                  <input type="range" id="prop-size" min="10" max="120" value="24">
+                </div>
+                
+                <div class="prop-row">
+                  <div class="prop-col">
+                    <label class="prop-label">Fill Color</label>
+                    <input type="color" id="prop-color" value="#121212">
+                  </div>
+                  <div id="prop-align-group" class="prop-col">
+                    <label class="prop-label">Alignment</label>
+                    <div class="align-group">
+                      <button onclick="setAlign('left')" class="align-btn" data-align="left"><i class="fa-solid fa-align-left"></i></button>
+                      <button onclick="setAlign('center')" class="align-btn active" data-align="center"><i class="fa-solid fa-align-center"></i></button>
+                      <button onclick="setAlign('right')" class="align-btn" data-align="right"><i class="fa-solid fa-align-right"></i></button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="prop-group flex items-center" style="gap: 0.5rem;">
+                   <input type="checkbox" id="prop-gradient-toggle" class="checkbox-modern">
+                   <label class="prop-label" style="margin:0;">Use Gradient Fill</label>
+                </div>
+                <div class="prop-group hidden" id="prop-gradient-wrapper">
+                  <label class="prop-label">Gradient Color 2</label>
+                  <input type="color" id="prop-gradient-color" value="#ff0000">
+                </div>
+
+                <div id="prop-curve-radius-group" class="prop-group hidden">
+                  <div class="prop-label-flex">
+                    <label class="prop-label" style="margin-bottom:0">Curve Direction & Radius</label>
+                    <span id="prop-radius-val" class="prop-val-badge">120</span>
+                  </div>
+                  <input type="range" id="prop-radius" min="-300" max="300" step="10" value="120">
+                </div>
+
+                <div class="effect-panel">
+                  <p class="effect-panel-title">Text Outline</p>
+                  <div class="prop-row">
+                    <div class="prop-col">
+                      <label class="prop-label">Color</label>
+                      <input type="color" id="prop-stroke-color" value="#000000">
+                    </div>
+                    <div class="prop-col">
+                      <div class="prop-label-flex">
+                        <label class="prop-label" style="margin:0;">Width</label>
+                        <span id="prop-stroke-width-val" class="prop-val-badge">0</span>
+                      </div>
+                      <input type="range" id="prop-stroke-width" min="0" max="10" value="0">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="effect-panel">
+                  <p class="effect-panel-title">Drop Shadow</p>
+                  <div class="prop-row">
+                    <div class="prop-col">
+                      <label class="prop-label">Shadow Color</label>
+                      <input type="color" id="prop-shadow-color" value="#000000">
+                    </div>
+                    <div class="prop-col">
+                      <div class="prop-label-flex">
+                        <label class="prop-label" style="margin:0;">Blur</label>
+                        <span id="prop-shadow-blur-val" class="prop-val-badge">0</span>
+                      </div>
+                      <input type="range" id="prop-shadow-blur" min="0" max="30" value="0">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="image-properties-wrapper" class="hidden">
+                 <div class="effect-panel">
+                  <p class="effect-panel-title">Image Filters</p>
+                  
+                  <div class="prop-group">
+                    <div class="prop-label-flex">
+                      <label class="prop-label" style="margin:0;">Brightness</label>
+                      <span id="prop-brightness-val" class="prop-val-badge">0</span>
+                    </div>
+                    <input type="range" id="prop-brightness" min="-1" max="1" step="0.1" value="0">
+                  </div>
+
+                  <div class="prop-group">
+                    <div class="prop-label-flex">
+                      <label class="prop-label" style="margin:0;">Contrast</label>
+                      <span id="prop-contrast-val" class="prop-val-badge">0</span>
+                    </div>
+                    <input type="range" id="prop-contrast" min="-1" max="1" step="0.1" value="0">
+                  </div>
+
+                  <div class="prop-group">
+                    <div class="prop-label-flex">
+                      <label class="prop-label" style="margin:0;">Saturation</label>
+                      <span id="prop-saturation-val" class="prop-val-badge">0</span>
+                    </div>
+                    <input type="range" id="prop-saturation" min="-1" max="1" step="0.1" value="0">
+                  </div>
+
+                  <div class="prop-group">
+                    <div class="prop-label-flex">
+                      <label class="prop-label" style="margin:0;">Blur</label>
+                      <span id="prop-blur-val" class="prop-val-badge">0</span>
+                    </div>
+                    <input type="range" id="prop-blur" min="0" max="1" step="0.1" value="0">
+                  </div>
+
+                  <div class="prop-group flex items-center" style="gap: 0.5rem; margin-top: 1rem;">
+                     <input type="checkbox" id="prop-grayscale" class="checkbox-modern">
+                     <label class="prop-label" style="margin:0;">Grayscale Filter</label>
+                  </div>
+                 </div>
+              </div>
+
+            </section>
+
+            <hr id="props-hr-divider" class="custom-hr hidden">
+
+            <section>
+              <form id="custom-design-cart-form" onsubmit="handleCartSubmit(event)">
+                <input type="hidden" id="selected-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+                
+                {% for block in section.blocks %}
+                  {% if block.type == 'custom_field' %}
+                    <div class="custom-field-group">
+                      <label class="field-label">
+                        {{ block.settings.field_label }} {% if block.settings.field_required %}<span class="required-star">*</span>{% endif %}
+                      </label>
+                      {% if block.settings.field_type == 'text' %}
+                        <input type="text" class="custom-input-modern custom-prop-input" data-label="{{ block.settings.field_label }}" placeholder="{{ block.settings.field_placeholder }}" {% if block.settings.field_required %}required{% endif %}>
+                      {% elsif block.settings.field_type == 'textarea' %}
+                        <textarea rows="3" class="custom-input-modern custom-prop-input" style="resize: vertical;" data-label="{{ block.settings.field_label }}" placeholder="{{ block.settings.field_placeholder }}" {% if block.settings.field_required %}required{% endif %}></textarea>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+
+                {% if section.settings.addon_product != blank %}
+                  {% assign addon_product = section.settings.addon_product %}
+                  <div class="addon-section">
+                    <h3 class="section-title"><i class="fa-solid fa-tags"></i> Additional Customization</h3>
+                    <div class="addon-list">
+                      {% for variant in addon_product.variants %}
+                        {% if variant.available %}
+                          <label class="addon-item">
+                            <div class="addon-item-left">
+                              <input type="checkbox" class="addon-checkbox" data-label="{{ variant.title }}" data-price="{{ variant.price }}" data-vid="{{ variant.id }}" onchange="toggleAddonUI(this)">
+                              <span class="addon-label">{{ variant.title }}</span>
+                            </div>
+                            <span class="addon-price">+{{ variant.price | money }}</span>
+                          </label>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endif %}
+
+                <div class="qty-total-row">
+                  <label class="qty-label">Quantity</label>
+                  <div class="qty-control">
+                    <button type="button" onclick="changeQty(-1)" class="qty-btn">−</button>
+                    <input type="number" id="quantity" value="1" min="1" max="99" class="qty-input" readonly>
+                    <button type="button" onclick="changeQty(1)" class="qty-btn">+</button>
+                  </div>
+                </div>
+
+                <div class="total-row">
+                  <span class="total-label">Estimated Total</span>
+                  <span class="total-price" id="subtotal-display">{{ product.price | money }}</span>
+                </div>
+
+                <button type="submit" id="add-to-cart-submit" class="btn-submit">
+                  <i class="fa-solid fa-cart-shopping"></i> Add To Cart
+                </button>
+              </form>
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="preview-modal" class="preview-modal hidden">
+  <div class="modal-overlay" onclick="closePreview()"></div>
+  <div class="modal-wrap">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Your Design Preview</h2>
+        <button onclick="closePreview()" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="preview-grid">
+          <div class="preview-col">
+            <p class="preview-label">Front View</p>
+            <img id="preview-front" class="preview-img" alt="Front preview">
+          </div>
+          <div class="preview-col">
+            <p class="preview-label">Back View</p>
+            <img id="preview-back" class="preview-img" alt="Back preview">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Format Money Helper
+const moneyFormat = '{{ shop.money_format }}';
+function formatMoney(cents) {
+  if (typeof cents == 'string') { cents = cents.replace('.', ''); }
+  let value = ''; const placeholderRegex = /\{\{\s*(\w+)\s*\}\}/; const formatString = moneyFormat;
+  function formatWithDelimiters(number, precision, thousands, decimal) {
+    precision = precision !== undefined ? precision : 2; thousands = thousands || ','; decimal = decimal || '.';
+    if (isNaN(number) || number == null) { return 0; }
+    number = (number / 100.0).toFixed(precision);
+    const parts = number.split('.'); const dollars = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands); const cents = parts[1] ? (decimal + parts[1]) : '';
+    return dollars + cents;
+  }
+  switch(formatString.match(placeholderRegex)[1]) {
+    case 'amount': value = formatWithDelimiters(cents, 2); break;
+    case 'amount_no_decimals': value = formatWithDelimiters(cents, 0); break;
+    case 'amount_with_comma_separator': value = formatWithDelimiters(cents, 2, '.', ','); break;
+    case 'amount_no_decimals_with_comma_separator': value = formatWithDelimiters(cents, 0, '.', ','); break;
+  }
+  return formatString.replace(placeholderRegex, value);
+}
+
+// Fabric Custom Class: Updated to support direction changes
+fabric.CurvedText = fabric.util.createClass(fabric.Object, {
+  type: 'curvedText', stateProperties: fabric.Object.prototype.stateProperties.concat('text','radius','spacing','fontFamily','fontSize','fill','fontWeight','fontStyle','stroke','strokeWidth','shadow'),
+  initialize: function(text, options) { options = options || {}; this.text = text || 'Curved Text'; this.radius = options.radius || 120; this.spacing = options.spacing || 5; this.fontFamily = options.fontFamily || 'Space Grotesk'; this.fontSize = options.fontSize || 24; this.fill = options.fill || '#121212'; this.fontWeight = options.fontWeight || 'normal'; this.fontStyle = options.fontStyle || 'normal'; this.stroke = options.stroke || null; this.strokeWidth = options.strokeWidth || 0; this.shadow = options.shadow || null; this.callSuper('initialize', options); this._calcBounds(); },
+  _calcBounds: function() { var c = document.createElement('canvas').getContext('2d'); c.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px ' + this.fontFamily; var chars = this.text.split(''); var tw = 0; chars.forEach(function(ch) { tw += c.measureText(ch).width + this.spacing; }.bind(this)); tw = Math.max(1, tw - this.spacing); var absRadius = Math.max(1, Math.abs(this.radius)); var totalAngle = tw / absRadius; var halfAngle = totalAngle / 2; var r = absRadius; var top = -r - this.fontSize * 0.6; var bottom = Math.sin(halfAngle) * r + this.fontSize * 0.6; var leftOff = -Math.cos(halfAngle) * r - this.fontSize * 0.5; var rightOff = Math.cos(halfAngle) * r + this.fontSize * 0.5; this.set({ width: Math.abs(leftOff) + Math.abs(rightOff), height: Math.abs(top) + Math.abs(bottom) }); },
+  _render: function(ctx) { 
+      var chars = this.text.split(''); if (!chars.length) return; 
+      ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px ' + this.fontFamily; 
+      var charWidths = []; var tw = 0; 
+      chars.forEach(function(ch) { var w = ctx.measureText(ch).width; charWidths.push(w); tw += w + this.spacing; }.bind(this)); 
+      tw = Math.max(1, tw - this.spacing); 
+      
+      var isReverse = this.radius < 0; // Check if curve is downwards
+      var r = Math.max(1, Math.abs(this.radius)); 
+      var totalAngle = tw / r; 
+      var startAngle = isReverse ? (Math.PI / 2 + totalAngle / 2) : (-Math.PI / 2 - totalAngle / 2); 
+      var curAngle = startAngle; 
+      
+      for (var i = 0; i < chars.length; i++) { 
+          var charAngle = charWidths[i] / r; 
+          var midAngle = isReverse ? (curAngle - charAngle / 2) : (curAngle + charAngle / 2); 
+          var x = Math.cos(midAngle) * r; 
+          var y = Math.sin(midAngle) * r; 
+          
+          ctx.save(); ctx.translate(x, y); 
+          ctx.rotate(isReverse ? midAngle - Math.PI / 2 : midAngle + Math.PI / 2); 
+          ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px ' + this.fontFamily; 
+          ctx.fillStyle = this.fill; 
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
+          
+          if(this.shadow) { ctx.shadowColor = this.shadow.color; ctx.shadowBlur = this.shadow.blur; ctx.shadowOffsetX = this.shadow.offsetX; ctx.shadowOffsetY = this.shadow.offsetY; }
+          ctx.fillText(chars[i], 0, 0); 
+          
+          if(this.strokeWidth > 0 && this.stroke) { ctx.shadowColor = 'transparent'; ctx.strokeStyle = this.stroke; ctx.lineWidth = this.strokeWidth; ctx.strokeText(chars[i], 0, 0); }
+          ctx.restore(); 
+          
+          curAngle = isReverse ? (curAngle - charAngle - this.spacing / r) : (curAngle + charAngle + this.spacing / r); 
+      } 
+  },
+  toObject: function() { return fabric.util.object.extend(this.callSuper('toObject'), { text: this.text, radius: this.radius, spacing: this.spacing, fontFamily: this.fontFamily, fontSize: this.fontSize, fill: this.fill, fontWeight: this.fontWeight, fontStyle: this.fontStyle, stroke: this.stroke, strokeWidth: this.strokeWidth, shadow: this.shadow }); }
+});
+fabric.CurvedText.fromObject = function(obj, callback) { return new fabric.CurvedText(obj.text, obj); };
+
+// State & Logic
+var CANVAS_W = 600, CANVAS_H = 750;
+var PRINTABLE = { left: 175, top: 160, width: 250, height: 300 };
+var fallbackImage = "{{ section.settings.fallback_image | image_url: width: 600 }}"; if (fallbackImage.includes('no-image')) fallbackImage = '';
+
+// Load all product images
+var productImagesList = [{% for image in product.images %}"{{ image | image_url: width: 600 }}"{% unless forloop.last %},{% endunless %}{% endfor %}];
+
+var frontBgUrl = productImagesList[0] || fallbackImage;
+var backBgUrl = productImagesList.length > 1 ? productImagesList[1] : frontBgUrl;
+
+var currentBgUrl = frontBgUrl, currentArea = 'front', areaStates = {}, historyData = [], historyIdx = -1, isRestoringState = false;
+
+// Updated Custom Props to save new styles
+var CUSTOM_PROPS = ['text','radius','spacing','fontFamily','fontWeight','fontStyle', 'opacity', 'angle', 'stroke', 'strokeWidth', 'shadow', 'filters'];
+var canvasBgColor = getComputedStyle(document.documentElement).getPropertyValue('--color-canvas').trim() || '#f9fafb';
+var canvas = new fabric.Canvas('design-canvas', { width: CANVAS_W, height: CANVAS_H, backgroundColor: canvasBgColor, selection: true, preserveObjectStacking: true });
+
+var currentVariantPrice = {{ product.selected_or_first_available_variant.price }};
+
+function setProductBackground(imageUrl) {
+  if (!imageUrl) return; if (imageUrl.startsWith('//')) imageUrl = 'https:' + imageUrl;
+  fabric.Image.fromURL(imageUrl, function(img) {
+    var scaleFactor = Math.min(CANVAS_W / img.width, CANVAS_H / img.height);
+    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), { originX: 'center', originY: 'center', left: CANVAS_W / 2, top: CANVAS_H / 2, scaleX: scaleFactor, scaleY: scaleFactor, crossOrigin: 'anonymous' });
+  }, { crossOrigin: 'anonymous' });
+}
+
+var productJsonEl = document.getElementById('ProductJson-{{ section.id }}');
+var productVariants = productJsonEl ? JSON.parse(productJsonEl.innerHTML) : [];
+
+// Dynamically Calculate Price
+function updateSubtotal() {
+  let basePrice = currentVariantPrice; let addonsTotal = 0;
+  document.querySelectorAll('.addon-checkbox:checked').forEach(cb => { addonsTotal += parseInt(cb.getAttribute('data-price') || 0); });
+  const qty = parseInt(document.getElementById('quantity').value) || 1; const finalTotal = (basePrice * qty) + addonsTotal; 
+  document.getElementById('subtotal-display').innerHTML = formatMoney(finalTotal);
+}
+
+function toggleAddonUI(checkbox) {
+  const labelWrapper = checkbox.closest('.addon-item');
+  if(checkbox.checked) { labelWrapper.classList.add('selected'); } else { labelWrapper.classList.remove('selected'); }
+  updateSubtotal();
+}
+
+function updateVariantDetails() {
+  if (productVariants.length === 0) { setProductBackground(currentBgUrl); return; }
+  var selectedOptions = [];
+  document.querySelectorAll('.variant-wrapper').forEach(function(wrapper) { var hiddenSelect = wrapper.querySelector('.hidden-variant-select'); if (hiddenSelect) { selectedOptions.push(hiddenSelect.value); } });
+  var matchedVariant = productVariants.find(function(v) { return v.options.every(function(opt, idx) { return opt === selectedOptions[idx]; }); });
+
+  if (matchedVariant) {
+    document.getElementById('selected-variant-id').value = matchedVariant.id; currentVariantPrice = matchedVariant.price; document.getElementById('dynamic-price').innerHTML = formatMoney(currentVariantPrice); updateSubtotal();
+    if (matchedVariant.featured_image) {
+      var pos = matchedVariant.featured_image.position; var frontIndex = pos - 1; var backIndex = frontIndex + 1;
+      frontBgUrl = productImagesList[frontIndex] || productImagesList[0] || fallbackImage; backBgUrl = productImagesList[backIndex] || frontBgUrl; 
+    }
+    currentBgUrl = (currentArea === 'back') ? backBgUrl : frontBgUrl;
+  }
+  setProductBackground(currentBgUrl);
+}
+
+document.querySelectorAll('.variant-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var wrapper = this.closest('.variant-wrapper'); wrapper.querySelectorAll('.variant-btn').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active'); var hiddenSelect = wrapper.querySelector('.hidden-variant-select'); if(hiddenSelect) hiddenSelect.value = this.getAttribute('data-value');
+    updateVariantDetails();
+  });
+});
+
+var printGuide = new fabric.Rect({ left: PRINTABLE.left, top: PRINTABLE.top, width: PRINTABLE.width, height: PRINTABLE.height, fill: 'transparent', stroke: getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#000', strokeWidth: 1, strokeDashArray: [6, 4], selectable: false, evented: false, opacity: 0.4 });
+canvas.add(printGuide); canvas.sendToBack(printGuide);
+
+function saveHistory() { if (isRestoringState) return; historyData.splice(historyIdx + 1); historyData.push(JSON.stringify(canvas.toJSON(CUSTOM_PROPS))); historyIdx = historyData.length - 1; if (historyData.length > 40) { historyData.shift(); historyIdx--; } }
+function undo() { if (historyIdx > 0) { historyIdx--; isRestoringState = true; canvas.loadFromJSON(historyData[historyIdx], function() { canvas.add(printGuide); canvas.sendToBack(printGuide); canvas.renderAll(); isRestoringState = false; updatePropsPanel(); }); } }
+function redo() { if (historyIdx < historyData.length - 1) { historyIdx++; isRestoringState = true; canvas.loadFromJSON(historyData[historyIdx], function() { canvas.add(printGuide); canvas.sendToBack(printGuide); canvas.renderAll(); isRestoringState = false; updatePropsPanel(); }); } }
+
+var textCounter = 0;
+function addText() { textCounter++; var txt = new fabric.IText('Text ' + textCounter, { left: PRINTABLE.left + PRINTABLE.width / 2, top: PRINTABLE.top + PRINTABLE.height / 2, originX: 'center', originY: 'center', fontFamily: 'Space Grotesk', fontSize: 32, fill: '#121212', textAlign: 'center', editable: true }); canvas.add(txt); canvas.setActiveObject(txt); canvas.renderAll(); saveHistory(); }
+function addCurvedText() { textCounter++; var ct = new fabric.CurvedText('Curved Text', { left: PRINTABLE.left + PRINTABLE.width / 2, top: PRINTABLE.top + 60, originX: 'center', originY: 'center', radius: 120, spacing: 5, fontFamily: 'Space Grotesk', fontSize: 32, fill: '#121212' }); canvas.add(ct); canvas.setActiveObject(ct); canvas.renderAll(); saveHistory(); }
+
+function handleImageUpload(file) { 
+  if (!file) return; if (file.size > 5 * 1024 * 1024) { showToast('File too large. Max 5MB allowed.', 'error'); return; } 
+  var reader = new FileReader(); reader.onload = function(e) { 
+    fabric.Image.fromURL(e.target.result, function(img) { 
+      var scale = Math.min((PRINTABLE.width * 0.7) / img.width, (PRINTABLE.height * 0.7) / img.height, 1); 
+      img.set({ left: PRINTABLE.left + PRINTABLE.width / 2, top: PRINTABLE.top + PRINTABLE.height / 2, originX: 'center', originY: 'center', scaleX: scale, scaleY: scale }); 
+      
+      // Initialize empty filters array for Fabric.js
+      img.filters = [];
+      
+      canvas.add(img); canvas.setActiveObject(img); canvas.renderAll(); saveHistory(); 
+    }); 
+  }; reader.readAsDataURL(file); 
+}
+
+// Z-Index Control
+function changeLayer(direction) {
+  var obj = canvas.getActiveObject();
+  if (!obj) return;
+  if (direction === 'up') { canvas.bringForward(obj); } 
+  else { canvas.sendBackwards(obj); }
+  // Ensure we don't send objects behind the print guide
+  if (canvas.getObjects().indexOf(obj) < canvas.getObjects().indexOf(printGuide)) { canvas.bringForward(obj); }
+  canvas.renderAll(); saveHistory();
+}
+
+function updatePropsPanel() {
+  var obj = canvas.getActiveObject(); var propsPanel = document.getElementById('props-panel'); var propsDivider = document.getElementById('props-hr-divider');
+  if (!obj || obj === printGuide) { propsPanel.classList.add('hidden'); propsDivider.classList.add('hidden'); return; }
+  propsPanel.classList.remove('hidden'); propsDivider.classList.remove('hidden');
+  
+  var isCurved = obj.type === 'curvedText', isText = (obj.type === 'i-text' || obj.type === 'text'), isImage = (obj.type === 'image');
+  document.getElementById('obj-type-badge').textContent = isCurved ? 'Curved Text' : (isImage ? 'Image' : 'Text');
+  
+  // Show/Hide specific panels based on object type
+  document.getElementById('text-properties-wrapper').classList.toggle('hidden', !isText && !isCurved);
+  document.getElementById('image-properties-wrapper').classList.toggle('hidden', !isImage);
+
+  document.getElementById('prop-curved-content').classList.toggle('hidden', !isCurved); 
+  document.getElementById('prop-align-group').classList.toggle('hidden', !isText); 
+  document.getElementById('prop-curve-radius-group').classList.toggle('hidden', !isCurved);
+  
+  // Common Settings
+  document.getElementById('prop-opacity').value = obj.opacity || 1;
+  document.getElementById('prop-opacity-val').textContent = Math.round((obj.opacity || 1) * 100) + '%';
+  document.getElementById('prop-angle').value = obj.angle || 0;
+  document.getElementById('prop-angle-val').textContent = Math.round(obj.angle || 0) + '°';
+
+  if (isCurved) { 
+    document.getElementById('prop-curved-text').value = obj.text || ''; 
+    document.getElementById('prop-radius').value = obj.radius || 120; 
+    document.getElementById('prop-radius-val').textContent = obj.radius || 120; 
+  }
+
+  // Text Settings Population
+  if (isText || isCurved) { 
+    document.getElementById('prop-font').value = obj.fontFamily || 'Space Grotesk'; 
+    document.getElementById('prop-size').value = obj.fontSize || 24; 
+    document.getElementById('prop-size-val').textContent = (obj.fontSize || 24) + 'px'; 
+    
+    // Gradient Check
+    if (typeof obj.fill === 'object' && obj.fill.type === 'linear') {
+      document.getElementById('prop-gradient-toggle').checked = true;
+      document.getElementById('prop-gradient-wrapper').classList.remove('hidden');
+      document.getElementById('prop-color').value = obj.fill.colorStops[0].color || '#121212';
+      document.getElementById('prop-gradient-color').value = obj.fill.colorStops[1].color || '#ff0000';
+    } else {
+      document.getElementById('prop-gradient-toggle').checked = false;
+      document.getElementById('prop-gradient-wrapper').classList.add('hidden');
+      document.getElementById('prop-color').value = obj.fill || '#121212'; 
+    }
+
+    // Outline / Stroke
+    document.getElementById('prop-stroke-color').value = obj.stroke || '#000000';
+    document.getElementById('prop-stroke-width').value = obj.strokeWidth || 0;
+    document.getElementById('prop-stroke-width-val').textContent = obj.strokeWidth || 0;
+
+    // Shadow
+    document.getElementById('prop-shadow-color').value = obj.shadow ? obj.shadow.color : '#000000';
+    document.getElementById('prop-shadow-blur').value = obj.shadow ? obj.shadow.blur : 0;
+    document.getElementById('prop-shadow-blur-val').textContent = obj.shadow ? obj.shadow.blur : 0;
+  }
+}
+
+canvas.on('selection:created', updatePropsPanel); canvas.on('selection:updated', updatePropsPanel); canvas.on('selection:cleared', updatePropsPanel);
+function getActiveDesignObj() { return (canvas.getActiveObject() && canvas.getActiveObject() !== printGuide) ? canvas.getActiveObject() : null; }
+
+// Common Event Listeners
+document.getElementById('prop-opacity').addEventListener('input', function() { var obj = getActiveDesignObj(); if(obj){ obj.set('opacity', parseFloat(this.value)); document.getElementById('prop-opacity-val').textContent = Math.round(this.value * 100) + '%'; canvas.renderAll(); } }); document.getElementById('prop-opacity').addEventListener('change', saveHistory);
+document.getElementById('prop-angle').addEventListener('input', function() { var obj = getActiveDesignObj(); if(obj){ obj.set('angle', parseInt(this.value)); document.getElementById('prop-angle-val').textContent = this.value + '°'; canvas.renderAll(); } }); document.getElementById('prop-angle').addEventListener('change', saveHistory);
+
+// Text Event Listeners
+document.getElementById('prop-font').addEventListener('change', function() { var obj = getActiveDesignObj(); if(obj){ obj.set('fontFamily', this.value); if(obj.type==='curvedText') obj._calcBounds(); canvas.renderAll(); saveHistory(); } });
+document.getElementById('prop-size').addEventListener('input', function() { var obj = getActiveDesignObj(); if(obj){ obj.set('fontSize', parseInt(this.value)); document.getElementById('prop-size-val').textContent = this.value + 'px'; if(obj.type==='curvedText') obj._calcBounds(); canvas.renderAll(); } }); document.getElementById('prop-size').addEventListener('change', saveHistory);
+document.getElementById('prop-curved-text').addEventListener('input', function() { var obj = getActiveDesignObj(); if(obj && obj.type==='curvedText'){ obj.text = this.value || ' '; obj._calcBounds(); canvas.renderAll(); } }); document.getElementById('prop-curved-text').addEventListener('change', saveHistory);
+document.getElementById('prop-radius').addEventListener('input', function() { var obj = getActiveDesignObj(); if(obj && obj.type==='curvedText'){ let val = parseInt(this.value); if(val === 0) val = 1; obj.radius = val; document.getElementById('prop-radius-val').textContent = this.value; obj._calcBounds(); canvas.renderAll(); } }); document.getElementById('prop-radius').addEventListener('change', saveHistory);
+
+function applyTextFill() {
+  var obj = getActiveDesignObj(); if(!obj) return;
+  var isGradient = document.getElementById('prop-gradient-toggle').checked;
+  var color1 = document.getElementById('prop-color').value;
+  var color2 = document.getElementById('prop-gradient-color').value;
+  if(isGradient) {
+    obj.set('fill', new fabric.Gradient({ type: 'linear', gradientUnits: 'pixels', coords: { x1: 0, y1: 0, x2: obj.width, y2: 0 }, colorStops:[ { offset: 0, color: color1 }, { offset: 1, color: color2 } ] }));
+  } else {
+    obj.set('fill', color1);
+  }
+  canvas.renderAll(); saveHistory();
+}
+document.getElementById('prop-color').addEventListener('input', applyTextFill);
+document.getElementById('prop-gradient-color').addEventListener('input', applyTextFill);
+document.getElementById('prop-gradient-toggle').addEventListener('change', function() { 
+  document.getElementById('prop-gradient-wrapper').classList.toggle('hidden', !this.checked); applyTextFill(); 
+});
+
+// Text Outline & Shadow Listeners
+function applyTextStroke() { var obj = getActiveDesignObj(); if(!obj) return; obj.set('stroke', document.getElementById('prop-stroke-color').value); obj.set('strokeWidth', parseInt(document.getElementById('prop-stroke-width').value)); document.getElementById('prop-stroke-width-val').textContent = document.getElementById('prop-stroke-width').value; canvas.renderAll(); }
+document.getElementById('prop-stroke-color').addEventListener('input', applyTextStroke); document.getElementById('prop-stroke-color').addEventListener('change', saveHistory);
+document.getElementById('prop-stroke-width').addEventListener('input', applyTextStroke); document.getElementById('prop-stroke-width').addEventListener('change', saveHistory);
+
+function applyTextShadow() { 
+  var obj = getActiveDesignObj(); if(!obj) return; 
+  var blur = parseInt(document.getElementById('prop-shadow-blur').value);
+  var color = document.getElementById('prop-shadow-color').value;
+  document.getElementById('prop-shadow-blur-val').textContent = blur;
+  if(blur > 0) { obj.set('shadow', new fabric.Shadow({ color: color, blur: blur, offsetX: 2, offsetY: 2 })); } else { obj.set('shadow', null); }
+  canvas.renderAll(); 
+}
+document.getElementById('prop-shadow-color').addEventListener('input', applyTextShadow); document.getElementById('prop-shadow-color').addEventListener('change', saveHistory);
+document.getElementById('prop-shadow-blur').addEventListener('input', applyTextShadow); document.getElementById('prop-shadow-blur').addEventListener('change', saveHistory);
+
+function setAlign(align) { var obj = getActiveDesignObj(); if(obj){ obj.set('textAlign', align); canvas.renderAll(); saveHistory(); updatePropsPanel(); } }
+function deleteSelected() { var obj = canvas.getActiveObject(); if(obj && obj !== printGuide){ if(obj.type==='activeSelection'){ obj.forEachObject(function(o){canvas.remove(o);}); } else { canvas.remove(obj); } canvas.discardActiveObject(); canvas.renderAll(); saveHistory(); } }
+function clearCanvas() { var objs = canvas.getObjects().filter(function(o){return o !== printGuide;}); if(objs.length){ objs.forEach(function(o){canvas.remove(o);}); canvas.discardActiveObject(); canvas.renderAll(); saveHistory(); } }
+canvas.on('object:modified', saveHistory);
+
+// ==========================================
+// IMAGE FILTERS LOGIC
+// ==========================================
+function applyImageFilter() {
+  var obj = getActiveDesignObj(); if(!obj || obj.type !== 'image') return;
+  
+  // Fabric.js filters array initialization if empty
+  if(!obj.filters) obj.filters = [];
+  
+  var brightness = parseFloat(document.getElementById('prop-brightness').value);
+  var contrast = parseFloat(document.getElementById('prop-contrast').value);
+  var saturation = parseFloat(document.getElementById('prop-saturation').value);
+  var blur = parseFloat(document.getElementById('prop-blur').value);
+  var grayscale = document.getElementById('prop-grayscale').checked;
+
+  document.getElementById('prop-brightness-val').textContent = brightness;
+  document.getElementById('prop-contrast-val').textContent = contrast;
+  document.getElementById('prop-saturation-val').textContent = saturation;
+  document.getElementById('prop-blur-val').textContent = blur;
+
+  // Set Filters in specific slots
+  obj.filters[0] = brightness !== 0 ? new fabric.Image.filters.Brightness({ brightness: brightness }) : null;
+  obj.filters[1] = contrast !== 0 ? new fabric.Image.filters.Contrast({ contrast: contrast }) : null;
+  obj.filters[2] = saturation !== 0 ? new fabric.Image.filters.Saturation({ saturation: saturation }) : null;
+  obj.filters[3] = grayscale ? new fabric.Image.filters.Grayscale() : null;
+  obj.filters[4] = blur > 0 ? new fabric.Image.filters.Blur({ blur: blur }) : null;
+
+  obj.applyFilters();
+  canvas.renderAll();
+}
+document.getElementById('prop-brightness').addEventListener('input', applyImageFilter); document.getElementById('prop-brightness').addEventListener('change', saveHistory);
+document.getElementById('prop-contrast').addEventListener('input', applyImageFilter); document.getElementById('prop-contrast').addEventListener('change', saveHistory);
+document.getElementById('prop-saturation').addEventListener('input', applyImageFilter); document.getElementById('prop-saturation').addEventListener('change', saveHistory);
+document.getElementById('prop-blur').addEventListener('input', applyImageFilter); document.getElementById('prop-blur').addEventListener('change', saveHistory);
+document.getElementById('prop-grayscale').addEventListener('change', function() { applyImageFilter(); saveHistory(); });
+
+// Area States
+function saveAreaState() { areaStates[currentArea] = { json: JSON.stringify(canvas.toJSON(CUSTOM_PROPS)) }; }
+function loadAreaState(area) {
+  if (area === 'front') currentBgUrl = frontBgUrl; else if (area === 'back') currentBgUrl = backBgUrl; else currentBgUrl = frontBgUrl; 
+  var state = areaStates[area];
+  if(state){ isRestoringState = true; canvas.loadFromJSON(state.json, function(){ canvas.add(printGuide); canvas.sendToBack(printGuide); canvas.renderAll(); isRestoringState=false; updatePropsPanel(); historyData=[state.json]; historyIdx=0; }); } 
+  else { var objs = canvas.getObjects().filter(function(o){return o !== printGuide;}); objs.forEach(function(o){canvas.remove(o);}); canvas.discardActiveObject(); setProductBackground(currentBgUrl); canvas.renderAll(); historyData = [JSON.stringify(canvas.toJSON(CUSTOM_PROPS))]; historyIdx=0; updatePropsPanel(); }
+}
+document.querySelectorAll('.area-tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    var area = this.dataset.area; if(area===currentArea) return; saveAreaState(); currentArea = area;
+    document.querySelectorAll('.area-tab').forEach(function(t){t.classList.remove('active');}); 
+    this.classList.add('active'); loadAreaState(area);
+  });
+});
+
+function showPreview() { saveAreaState(); document.getElementById('preview-modal').classList.remove('hidden'); document.body.style.overflow = 'hidden'; canvas.discardActiveObject(); printGuide.set('opacity', 0); canvas.renderAll(); document.getElementById('preview-front').src = canvas.toDataURL({ format: 'png', multiplier: 2 }); printGuide.set('opacity', 0.4); canvas.renderAll(); var otherArea = currentArea === 'front' ? 'back' : 'front'; if (areaStates[otherArea]) { var origArea = currentArea; isRestoringState = true; canvas.loadFromJSON(areaStates[otherArea].json, function() { canvas.discardActiveObject(); printGuide.set('opacity', 0); canvas.renderAll(); document.getElementById('preview-back').src = canvas.toDataURL({ format: 'png', multiplier: 2 }); printGuide.set('opacity', 0.4); canvas.loadFromJSON(areaStates[origArea].json, function() { canvas.add(printGuide); canvas.sendToBack(printGuide); canvas.renderAll(); isRestoringState = false; }); }); } else { document.getElementById('preview-back').src = currentBgUrl; } }
+function closePreview() { document.getElementById('preview-modal').classList.add('hidden'); document.body.style.overflow = ''; }
+function dataURLtoFile(dataurl, filename) { var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[arr.length - 1]), n = bstr.length, u8arr = new Uint8Array(n); while(n--){ u8arr[n] = bstr.charCodeAt(n); } return new File([u8arr], filename, {type:mime}); }
+
+
+function handleCartSubmit(e) {
+  if (window.isSubmitting) return;
+  e.preventDefault();
+  saveAreaState();
+
+  var btn = document.getElementById('add-to-cart-submit');
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Order...';
+  btn.disabled = true;
+  window.isSubmitting = true;
+
+  canvas.discardActiveObject();
+  printGuide.set('opacity', 0);
+  canvas.renderAll();
+  var dataURL = canvas.toDataURL({ format: 'png', multiplier: 1.5 });
+  var file = dataURLtoFile(dataURL, 'custom-design.png');
+  printGuide.set('opacity', 0.4);
+  canvas.renderAll();
+
+  let formData = new FormData();
+  let itemIndex = 0;
+  let qty = document.getElementById('quantity').value || 1;
+  let bundleId = Date.now().toString();
+
+  formData.append(`items[${itemIndex}][id]`, document.getElementById('selected-variant-id').value);
+  formData.append(`items[${itemIndex}][quantity]`, qty);
+  formData.append(`items[${itemIndex}][properties][Custom Design]`, file);
+  formData.append(`items[${itemIndex}][properties][_bundle_id]`, bundleId);
+
+  document.querySelectorAll('.custom-prop-input').forEach(input => {
+    if (input.value.trim() !== '') {
+      formData.append(`items[${itemIndex}][properties][${input.getAttribute('data-label')}]`, input.value);
+    }
+  });
+
+  itemIndex++;
+
+  // --- ITEMS 1..N: ADD-ON FEES ---
+  document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+    let vid = cb.getAttribute('data-vid');
+    let label = cb.getAttribute('data-label');
+    
+    // --- Fixing the Price Formatting ---
+    let rawPrice = cb.getAttribute('data-price') || '0'; 
+    let formattedPrice = (parseFloat(rawPrice) / 100).toFixed(2);
+    let displayPrice = '$' + formattedPrice; // Apnar currency onujayi symbol change korte paren
+
+    if (vid && vid.trim() !== '') {
+      formData.append(`items[0][properties][Add-on: ${label}]`, displayPrice);
+
+      formData.append(`items[${itemIndex}][id]`, vid);
+      formData.append(`items[${itemIndex}][quantity]`, qty);
+      formData.append(`items[${itemIndex}][properties][_hidden_addon]`, 'true');
+      formData.append(`items[${itemIndex}][properties][_bundle_id]`, bundleId);
+      itemIndex++;
+    }
+  });
+
+  formData.append('sections', document.querySelector('cart-drawer') ? 'cart-drawer,cart-icon-bubble' : 'cart-icon-bubble');
+  formData.append('sections_url', window.location.pathname);
+
+  fetch(window.Shopify.routes.root + 'cart/add.js', {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/javascript' },
+    body: formData
+  })
+  .then(response => { if (!response.ok) throw new Error('Failed to add to cart'); return response.json(); })
+  .then(data => {
+    const cartDrawer = document.querySelector('cart-drawer');
+    if (cartDrawer) {
+      cartDrawer.renderContents(data);
+      if (typeof cartDrawer.open === 'function') cartDrawer.open();
+      cartDrawer.classList.remove('is-empty');
+    } else {
+      window.location.href = window.Shopify.routes.root + 'cart';
+    }
+    btn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Add To Cart';
+    btn.disabled = false;
+    window.isSubmitting = false;
+  })
+  .catch(error => {
+    console.error(error);
+    btn.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Add To Cart';
+    btn.disabled = false;
+    window.isSubmitting = false;
+  });
+}
+
+function changeQty(delta) { var input = document.getElementById('quantity'); input.value = Math.max(1, Math.min(99, (parseInt(input.value)||1) + delta)); updateSubtotal(); }
+document.getElementById('file-input').addEventListener('change', function(e) { if(e.target.files&&e.target.files[0]) handleImageUpload(e.target.files[0]); e.target.value = ''; });
+document.addEventListener('keydown', function(e) { if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return; if(canvas.getActiveObject() && canvas.getActiveObject().isEditing) return; if((e.key==='Delete'||e.key==='Backspace') && canvas.getActiveObject()) { e.preventDefault(); deleteSelected(); } if(e.ctrlKey && e.key==='z'){ e.preventDefault(); undo(); } if(e.ctrlKey && e.key==='y'){ e.preventDefault(); redo(); } });
+function showToast(msg, type) { type = type || 'info'; var container = document.getElementById('toast-container'); var toast = document.createElement('div'); toast.className = 'toast ' + type; toast.innerHTML = msg; container.appendChild(toast); setTimeout(function(){toast.remove();}, 4000); }
+
+function init() { updateVariantDetails(); setTimeout(function(){ saveHistory(); updateSubtotal(); }, 300); }
+init();
+</script>
