@@ -1,0 +1,1925 @@
+{% schema %}
+{
+  "name": "Apparel Studio App",
+  "settings": [
+    { "type": "header", "content": "Text Settings" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Custom Apparel Studio" },
+    { "type": "font_picker", "id": "heading_font", "label": "Heading Font", "default": "sans-serif" },
+    { "type": "font_picker", "id": "body_font", "label": "Body Font", "default": "sans-serif" },
+    { "type": "header", "content": "Color Settings" },
+    { "type": "color", "id": "app_bg_color", "label": "Page Background", "default": "#1a1a1a" },
+    { "type": "color", "id": "bg_color", "label": "App Background", "default": "#ffffff" },
+    { "type": "color", "id": "card_color", "label": "Sidebar Card Background", "default": "#ffffff" },
+    { "type": "color", "id": "card_alt_color", "label": "Secondary Background", "default": "#f3f4f6" },
+    { "type": "color", "id": "accent_color", "label": "Primary Accent", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Primary Text", "default": "#111827" },
+    { "type": "color", "id": "muted_color", "label": "Muted Text", "default": "#6b7280" },
+    { "type": "color", "id": "border_color", "label": "Border Color", "default": "#e5e7eb" },
+    { "type": "color", "id": "canvas_bg_color", "label": "Canvas Area Background", "default": "#f8f9fa" },
+    { "type": "header", "content": "Modal Settings" },
+    { "type": "color_background", "id": "modal_bg_color", "label": "Modal Overlay Background", "default": "rgba(0,0,0,0.8)" },
+    { "type": "color", "id": "modal_icon_color", "label": "Modal Close Icon Color", "default": "#ffffff" },
+    { "type": "header", "content": "Fallback Images" },
+    { "type": "image_picker", "id": "fallback_image", "label": "Fallback Product Image" }
+  ],
+  "presets": [
+    { "name": "Apparel Studio App layout" }
+  ]
+}
+{% endschema %}
+
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Bangers&family=Bebas+Neue&family=Caveat&family=Cinzel&family=Courgette&family=Creepster&family=Dancing+Script&family=Fredoka+One&family=Lobster&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@400;700&family=Righteous&family=Russo+One&family=Special+Elite&display=swap" rel="stylesheet">
+
+{% style %}
+  {{ section.settings.heading_font | font_face: font_display: 'swap' }}
+  {{ section.settings.body_font | font_face: font_display: 'swap' }}
+
+  .app-studio-wrapper {
+    --color-page-bg: {{ section.settings.app_bg_color }};
+    --color-bg: {{ section.settings.bg_color }};
+    --color-card: {{ section.settings.card_color }};
+    --color-card-alt: {{ section.settings.card_alt_color }};
+    --color-accent: {{ section.settings.accent_color }};
+    --color-txt: {{ section.settings.text_color }};
+    --color-muted: {{ section.settings.muted_color }};
+    --color-border: {{ section.settings.border_color }};
+    --color-canvas: {{ section.settings.canvas_bg_color }};
+    --color-modal-bg: {{ section.settings.modal_bg_color }};
+    --color-modal-icon: {{ section.settings.modal_icon_color }};
+    --font-heading: {{ section.settings.heading_font.family }}, {{ section.settings.heading_font.fallback_families }};
+    --font-body: {{ section.settings.body_font.family }}, {{ section.settings.body_font.fallback_families }};
+    background-color: var(--color-page-bg);
+    padding: 40px 20px;
+    min-height: 100vh;
+    font-family: var(--font-body);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .app-studio-wrapper * { box-sizing: border-box; }
+  .app-container { width: 100%; max-width: 1300px; background: var(--color-bg); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  
+  .app-topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; border-bottom: 1px solid var(--color-border); }
+  .topbar-title { font-size: 20px; font-weight: 800; color: var(--color-txt); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+  
+  .topbar-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-bg); color: var(--color-txt); font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; }
+  .topbar-btn:hover { background: var(--color-card-alt); }
+  .topbar-center { display: flex; gap: 15px; align-items: center; }
+  .btn-close { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--color-card-alt); color: var(--color-txt); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  
+  .app-workspace { display: flex; height: 800px; }
+  .app-canvas-zone { flex: 1; background: var(--color-canvas); position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+  
+  .floating-bottom-bar { position: absolute; bottom: 25px; background: var(--color-bg); padding: 10px 20px; border-radius: 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 1px solid var(--color-border); z-index: 10; }
+  .tool-icon-btn { background: none; border: none; color: var(--color-muted); font-size: 16px; cursor: pointer; transition: 0.2s; }
+  .tool-icon-btn:hover { color: var(--color-txt); }
+  .tool-divider { width: 1px; height: 20px; background: var(--color-border); }
+  
+  .view-toggle-pill { display: flex; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 30px; padding: 4px; gap: 5px; }
+  .view-btn { display: flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; border: none; background: transparent; color: var(--color-muted); font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.3s; }
+  .view-btn.active { background: #e5e7eb; color: var(--color-txt); }
+  .view-btn i { font-size: 14px; }
+
+  .app-sidebar { width: 380px; background: var(--color-bg); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; }
+  .sidebar-scroll { flex: 1; overflow-y: auto; padding: 20px; }
+  .sidebar-scroll::-webkit-scrollbar { width: 6px; }
+  .sidebar-scroll::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+
+  .sidebar-variant-section { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); }
+  .variant-option-group { margin-bottom: 15px; }
+  .variant-option-group:last-child { margin-bottom: 0; }
+  .option-values { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  
+  .color-swatch-modern { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--color-border); cursor: pointer; transition: transform 0.2s; }
+  .color-swatch-modern.active { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .color-swatch-modern:hover { transform: scale(1.1); }
+  
+  .size-pill { padding: 10px 18px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-bg); cursor: pointer; transition: 0.2s; font-weight: 600; font-size: 14px; color: var(--color-txt); }
+  .size-pill:hover { border-color: var(--color-accent); }
+  .size-pill.active { border-color: var(--color-accent); background: var(--color-txt); color: var(--color-bg); }
+  
+  .tool-card { border: 1px solid var(--color-border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: var(--color-card); transition: 0.3s ease; }
+  .tool-card-header { display: flex; align-items: center; padding: 16px; cursor: pointer; background: var(--color-bg); }
+  .tool-icon-box { width: 40px; height: 40px; background: var(--color-card-alt); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: var(--color-muted); font-size: 18px; border: 1px solid var(--color-border); }
+  .tool-titles { flex: 1; }
+  .tool-main-title { font-weight: 700; font-size: 15px; color: var(--color-txt); margin: 0 0 4px 0; }
+  .tool-sub-title { font-size: 12px; color: var(--color-muted); margin: 0; }
+  .tool-content { padding:16px; display: none; }
+  .tool-card.active .tool-content { display: block; }
+  .tool-card.active { border-color: var(--color-accent); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .tool-card.active .tool-icon-box { background: var(--color-txt); color: var(--color-bg); border-color: var(--color-txt); }
+  
+  .add-elements-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 5px; }
+  .btn-add-element { padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-card-alt); cursor: pointer; font-weight: 600; font-size: 13px; text-align: center; color: var(--color-txt); transition: 0.2s; }
+  .btn-add-element:hover { border-color: var(--color-accent); }
+  .upload-zone { border: 2px dashed var(--color-border); border-radius: 12px; padding: 25px; text-align: center; cursor: pointer; background: var(--color-canvas); }
+  .upload-zone:hover { border-color: var(--color-accent); }
+  .upload-zone i { font-size: 24px; color: var(--color-muted); margin-bottom: 10px; display: block; }
+  .prop-group { margin-bottom: 15px; }
+  .prop-label { font-size: 13px; font-weight: 700; color: var(--color-txt); margin-bottom: 6px; display: block; }
+  .custom-input-modern, .designer-select { width: 100%; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: 8px; font-size: 14px; background: var(--color-bg); color: var(--color-txt); }
+  .prop-row { display: flex; gap: 10px; }
+  .prop-col { flex: 1; }
+  input[type="range"] { width: 100%; accent-color: var(--color-accent); }
+
+  .artwork-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+  .artwork-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: 0.2s; background: var(--color-canvas); }
+  .artwork-item:hover { border-color: var(--color-accent); transform: scale(1.05); }
+
+  .layers-list { display: flex; flex-direction: column; gap: 8px; }
+  .layer-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--color-canvas); border: 1px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: 0.2s; }
+  .layer-item.active { border-color: var(--color-accent); background: var(--color-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+  .layer-info { font-size: 13px; font-weight: 600; color: var(--color-txt); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+  .layer-actions { display: flex; gap: 5px; }
+  .layer-btn { background: none; border: none; font-size: 14px; color: var(--color-muted); cursor: pointer; padding: 4px; border-radius: 4px; transition: 0.2s; }
+  .layer-btn:hover { background: var(--color-card-alt); color: var(--color-txt); }
+  
+  .sidebar-footer { padding: 20px; border-top: 1px solid var(--color-border); background: var(--color-bg); display: flex; flex-direction: column; gap: 15px; }
+  .quantity-stepper-container { display: flex; justify-content: space-between; align-items: center; }
+  .quantity-label { font-weight: 700; color: var(--color-txt); font-size: 15px; }
+  .quantity-stepper { display: flex; align-items: center; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; background: var(--color-bg); }
+  .quantity-stepper button { background: none; border: none; padding: 8px 15px; font-size: 16px; cursor: pointer; color: var(--color-txt); font-weight: bold; }
+  .quantity-stepper button:hover { background: var(--color-card-alt); }
+  .quantity-stepper input { width: 40px; text-align: center; border: none; font-weight: 600; background: transparent; color: var(--color-txt); font-size: 14px; pointer-events: none; }
+  .quantity-stepper input::-webkit-outer-spin-button, .quantity-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  
+  .order-summary-box { background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 15px; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--color-muted); }
+  .summary-row:last-child { margin-bottom: 0; }
+  .summary-row.total-row { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-border); font-size: 18px; font-weight: 700; color: var(--color-txt); align-items: center; }
+  .price-amount { font-size: 24px; font-weight: 700; color: var(--color-accent); }
+  
+  .btn-submit { width: 100%; padding: 14px; background: var(--color-accent); color: var(--color-bg); font-weight: 700; font-size: 16px; border: none; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+  .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+  .hidden { display: none !important; }
+  
+  .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+  .toast { background: #333; color: #fff; padding: 12px 20px; border-radius: 8px; font-weight: 600; animation: slideIn 0.3s ease; }
+  .toast.error { background: #dc2626; }
+  @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .modal-overlay { position: fixed; inset: 0; background: var(--color-modal-bg); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+  .modal-content { background: var(--color-bg); padding: 30px; border-radius: 16px; width: 100%; max-width: 900px; position: relative; max-height: 95vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+  .modal-close-btn { position: absolute; top: 15px; right: 15px; background: transparent; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-modal-icon); transition: 0.2s; z-index: 10; }
+  .modal-close-btn:hover { transform: scale(1.1); }
+  .modal-title { margin-top: 0; margin-bottom: 25px; font-weight: 700; font-size: 24px; color: var(--color-txt); text-align: center; }
+  
+  .modal-body { display: flex; flex-direction: column; gap: 20px; }
+  .modal-view-col { width: 100%; }
+  .modal-view-label { font-weight: 700; margin-bottom: 10px; color: var(--color-txt); text-align: center; font-size: 16px; }
+  .modal-img-box { border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; background: var(--color-canvas); padding: 15px; display: flex; justify-content: center; align-items: center; }
+  .modal-img-box img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+
+  @media (min-width: 768px) {
+    .modal-body { flex-direction: row; align-items: flex-start; }
+    .modal-view-col { width: 50%; }
+  }
+
+  .text-creator-box {
+    background: var(--color-canvas); 
+    padding: 15px; 
+    border-radius: 10px; 
+    border: 1px solid var(--color-border);
+  }
+  .text-creator-title {
+    margin: 0 0 12px 0; 
+    font-weight: 700; 
+    font-size: 14px; 
+    color: var(--color-txt);
+  }
+
+  /* Tab Styles for Add Text */
+  .text-tabs-nav { display: flex; gap: 10px;margin-top: 15px; margin-bottom: 15px; }
+  .text-tab-btn { flex: 1; padding: 10px; background: var(--color-canvas); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-muted); font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 13px; }
+  .text-tab-btn:hover { border-color: var(--color-accent); color: var(--color-txt); }
+  .text-tab-btn.active { background: var(--color-txt); color: var(--color-bg); border-color: var(--color-txt); }
+  
+  .text-tab-content { display: none; }
+  .text-tab-content.active { display: block; }
+
+  /* Font Picker Modal Styles */
+  .font-picker-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: 8px; background: var(--color-bg); font-size: 14px; cursor: pointer; color: var(--color-txt); margin-bottom: 10px; }
+  .font-picker-btn:hover { border-color: var(--color-accent); }
+  .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 60vh; overflow-y: auto; padding: 5px; }
+  .font-grid::-webkit-scrollbar { width: 6px; }
+  .font-grid::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+  .font-card { border: 1px solid var(--color-border); border-radius: 8px; padding: 15px 5px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--color-canvas); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90px; }
+  .font-card:hover { border-color: var(--color-accent); transform: translateY(-2px); }
+  .font-card.active { border-color: var(--color-accent); background: var(--color-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .font-preview-text { font-size: 26px; margin-bottom: 5px; color: var(--color-txt); line-height: 1; }
+  .font-name-label { font-size: 11px; color: var(--color-muted); font-family: var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+{% endstyle %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<div class="app-studio-wrapper">
+  <div id="toast-container" class="toast-container"></div>
+
+  <div class="app-container">
+    <header class="app-topbar">
+      <h1 class="topbar-title">{{ product.title }}</h1>
+      <div class="topbar-center">
+        <button class="topbar-btn" onclick="showPreview()"><i class="fa-solid fa-eye"></i> Preview</button>
+        <button class="btn-close" onclick="window.history.back()" title="Go Back"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </header>
+
+    <div class="app-workspace">
+      <div class="app-canvas-zone">
+        <canvas id="design-canvas" width="600" height="700"></canvas>
+
+        <div class="floating-bottom-bar">
+          <button onclick="undo()" class="tool-icon-btn" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+          <button onclick="redo()" class="tool-icon-btn" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+          <button onclick="clearCanvas()" class="tool-icon-btn" title="Clear All"><i class="fa-solid fa-broom"></i></button>
+          <div class="tool-divider"></div>
+          
+          <div class="view-toggle-pill">
+            <button class="view-btn active" onclick="switchView('front')" id="btn-view-front">
+              <i class="fa-solid fa-shirt"></i> Front
+            </button>
+            <button class="view-btn" onclick="switchView('back')" id="btn-view-back">
+              <i class="fa-solid fa-shirt" style="opacity: 0.5;"></i> Back
+            </button>
+          </div>
+
+          <div class="tool-divider"></div>
+          <button onclick="deleteSelected()" class="tool-icon-btn" style="color: #dc2626;" title="Delete Object"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+
+      <aside class="app-sidebar">
+        <div class="sidebar-scroll">
+
+          {% unless product.has_only_default_variant %}
+            <div class="sidebar-variant-section" id="variant-selectors-container">
+              {% for option in product.options_with_values %}
+                {% assign isColor = false %}
+                {% assign downcased_name = option.name | downcase %}
+                {% if downcased_name contains 'color' or downcased_name contains 'colour' %}
+                  {% assign isColor = true %}
+                {% endif %}
+
+                <div class="variant-option-group">
+                  <label class="prop-label">Select {{ option.name }}</label>
+                  <div class="option-values">
+                    {% for value in option.values %}
+                      {% if isColor %}
+                        {% assign css_color = value | downcase | replace: ' ', '' %}
+                        <button type="button" 
+                                class="color-swatch-modern variant-btn {% if option.selected_value == value %}active{% endif %}"
+                                style="background-color: {{ css_color }};"
+                                data-option-index="{{ option.position | minus: 1 }}"
+                                data-value="{{ value | escape }}"
+                                title="{{ value }}"></button>
+                      {% else %}
+                        <button type="button" 
+                                class="size-pill variant-btn {% if option.selected_value == value %}active{% endif %}"
+                                data-option-index="{{ option.position | minus: 1 }}"
+                                data-value="{{ value | escape }}">{{ value }}</button>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endunless %}
+
+         {% if product.metafields.custom.custom_extras != blank %}
+          <div class="tool-card" onclick="toggleAccordion(this)">
+            <div class="tool-card-header">
+              <div class="tool-icon-box"><i class="fa-solid fa-sliders"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Customization Extras</p>
+                <p class="tool-sub-title">Add specific product features</p>
+              </div>
+            </div>
+            <div class="tool-content" onclick="event.stopPropagation()">
+              {% for variant in product.metafields.custom.custom_extras.value %}
+                <div style="display:flex; gap:10px; margin-bottom:5px; align-items:center;">
+                  <input type="checkbox" class="addon-checkbox"
+                    data-label="{{ variant.product.title | escape }} {% if variant.title != 'Default Title' %}- {{ variant.title | escape }}{% endif %}"
+                    data-price="{{ variant.price }}"
+                    data-vid="{{ variant.id }}"
+                    onchange="updateSubtotal()">
+                 <span style="font-size:14px; color: var(--color-txt);">
+                    {{ variant.title }}
+                    (+{{ variant.price | money }})
+                  </span>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if product.metafields.custom.graphic_location != blank %}
+          <div class="tool-card" onclick="toggleAccordion(this)">
+            <div class="tool-card-header">
+              <div class="tool-icon-box"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Graphical Location</p>
+                <p class="tool-sub-title">Add specific product Location</p>
+              </div>
+            </div>
+            <div class="tool-content" onclick="event.stopPropagation()">
+              {% for variant in product.metafields.custom.graphic_location.value %}
+                <div style="display:flex; gap:10px; margin-bottom:5px; align-items:center;">
+                  <input type="checkbox" class="addon-checkbox"
+                    data-label="{{ variant.product.title | escape }} {% if variant.title != 'Default Title' %}- {{ variant.title | escape }}{% endif %}"
+                    data-price="{{ variant.price }}"
+                    data-vid="{{ variant.id }}"
+                    onchange="updateSubtotal()">
+                 <span style="font-size:14px; color: var(--color-txt);">
+                    {{ variant.title }}
+                    (+{{ variant.price | money }})
+                  </span>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if product.metafields.custom.custom_form_field != blank %}
+          <div class="tool-card" onclick="toggleAccordion(this)">
+            <div class="tool-card-header">
+              <div class="tool-icon-box"><i class="fa-solid fa-pen-to-square"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Custom Details</p>
+                <p class="tool-sub-title">Enter your specific info</p>
+              </div>
+            </div>
+            <div class="tool-content" onclick="event.stopPropagation()">
+              {% for field in product.metafields.custom.custom_form_field.value %}
+                <div class="prop-group" style="margin-bottom: 12px;">
+                  <label class="prop-label">{{ field }}</label>
+                  <input type="text" class="custom-input-modern custom-metafield-input" data-label="{{ field }}" placeholder="Enter {{ field }}...">
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="tool-card" onclick="toggleAccordion(this)">
+            <div class="tool-card-header">
+              <div class="tool-icon-box"><i class="fa-solid fa-font"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Add Text</p>
+                <p class="tool-sub-title">Insert and edit typography</p>
+              </div>
+            </div>
+            <div class="tool-content" onclick="event.stopPropagation()">
+              
+              <div class="text-tabs-nav">
+                <button class="text-tab-btn active" id="tab-btn-normal" onclick="switchTextTab('normal')">Normal Text</button>
+                <button class="text-tab-btn" id="tab-btn-curved" onclick="switchTextTab('curved')">Curved Text</button>
+              </div>
+
+              <div class="text-tab-content active" id="tab-content-normal">
+                <input type="text" id="add-normal-text-val" class="custom-input-modern" placeholder="Enter text..." value="Your Text" style="margin-bottom: 10px;">
+                
+                <button type="button" class="font-picker-btn" onclick="openFontModal('normal')">
+                  <span>Pick Font: <strong id="label-normal-font" style="font-family: Arial; font-size: 16px;">Arial</strong></span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <input type="hidden" id="add-normal-font" value="Arial">
+
+                <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+                  <div style="flex: 2;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--color-muted); display: block; margin-bottom: 4px;">Size</label>
+                    <input type="range" id="add-normal-size" min="10" max="120" value="32" style="width: 100%;">
+                  </div>
+                  <div style="flex: 1;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--color-muted); display: block; margin-bottom: 4px;">Color</label>
+                    <input type="color" id="add-normal-color" value="#121212" style="width:100%; height:28px; border-radius:6px; border:1px solid #ccc; cursor:pointer; padding:0;">
+                  </div>
+                </div>
+
+                <button onclick="addText()" class="btn-add-element" style="width: 100%; background: var(--color-txt); color: var(--color-bg); border: none;"><i class="fa-solid fa-plus"></i> Add Normal Text</button>
+              </div>
+
+              <div class="text-tab-content" id="tab-content-curved">
+                <input type="text" id="add-curved-text-val" class="custom-input-modern" placeholder="Enter text..." value="Curved Text" style="margin-bottom: 10px;">
+                
+                <button type="button" class="font-picker-btn" onclick="openFontModal('curved')">
+                  <span>Pick Font: <strong id="label-curved-font" style="font-family: Arial; font-size: 16px;">Arial</strong></span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <input type="hidden" id="add-curved-font" value="Arial">
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                  <div style="flex: 2;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--color-muted); display: block; margin-bottom: 4px;">Size</label>
+                    <input type="range" id="add-curved-size" min="10" max="120" value="32" style="width: 100%;">
+                  </div>
+                  <div style="flex: 1;">
+                    <label style="font-size: 11px; font-weight: 700; color: var(--color-muted); display: block; margin-bottom: 4px;">Color</label>
+                    <input type="color" id="add-curved-color" value="#121212" style="width:100%; height:28px; border-radius:6px; border:1px solid #ccc; cursor:pointer; padding:0;">
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                  <label style="font-size: 11px; font-weight: 700; color: var(--color-muted); display: block; margin-bottom: 4px;">Curve Radius</label>
+                  <input type="range" id="add-curved-radius" min="-300" max="300" step="10" value="120" style="width: 100%;">
+                </div>
+
+                <button onclick="addCurvedText()" class="btn-add-element" style="width: 100%; background: var(--color-txt); color: var(--color-bg); border: none;"><i class="fa-solid fa-plus"></i> Add Curved Text</button>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="tool-card" onclick="toggleAccordion(this)">
+            <div class="tool-card-header">
+              <div class="tool-icon-box"><i class="fa-regular fa-image"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Upload Image</p>
+                <p class="tool-sub-title">Add your custom logo or photo</p>
+              </div>
+            </div>
+            <div class="tool-content" onclick="event.stopPropagation()">
+              <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p style="margin:0; font-weight:600; font-size:14px;">Click to upload</p>
+                <p style="margin:5px 0 0 0; font-size:12px; color:var(--color-muted);">PNG, JPG (Max 5MB)</p>
+              </div>
+              <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleImageUpload(this.files[0]); this.value='';">
+            </div>
+          </div>
+
+          {% if product.metafields.custom.artwork != blank %}
+          <div class="tool-card" onclick="toggleAccordion(this)">
+            <div class="tool-card-header">
+              <div class="tool-icon-box"><i class="fa-solid fa-palette"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Add Art Work</p>
+                <p class="tool-sub-title">Choose from our gallery</p>
+              </div>
+            </div>
+            <div class="tool-content" onclick="event.stopPropagation()">
+              <p style="font-size:12px; color:var(--color-muted); margin-bottom: 10px;">Click an image to add it to your design.</p>
+              <div class="artwork-grid">
+                {% for image in product.metafields.custom.artwork.value %}
+                  <img src="{{ image | image_url: width: 150 }}" 
+                       class="artwork-item" 
+                       onclick="addArtwork('{{ image | image_url: width: 800 }}')" 
+                       alt="Artwork option">
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="tool-card" onclick="toggleAccordion(this)">
+            <div class="tool-card-header">
+              <div class="tool-icon-box"><i class="fa-solid fa-layer-group"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Layers</p>
+                <p class="tool-sub-title">Manage your design elements</p>
+              </div>
+            </div>
+            <div class="tool-content" onclick="event.stopPropagation()">
+              <div id="layers-list" class="layers-list">
+                <p style="font-size:12px; color:var(--color-muted); text-align:center;">No elements added.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-card" id="dynamic-properties-card" onclick="toggleAccordion(this)" style="display:none;">
+            <div class="tool-card-header">
+              <div class="tool-icon-box" style="background:var(--color-txt); color:var(--color-bg);"><i class="fa-solid fa-sliders"></i></div>
+              <div class="tool-titles">
+                <p class="tool-main-title">Edit Element</p>
+                <p class="tool-sub-title" id="obj-type-badge">Properties</p>
+              </div>
+            </div>
+            <div class="tool-content" id="props-panel" onclick="event.stopPropagation()">
+              
+              <div class="prop-group">
+                <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Opacity (<span id="prop-opacity-val">100%</span>)</label>
+                <input type="range" id="prop-opacity" min="0" max="1" step="0.1" value="1">
+              </div>
+              
+              <div class="prop-group">
+                <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Rotation (<span id="prop-angle-val">0°</span>)</label>
+                <input type="range" id="prop-angle" min="0" max="360" value="0">
+              </div>
+              
+              <div id="text-properties-wrapper">
+                <div id="prop-text-content-group" class="prop-group hidden">
+                  <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Text Content</label>
+                  <input type="text" id="prop-text-input" class="custom-input-modern">
+                </div>
+                
+                <div class="prop-group">
+                  <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Font Family</label>
+                  <button type="button" class="font-picker-btn" onclick="openFontModal('prop')">
+                    <span><strong id="label-prop-font" style="font-family: Arial; font-size: 14px;">Arial</strong></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                  <input type="hidden" id="prop-font" value="Arial">
+                </div>
+
+                <div class="prop-row" style="margin-bottom:15px;">
+                  <div class="prop-col" style="flex: 2;">
+                    <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Font Size (<span id="prop-size-val">24px</span>)</label>
+                    <input type="range" id="prop-size" min="10" max="120" value="24">
+                  </div>
+                  <div class="prop-col" style="flex: 1;">
+                    <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Color</label>
+                    <input type="color" id="prop-color" value="#121212" style="width:100%; height:25px; border-radius:6px; border:1px solid #ccc; cursor:pointer; padding:0;">
+                  </div>
+                </div>
+
+                <div id="prop-text-styles-group" class="prop-group hidden" style="display:flex; gap:6px; margin-bottom:15px;">
+                  <button id="btn-bold" class="btn-add-element" style="flex:1; padding:8px;"><b>B</b></button>
+                  <button id="btn-italic" class="btn-add-element" style="flex:1; padding:8px;"><i>I</i></button>
+                  <button id="btn-align-left" class="btn-add-element" style="flex:1; padding:8px;"><i class="fa-solid fa-align-left"></i></button>
+                  <button id="btn-align-center" class="btn-add-element" style="flex:1; padding:8px;"><i class="fa-solid fa-align-center"></i></button>
+                  <button id="btn-align-right" class="btn-add-element" style="flex:1; padding:8px;"><i class="fa-solid fa-align-right"></i></button>
+                </div>
+
+                <div id="prop-curve-radius-group" class="prop-group hidden" style="margin-top:15px;">
+                  <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Curve Radius</label>
+                  <input type="range" id="prop-radius" min="-300" max="300" step="10" value="120">
+                </div>
+              </div>
+
+              <div id="image-properties-wrapper" class="hidden">
+                <div class="prop-group">
+                  <label class="prop-label" style="text-transform: none; font-size: 12px; font-weight: bold; color: var(--color-muted);">Brightness</label>
+                  <input type="range" id="prop-brightness" min="-1" max="1" step="0.1" value="0">
+                </div>
+                <div class="prop-group" style="display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" id="prop-grayscale">
+                  <label class="prop-label" style="margin:0; text-transform:none; font-size:14px;">Enable Grayscale</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden inputs for Liquid variables to avoid JS syntax errors -->
+          <input type="hidden" id="selected-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+          <input type="hidden" id="current-variant-price" value="{{ product.selected_or_first_available_variant.price | default: 0 }}">
+          <input type="hidden" id="shop-money-format" value="{{ shop.money_format | escape }}">
+          
+          <script type="application/json" id="ProductJson-{{ section.id }}">{{ product.variants | json }}</script>
+          <script type="application/json" id="product-media-json">
+            [
+              {% for image in product.images %}
+                { "id": {{ image.id | default: "null" }}, "url": "{{ image | image_url: width: 600 }}" }{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ]
+          </script>
+
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="quantity-stepper-container">
+            <span class="quantity-label">Quantity</span>
+            <div class="quantity-stepper">
+              <button type="button" onclick="changeQty(-1)">−</button>
+              <input type="number" id="quantity" value="1" min="1" max="99" readonly>
+              <button type="button" onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+
+          <div class="order-summary-box">
+            <div class="summary-row">
+              <span class="summary-text">Base price</span>
+              <span id="summary-base-price">{{ product.price | money }}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-text" id="addon-label">Customizations (0 item)</span>
+              <span id="summary-addon-price" style="color: #059669;">+$0.00</span>
+            </div>
+            <div class="summary-row total-row">
+              <span class="summary-text">Total</span>
+              <span id="subtotal-display" class="price-amount">{{ product.price | money }}</span>
+            </div>
+          </div>
+
+          <button type="button" id="add-to-cart-submit-bottom" onclick="handleCartSubmit(event)" class="btn-submit">Add to Cart</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div id="preview-modal" class="modal-overlay hidden" onclick="closePreviewModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closePreviewModal()"><i class="fa-solid fa-xmark"></i></button>
+    <h2 class="modal-title">Design Preview</h2>
+    <div class="modal-body">
+      <div class="modal-view-col">
+        <p class="modal-view-label">Front View</p>
+        <div class="modal-img-box">
+          <img id="preview-front" alt="Front preview">
+        </div>
+      </div>
+      <div class="modal-view-col">
+        <p class="modal-view-label">Back View</p>
+        <div class="modal-img-box">
+          <img id="preview-back" alt="Back preview">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="font-modal" class="modal-overlay hidden" onclick="closeFontModal()">
+  <div class="modal-content" style="max-width: 800px;" onclick="event.stopPropagation()">
+    <button class="modal-close-btn" onclick="closeFontModal()"><i class="fa-solid fa-xmark"></i></button>
+    <h2 class="modal-title">Choose a Font</h2>
+    <div class="font-grid" id="font-grid-container">
+      <!-- Generated by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ─── Utilities ─────────────────────────────────────── */
+  function showToast(msg, type) {
+    type = type || 'success';
+    var container = document.getElementById('toast-container');
+    if (!container) return;
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerText = msg;
+    container.appendChild(toast);
+    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 3000);
+  }
+
+  /* ─── Money formatting ───────────────────────────────── */
+  var moneyFormatEl = document.getElementById('shop-money-format');
+  var defaultFormat = "$\x7B\x7Bamount\x7D\x7D";
+  var moneyFormat = moneyFormatEl ? moneyFormatEl.value : defaultFormat;
+  
+  if (moneyFormat.indexOf('shop.money_format') !== -1 || moneyFormat.indexOf('\x7B\x7B') !== -1) {
+    moneyFormat = defaultFormat; // Fallback for previews
+  }
+
+  function formatMoney(cents) {
+    if (typeof cents === 'string') { cents = cents.replace('.', ''); }
+    cents = parseInt(cents, 10) || 0;
+    var placeholderRegex = /\{\{\s*(\w+)\s*\}\}/;
+    var match = (moneyFormat || '').match(placeholderRegex);
+    if (!match) { return '$' + (cents / 100).toFixed(2); }
+
+    function formatWithDelimiters(number, precision, thousands, decimal) {
+      precision = precision !== undefined ? precision : 2;
+      thousands = thousands || ',';
+      decimal = decimal || '.';
+      if (isNaN(number) || number == null) { return '0'; }
+      number = (number / 100.0).toFixed(precision);
+      var parts = number.split('.');
+      var dollars = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + thousands);
+      var centsPart = parts[1] ? (decimal + parts[1]) : '';
+      return dollars + centsPart;
+    }
+
+    var value = '';
+    switch (match[1]) {
+      case 'amount': value = formatWithDelimiters(cents, 2); break;
+      case 'amount_no_decimals': value = formatWithDelimiters(cents, 0); break;
+      case 'amount_with_comma_separator': value = formatWithDelimiters(cents, 2, '.', ','); break;
+      case 'amount_no_decimals_with_comma_separator': value = formatWithDelimiters(cents, 0, '.', ','); break;
+      default: value = formatWithDelimiters(cents, 2);
+    }
+    return moneyFormat.replace(placeholderRegex, value);
+  }
+
+  /* ─── CurvedText (Fabric custom class) ──────────────── */
+  fabric.CurvedText = fabric.util.createClass(fabric.Object, {
+    type: 'curvedText',
+    stateProperties: fabric.Object.prototype.stateProperties.concat([
+      'text', 'radius', 'spacing', 'fontFamily', 'fontSize', 'fill', 'fontWeight', 'fontStyle', 'textAlign'
+    ]),
+
+    initialize: function(text, options) {
+      options = options || {};
+      this.text      = text || 'Curved Text';
+      this.radius    = options.radius    !== undefined ? options.radius    : 120;
+      this.spacing   = options.spacing   !== undefined ? options.spacing   : 5;
+      this.fontFamily = options.fontFamily || 'Arial';
+      this.fontSize  = options.fontSize  || 24;
+      this.fontWeight = options.fontWeight || 'normal';
+      this.fontStyle  = options.fontStyle  || 'normal';
+      this.textAlign  = options.textAlign  || 'center';
+      this.fill      = options.fill      || '#121212';
+      this.callSuper('initialize', options);
+      this._calcBounds();
+    },
+
+    _getFontString: function() {
+      return (this.fontStyle || 'normal') + ' ' + (this.fontWeight || 'normal') + ' ' + this.fontSize + 'px ' + this.fontFamily;
+    },
+
+    _calcBounds: function() {
+      var c = document.createElement('canvas').getContext('2d');
+      c.font = this._getFontString();
+      var chars = this.text ? this.text.split('') : [];
+      var tw = 0;
+      var self = this;
+      chars.forEach(function(ch) { tw += c.measureText(ch).width + self.spacing; });
+      tw = Math.max(1, tw - this.spacing);
+      var absRadius  = Math.max(1, Math.abs(this.radius));
+      var totalAngle = tw / absRadius;
+      var halfAngle  = totalAngle / 2;
+      var r          = absRadius;
+      var top        = -r - this.fontSize * 0.6;
+      var left       = -Math.cos(halfAngle) * r - this.fontSize * 0.5;
+      var right      =  Math.cos(halfAngle) * r + this.fontSize * 0.5;
+      var bottom     =  Math.sin(halfAngle) * r + this.fontSize * 0.6;
+      this.set({
+        width:  Math.max(1, Math.abs(left) + Math.abs(right)),
+        height: Math.max(1, Math.abs(top)  + Math.abs(bottom))
+      });
+    },
+
+    _render: function(ctx) {
+      if (!this.text || !this.text.length) return;
+      var chars = this.text.split('');
+      ctx.font = this._getFontString();
+      var self = this;
+      var charWidths = [];
+      var tw = 0;
+      chars.forEach(function(ch) {
+        var w = ctx.measureText(ch).width;
+        charWidths.push(w);
+        tw += w + self.spacing;
+      });
+      tw = Math.max(1, tw - this.spacing);
+      var isReverse  = this.radius < 0;
+      var r          = Math.max(1, Math.abs(this.radius));
+      var totalAngle = tw / r;
+      var startAngle = isReverse
+        ? (Math.PI / 2 + totalAngle / 2)
+        : (-Math.PI / 2 - totalAngle / 2);
+      var curAngle = startAngle;
+      for (var i = 0; i < chars.length; i++) {
+        var charAngle = charWidths[i] / r;
+        var midAngle  = isReverse ? (curAngle - charAngle / 2) : (curAngle + charAngle / 2);
+        var x = Math.cos(midAngle) * r;
+        var y = Math.sin(midAngle) * r;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(isReverse ? midAngle - Math.PI / 2 : midAngle + Math.PI / 2);
+        ctx.font = this._getFontString();
+        ctx.fillStyle = this.fill;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(chars[i], 0, 0);
+        ctx.restore();
+        curAngle = isReverse
+          ? (curAngle - charAngle - this.spacing / r)
+          : (curAngle + charAngle + this.spacing / r);
+      }
+    },
+
+    toObject: function() {
+      return fabric.util.object.extend(this.callSuper('toObject'), {
+        text: this.text,
+        radius: this.radius,
+        spacing: this.spacing,
+        fontFamily: this.fontFamily,
+        fontSize: this.fontSize,
+        fontWeight: this.fontWeight,
+        fontStyle: this.fontStyle,
+        textAlign: this.textAlign,
+        fill: this.fill
+      });
+    }
+  });
+
+  fabric.CurvedText.fromObject = function(object, callback) {
+    var instance = new fabric.CurvedText(object.text, object);
+    if (typeof callback === 'function') { callback(instance); }
+    return instance;
+  };
+
+  /* ─── Canvas setup ───────────────────────────────────── */
+  var CANVAS_W   = 600;
+  var CANVAS_H   = 700;
+  var PRINTABLE  = { left: 175, top: 160, width: 250, height: 300 };
+  
+  var CUSTOM_PROPS = ['id', 'text', 'radius', 'spacing', 'fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'textAlign', 'fill', 'opacity', 'angle', 'filters'];
+
+  var fallbackImage = "{{ section.settings.fallback_image | image_url: width: 600 }}";
+  if (!fallbackImage || fallbackImage.indexOf('no-image') !== -1) fallbackImage = '';
+
+  var productMedia = [];
+  try {
+    var mediaJsonEl = document.getElementById('product-media-json');
+    var mediaStr = mediaJsonEl ? mediaJsonEl.innerHTML.trim() : '';
+    if (mediaStr && !mediaStr.includes('\x7B%')) {
+      productMedia = JSON.parse(mediaStr);
+    }
+  } catch(e) {
+    productMedia = [];
+  }
+
+  var frontBgUrl = productMedia.length > 0 ? productMedia[0].url : fallbackImage;
+  var backBgUrl  = productMedia.length > 1 ? productMedia[1].url : frontBgUrl;
+
+  var currentBgUrl      = frontBgUrl;
+  var currentArea       = 'front';
+  var areaStates        = {};
+  var historyData       = [];
+  var historyIdx        = -1;
+  var isRestoringState  = false;
+  var textCounter       = 0;
+
+  var APPAREL_FONTS = [
+    'Arial', 'Montserrat', 'Oswald', 'Bebas Neue', 'Lobster', 'Pacifico',
+    'Anton', 'Righteous', 'Permanent Marker', 'Caveat', 'Russo One',
+    'Bangers', 'Fredoka One', 'Alfa Slab One', 'Playfair Display',
+    'Cinzel', 'Dancing Script', 'Courgette', 'Creepster', 'Special Elite'
+  ];
+  var currentFontTarget = 'normal';
+
+  var currentVariantPriceEl = document.getElementById('current-variant-price');
+  var currentVariantPrice = 0;
+  if (currentVariantPriceEl && !currentVariantPriceEl.value.includes('\x7B\x7B')) {
+    currentVariantPrice = parseInt(currentVariantPriceEl.value, 10) || 0;
+  }
+
+  var productJsonEl  = document.getElementById('ProductJson-{{ section.id }}');
+  var productVariants = [];
+  try { 
+    var pStr = productJsonEl ? productJsonEl.innerHTML.trim() : '';
+    if (pStr && !pStr.includes('\x7B\x7B')) {
+      productVariants = JSON.parse(pStr); 
+    }
+  } catch(e) { productVariants = []; }
+
+  var canvas = new fabric.Canvas('design-canvas', {
+    width: CANVAS_W,
+    height: CANVAS_H,
+    selection: true,
+    preserveObjectStacking: true
+  });
+
+  /* ─── Layers Panel Logic ─────────────────────────────── */
+  function updateLayersPanel() {
+    var list = document.getElementById('layers-list');
+    if (!list) return;
+    list.innerHTML = '';
+    
+    var objects = canvas.getObjects();
+    if (objects.length === 0) {
+      list.innerHTML = '<p style="font-size:12px; color:var(--color-muted); text-align:center; padding:10px;">No elements added.</p>';
+      return;
+    }
+    
+    for (var i = objects.length - 1; i >= 0; i--) {
+      var obj = objects[i];
+      var div = document.createElement('div');
+      var isActive = (canvas.getActiveObject() === obj) ? 'active' : '';
+      div.className = 'layer-item ' + isActive;
+      
+      div.onclick = (function(o) {
+        return function() {
+          canvas.setActiveObject(o);
+          canvas.renderAll();
+          updateLayersPanel();
+        };
+      })(obj);
+
+      var label = obj.type;
+      var icon = '<i class="fa-solid fa-shapes"></i>';
+      if (obj.type === 'i-text') { label = 'Text: ' + (obj.text.substring(0, 10) || '...'); icon = '<i class="fa-solid fa-font"></i>'; }
+      if (obj.type === 'curvedText') { label = 'Curved: ' + (obj.text.substring(0, 10) || '...'); icon = '<i class="fa-solid fa-text-height"></i>'; }
+      if (obj.type === 'image') { label = 'Uploaded Image'; icon = '<i class="fa-regular fa-image"></i>'; }
+
+      div.innerHTML = 
+        '<div style="display:flex; align-items:center; gap:8px; overflow:hidden;">' +
+          '<span style="color:var(--color-muted); font-size:14px;">' + icon + '</span>' +
+          '<span class="layer-info">' + label + '</span>' +
+        '</div>' +
+        '<div class="layer-actions">' +
+          '<button class="layer-btn" title="Bring Forward" onclick="moveLayerObj(event, ' + i + ', \'up\')"><i class="fa-solid fa-arrow-up"></i></button>' +
+          '<button class="layer-btn" title="Send Backward" onclick="moveLayerObj(event, ' + i + ', \'down\')"><i class="fa-solid fa-arrow-down"></i></button>' +
+          '<button class="layer-btn" style="color:#dc2626;" title="Delete" onclick="deleteLayerObj(event, ' + i + ')"><i class="fa-solid fa-trash"></i></button>' +
+        '</div>';
+      list.appendChild(div);
+    }
+  }
+
+  function moveLayerObj(e, index, dir) {
+    e.stopPropagation();
+    var objects = canvas.getObjects();
+    var obj = objects[index];
+    if (dir === 'up') {
+      canvas.bringForward(obj);
+    } else {
+      canvas.sendBackwards(obj);
+    }
+    canvas.renderAll();
+    saveHistory();
+    updateLayersPanel();
+  }
+  window.moveLayerObj = moveLayerObj;
+
+  function deleteLayerObj(e, index) {
+    e.stopPropagation();
+    var objects = canvas.getObjects();
+    canvas.remove(objects[index]);
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    saveHistory();
+    updateLayersPanel();
+  }
+  window.deleteLayerObj = deleteLayerObj;
+
+  canvas.on('object:added', updateLayersPanel);
+  canvas.on('object:removed', updateLayersPanel);
+  canvas.on('selection:created', updateLayersPanel);
+  canvas.on('selection:updated', updateLayersPanel);
+  canvas.on('selection:cleared', updateLayersPanel);
+
+
+  /* ─── Background image ───────────────────────────────── */
+  function setProductBackground(imageUrl) {
+    if (!imageUrl) return;
+    if (imageUrl.charAt(0) === '/' && imageUrl.charAt(1) === '/') imageUrl = 'https:' + imageUrl;
+    fabric.Image.fromURL(imageUrl, function(img) {
+      if (!img) return;
+      var scaleFactor = Math.min(CANVAS_W / img.width, CANVAS_H / img.height);
+      canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+        originX:     'center',
+        originY:     'center',
+        left:        CANVAS_W / 2,
+        top:         CANVAS_H / 2,
+        scaleX:      scaleFactor,
+        scaleY:      scaleFactor,
+        crossOrigin: 'anonymous'
+      });
+    }, { crossOrigin: 'anonymous' });
+  }
+
+  /* ─── Subtotal & Quantity Logic ──────────────────────── */
+  function changeQty(delta) {
+    var input = document.getElementById('quantity');
+    var val = parseInt(input.value, 10) || 1;
+    val += delta;
+    if (val < 1) val = 1;
+    if (val > 99) val = 99;
+    input.value = val;
+    updateSubtotal();
+  }
+  window.changeQty = changeQty;
+
+  function updateSubtotal() {
+    var qty = parseInt(document.getElementById('quantity').value, 10) || 1;
+    var baseTotal = currentVariantPrice * qty;
+    var addonsTotal = 0;
+    var addonCount = 0;
+    document.querySelectorAll('.addon-checkbox:checked').forEach(function(cb) {
+      addonsTotal += (parseInt(cb.getAttribute('data-price') || '0', 10) * qty);
+      addonCount++;
+    });
+    var finalTotal = baseTotal + addonsTotal;
+    
+    document.getElementById('summary-base-price').innerHTML = formatMoney(baseTotal);
+    var itemText = addonCount <= 1 ? ' item' : ' items';
+    document.getElementById('addon-label').innerText = 'Customizations (' + addonCount + itemText + ')';
+    document.getElementById('summary-addon-price').innerHTML = '+' + formatMoney(addonsTotal);
+    document.getElementById('subtotal-display').innerHTML = formatMoney(finalTotal);
+  }
+  window.updateSubtotal = updateSubtotal;
+
+  /* ─── LINKED OPTIONS STATE MANAGEMENT ────────────────── */
+  var currentSelectedOptions = [];
+  
+  function initVariantState() {
+    document.querySelectorAll('.variant-option-group').forEach(function(group, index) {
+      var activeBtn = group.querySelector('.variant-btn.active');
+      if (activeBtn) {
+        currentSelectedOptions[index] = activeBtn.getAttribute('data-value');
+      }
+    });
+  }
+
+  function handleVariantClick(e) {
+    var btn = e.currentTarget;
+    var optIndex = parseInt(btn.getAttribute('data-option-index'), 10);
+    var val = btn.getAttribute('data-value');
+
+    currentSelectedOptions[optIndex] = val;
+
+    var group = btn.closest('.option-values');
+    group.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (currentArea === 'back') {
+      switchView('front');
+    }
+
+    findAndUpdateVariant();
+  }
+
+  function findAndUpdateVariant() {
+    if (productVariants.length === 0) return;
+
+    var matchedVariant = productVariants.find(function(v) {
+      return v.options.every(function(opt, i) { return opt === currentSelectedOptions[i]; });
+    });
+
+    if (!matchedVariant) {
+      matchedVariant = productVariants.find(function(v) {
+        return v.options[0] === currentSelectedOptions[0] && v.available; 
+      });
+      
+      if (matchedVariant) {
+        currentSelectedOptions = [...matchedVariant.options];
+        updateVariantUIButtons();
+      }
+    }
+
+    if (matchedVariant) {
+      document.getElementById('selected-variant-id').value = matchedVariant.id;
+      currentVariantPrice = matchedVariant.price;
+      updateSubtotal();
+      
+      if (matchedVariant.featured_image && matchedVariant.featured_image.id) {
+        var fId = matchedVariant.featured_image.id;
+        var mediaIndex = productMedia.findIndex(function(m) { return m.id === fId; });
+        
+        if (mediaIndex !== -1) {
+          frontBgUrl = productMedia[mediaIndex].url;
+          backBgUrl  = (mediaIndex + 1 < productMedia.length) ? productMedia[mediaIndex + 1].url : frontBgUrl;
+        }
+      }
+      currentBgUrl = (currentArea === 'back') ? backBgUrl : frontBgUrl;
+      setProductBackground(currentBgUrl); 
+    }
+  }
+
+  function updateVariantUIButtons() {
+    document.querySelectorAll('.variant-btn').forEach(function(btn) {
+      var idx = parseInt(btn.getAttribute('data-option-index'), 10);
+      var val = btn.getAttribute('data-value');
+      if (currentSelectedOptions[idx] === val) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  document.querySelectorAll('.variant-btn').forEach(function(btn) {
+    btn.addEventListener('click', handleVariantClick);
+  });
+
+
+  /* ─── History ────────────────────────────────────────── */
+  function saveHistory() {
+    if (isRestoringState) return;
+    historyData.splice(historyIdx + 1);
+    historyData.push(JSON.stringify(canvas.toJSON(CUSTOM_PROPS)));
+    historyIdx = historyData.length - 1;
+    if (historyData.length > 40) { historyData.shift(); historyIdx--; }
+  }
+
+  function restoreFromHistory(json) {
+    isRestoringState = true;
+    canvas.loadFromJSON(json, function() {
+      canvas.renderAll();
+      isRestoringState = false;
+      updatePropsPanel();
+      updateLayersPanel();
+    });
+  }
+
+  function undo() { if (historyIdx > 0) { historyIdx--; restoreFromHistory(historyData[historyIdx]); } }
+  function redo() { if (historyIdx < historyData.length - 1) { historyIdx++; restoreFromHistory(historyData[historyIdx]); } }
+  window.undo = undo;
+  window.redo = redo;
+
+  /* ─── View switching (Front/Back) ─────────────────────── */
+  function saveAreaState() {
+    areaStates[currentArea] = { json: JSON.stringify(canvas.toJSON(CUSTOM_PROPS)) };
+  }
+
+  function loadAreaState(area) {
+    currentBgUrl = (area === 'back') ? backBgUrl : frontBgUrl;
+    var state = areaStates[area];
+    if (state && state.json) {
+      restoreFromHistory(state.json);
+      historyData = [state.json];
+      historyIdx  = 0;
+      setProductBackground(currentBgUrl);
+    } else {
+      canvas.getObjects().forEach(function(o) { canvas.remove(o); });
+      canvas.discardActiveObject();
+      setProductBackground(currentBgUrl);
+      canvas.renderAll();
+      historyData = [JSON.stringify(canvas.toJSON(CUSTOM_PROPS))];
+      historyIdx  = 0;
+      updatePropsPanel();
+      updateLayersPanel();
+    }
+  }
+
+  function switchView(dir) {
+    saveAreaState();
+    currentArea = dir;
+    
+    var btnFront = document.getElementById('btn-view-front');
+    var btnBack = document.getElementById('btn-view-back');
+    
+    if (dir === 'front') {
+      btnFront.classList.add('active');
+      btnBack.classList.remove('active');
+    } else {
+      btnBack.classList.add('active');
+      btnFront.classList.remove('active');
+    }
+    
+    loadAreaState(currentArea);
+  }
+  window.switchView = switchView;
+
+
+  /* ─── Tab & Alignment Logic for Add Text ───────────────── */
+
+  function switchTextTab(tabName) {
+    document.getElementById('tab-btn-normal').classList.toggle('active', tabName === 'normal');
+    document.getElementById('tab-btn-curved').classList.toggle('active', tabName === 'curved');
+    
+    document.getElementById('tab-content-normal').classList.toggle('active', tabName === 'normal');
+    document.getElementById('tab-content-curved').classList.toggle('active', tabName === 'curved');
+  }
+  window.switchTextTab = switchTextTab;
+
+  /* ─── Font Modal Logic ───────────────────────────────── */
+  function initFontGrid() {
+    var container = document.getElementById('font-grid-container');
+    if (!container) return;
+    container.innerHTML = '';
+    APPAREL_FONTS.forEach(function(font) {
+      var card = document.createElement('div');
+      card.className = 'font-card';
+      card.setAttribute('data-font', font);
+      card.onclick = function() { selectFont(font); };
+      
+      var previewText = (font === 'Creepster') ? 'Boo' : 'Ag';
+      card.innerHTML = 
+        '<div class="font-preview-text" style="font-family: \'' + font + '\', sans-serif;">' + previewText + '</div>' +
+        '<div class="font-name-label">' + font + '</div>';
+      container.appendChild(card);
+    });
+  }
+
+  function openFontModal(target) {
+    currentFontTarget = target;
+    var currentFont = 'Arial';
+    if (target === 'normal') currentFont = document.getElementById('add-normal-font').value;
+    else if (target === 'curved') currentFont = document.getElementById('add-curved-font').value;
+    else if (target === 'prop') currentFont = document.getElementById('prop-font').value;
+
+    document.querySelectorAll('.font-card').forEach(function(card) {
+      if (card.getAttribute('data-font') === currentFont) card.classList.add('active');
+      else card.classList.remove('active');
+    });
+
+    document.getElementById('font-modal').classList.remove('hidden');
+  }
+  window.openFontModal = openFontModal;
+
+  function closeFontModal() {
+    document.getElementById('font-modal').classList.add('hidden');
+  }
+  window.closeFontModal = closeFontModal;
+
+  function triggerCustomEvent(el, type) {
+    if ('createEvent' in document) {
+      var e = document.createEvent('HTMLEvents');
+      e.initEvent(type, false, true);
+      el.dispatchEvent(e);
+    } else {
+      el.fireEvent('on' + type);
+    }
+  }
+
+  function selectFont(fontName) {
+    var inputEl;
+    if (currentFontTarget === 'normal') {
+      inputEl = document.getElementById('add-normal-font');
+      inputEl.value = fontName;
+      document.getElementById('label-normal-font').textContent = fontName;
+      document.getElementById('label-normal-font').style.fontFamily = fontName;
+    } else if (currentFontTarget === 'curved') {
+      inputEl = document.getElementById('add-curved-font');
+      inputEl.value = fontName;
+      document.getElementById('label-curved-font').textContent = fontName;
+      document.getElementById('label-curved-font').style.fontFamily = fontName;
+    } else if (currentFontTarget === 'prop') {
+      inputEl = document.getElementById('prop-font');
+      inputEl.value = fontName;
+      document.getElementById('label-prop-font').textContent = fontName;
+      document.getElementById('label-prop-font').style.fontFamily = fontName;
+    }
+    
+    if (inputEl) {
+      triggerCustomEvent(inputEl, 'change');
+    }
+    closeFontModal();
+  }
+  window.selectFont = selectFont;
+
+  function setAddAlign(type, align) {
+    if (type === 'normal') {
+      addNormalAlign = align;
+      ['left', 'center', 'right'].forEach(function(a) {
+        var btn = document.getElementById('add-align-normal-' + a);
+        if(btn) btn.style.borderColor = (a === align) ? 'var(--color-accent)' : 'var(--color-border)';
+      });
+    } else {
+      addCurvedAlign = align;
+      ['left', 'center', 'right'].forEach(function(a) {
+        var btn = document.getElementById('add-align-curved-' + a);
+        if(btn) btn.style.borderColor = (a === align) ? 'var(--color-accent)' : 'var(--color-border)';
+      });
+    }
+  }
+  window.setAddAlign = setAddAlign;
+
+  /* ─── Add objects ────────────────────────────────────── */
+  
+function addText() {
+    var textVal = document.getElementById('add-normal-text-val').value || 'Your Text';
+    var fontVal = document.getElementById('add-normal-font').value;
+    var sizeVal = parseInt(document.getElementById('add-normal-size').value, 10);
+    var colorVal = document.getElementById('add-normal-color').value;
+
+    textCounter++;
+    var txt = new fabric.IText(textVal, {
+      left: CANVAS_W / 2, top: CANVAS_H / 2,
+      originX: 'center', originY: 'center',
+      fontFamily: fontVal, fontSize: sizeVal,
+      fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center',
+      fill: colorVal, editable: true
+    });
+    canvas.add(txt);
+    canvas.setActiveObject(txt);
+    canvas.renderAll();
+    saveHistory();
+  }
+  window.addText = addText;
+
+  function addCurvedText() {
+    var textVal = document.getElementById('add-curved-text-val').value || 'Curved Text';
+    var fontVal = document.getElementById('add-curved-font').value;
+    var sizeVal = parseInt(document.getElementById('add-curved-size').value, 10);
+    var colorVal = document.getElementById('add-curved-color').value;
+    var radiusVal = parseInt(document.getElementById('add-curved-radius').value, 10);
+
+    textCounter++;
+    var ct = new fabric.CurvedText(textVal, {
+      left: CANVAS_W / 2, top: CANVAS_H / 2,
+      originX: 'center', originY: 'center',
+      radius: radiusVal, spacing: 5,
+      fontFamily: fontVal, fontSize: sizeVal, fill: colorVal,
+      fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center'
+    });
+    canvas.add(ct);
+    canvas.setActiveObject(ct);
+    canvas.renderAll();
+    saveHistory();
+  }
+  window.addCurvedText = addCurvedText;
+
+  function handleImageUpload(file) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('Max 5MB allowed.', 'error'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      fabric.Image.fromURL(e.target.result, function(img) {
+        if (!img) return;
+        var scale = Math.min(
+          (PRINTABLE.width  * 0.7) / img.width,
+          (PRINTABLE.height * 0.7) / img.height,
+          1
+        );
+        img.set({
+          left: CANVAS_W / 2, top: CANVAS_H / 2,
+          originX: 'center', originY: 'center',
+          scaleX: scale, scaleY: scale
+        });
+        img.filters = [];
+        canvas.add(img);
+        canvas.setActiveObject(img);
+        canvas.renderAll();
+        saveHistory();
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+  window.handleImageUpload = handleImageUpload;
+
+  function addArtwork(url) {
+    if (url.startsWith('//')) url = 'https:' + url;
+    
+    fabric.Image.fromURL(url, function(img) {
+      if (!img) return;
+      
+      var scale = Math.min(
+        (PRINTABLE.width  * 0.7) / img.width,
+        (PRINTABLE.height * 0.7) / img.height,
+        1
+      );
+      
+      img.set({
+        left: CANVAS_W / 2, top: CANVAS_H / 2,
+        originX: 'center', originY: 'center',
+        scaleX: scale, scaleY: scale
+      });
+      
+      img.filters = [];
+      canvas.add(img);
+      canvas.setActiveObject(img);
+      canvas.renderAll();
+      saveHistory(); 
+      
+      showToast('Artwork added successfully!');
+    }, { crossOrigin: 'anonymous' }); 
+  }
+  window.addArtwork = addArtwork;
+
+  function getActiveDesignObj() {
+    var obj = canvas.getActiveObject();
+    return obj ? obj : null;
+  }
+
+  /* ─── Properties panel & Add Text Live Sync ───────────────────────────────── */
+  function updatePropsPanel() {
+    var obj       = canvas.getActiveObject();
+    var propsCard = document.getElementById('dynamic-properties-card');
+    
+    if (!obj) {
+      propsCard.style.display = 'none';
+      return;
+    }
+    propsCard.style.display = 'block';
+
+    var isCurved = obj.type === 'curvedText';
+    var isText   = (obj.type === 'i-text' || obj.type === 'text');
+    var isImage  = (obj.type === 'image');
+
+    document.getElementById('obj-type-badge').textContent =
+      isCurved ? 'Curved Text' : (isImage ? 'Image' : 'Text');
+
+    document.getElementById('text-properties-wrapper').classList.toggle('hidden',  !isText && !isCurved);
+    document.getElementById('image-properties-wrapper').classList.toggle('hidden', !isImage);
+    
+    document.getElementById('prop-text-content-group').classList.toggle('hidden',  !isText && !isCurved);
+    document.getElementById('prop-text-styles-group').classList.toggle('hidden',  !isText && !isCurved);
+    document.getElementById('prop-curve-radius-group').classList.toggle('hidden',  !isCurved);
+
+    var opacity = obj.opacity !== undefined ? obj.opacity : 1;
+    document.getElementById('prop-opacity').value = opacity;
+    document.getElementById('prop-opacity-val').textContent = Math.round(opacity * 100) + '%';
+
+    var angle = obj.angle || 0;
+    document.getElementById('prop-angle').value = angle;
+    document.getElementById('prop-angle-val').textContent = Math.round(angle) + '°';
+
+    if (isText || isCurved) {
+      document.getElementById('prop-text-input').value = obj.text || '';
+      
+      var fFamily = obj.fontFamily || 'Arial';
+      document.getElementById('prop-font').value  = fFamily;
+      document.getElementById('label-prop-font').textContent = fFamily;
+      document.getElementById('label-prop-font').style.fontFamily = fFamily;
+
+      document.getElementById('prop-size').value  = obj.fontSize   || 24;
+      document.getElementById('prop-size-val').textContent = (obj.fontSize || 24) + 'px';
+      document.getElementById('prop-color').value = (typeof obj.fill === 'string') ? obj.fill : '#121212';
+      
+      document.getElementById('btn-bold').style.borderColor = obj.fontWeight === 'bold' ? 'var(--color-accent)' : 'var(--color-border)';
+      document.getElementById('btn-italic').style.borderColor = obj.fontStyle === 'italic' ? 'var(--color-accent)' : 'var(--color-border)';
+    }
+    
+    // SYNCING WITH "ADD TEXT" SECTION INPUTS
+    if (isText) {
+      document.getElementById('add-normal-text-val').value = obj.text || '';
+      
+      var fFamilyN = obj.fontFamily || 'Arial';
+      document.getElementById('add-normal-font').value  = fFamilyN;
+      document.getElementById('label-normal-font').textContent = fFamilyN;
+      document.getElementById('label-normal-font').style.fontFamily = fFamilyN;
+
+      document.getElementById('add-normal-size').value  = obj.fontSize   || 24;
+      document.getElementById('add-normal-color').value = (typeof obj.fill === 'string') ? obj.fill : '#121212';
+    } else if (isCurved) {
+      document.getElementById('add-curved-text-val').value = obj.text || '';
+      
+      var fFamilyC = obj.fontFamily || 'Arial';
+      document.getElementById('add-curved-font').value  = fFamilyC;
+      document.getElementById('label-curved-font').textContent = fFamilyC;
+      document.getElementById('label-curved-font').style.fontFamily = fFamilyC;
+
+      document.getElementById('add-curved-size').value  = obj.fontSize   || 24;
+      document.getElementById('add-curved-color').value = (typeof obj.fill === 'string') ? obj.fill : '#121212';
+      document.getElementById('add-curved-radius').value = obj.radius !== undefined ? obj.radius : 120;
+    }
+    
+    if (isCurved) {
+      document.getElementById('prop-radius').value = obj.radius !== undefined ? obj.radius : 120;
+    }
+    
+    if (isImage) {
+      document.getElementById('prop-brightness').value  = '0';
+      document.getElementById('prop-grayscale').checked = false;
+      if (obj.filters && obj.filters.length) {
+        obj.filters.forEach(function(f) {
+          if (!f) return;
+          if (f.type === 'Brightness') document.getElementById('prop-brightness').value = f.brightness || 0;
+          if (f.type === 'Grayscale')  document.getElementById('prop-grayscale').checked = true;
+        });
+      }
+    }
+  }
+
+  /* ─── Live Editing Listeners for "Add Text" section controls ─── */
+  
+  // Normal Text
+  document.getElementById('add-normal-text-val').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (obj && (obj.type === 'i-text' || obj.type === 'text')) {
+      obj.set('text', this.value || ' ');
+      canvas.renderAll();
+    }
+  });
+  document.getElementById('add-normal-text-val').addEventListener('change', saveHistory);
+
+  document.getElementById('add-normal-font').addEventListener('change', function() {
+    var obj = getActiveDesignObj();
+    if (obj && (obj.type === 'i-text' || obj.type === 'text')) {
+      obj.set('fontFamily', this.value);
+      canvas.renderAll();
+      saveHistory();
+    }
+  });
+
+  document.getElementById('add-normal-size').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (obj && (obj.type === 'i-text' || obj.type === 'text')) {
+      obj.set('fontSize', parseInt(this.value, 10));
+      canvas.renderAll();
+    }
+  });
+  document.getElementById('add-normal-size').addEventListener('change', saveHistory);
+
+  document.getElementById('add-normal-color').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (obj && (obj.type === 'i-text' || obj.type === 'text')) {
+      obj.set('fill', this.value);
+      canvas.renderAll();
+    }
+  });
+  document.getElementById('add-normal-color').addEventListener('change', saveHistory);
+
+  // Curved Text
+  document.getElementById('add-curved-text-val').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (obj && obj.type === 'curvedText') {
+      obj.set('text', this.value || ' ');
+      obj._calcBounds();
+      canvas.renderAll();
+    }
+  });
+  document.getElementById('add-curved-text-val').addEventListener('change', saveHistory);
+
+  document.getElementById('add-curved-font').addEventListener('change', function() {
+    var obj = getActiveDesignObj();
+    if (obj && obj.type === 'curvedText') {
+      obj.set('fontFamily', this.value);
+      obj._calcBounds();
+      canvas.renderAll();
+      saveHistory();
+    }
+  });
+
+  document.getElementById('add-curved-size').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (obj && obj.type === 'curvedText') {
+      obj.set('fontSize', parseInt(this.value, 10));
+      obj._calcBounds();
+      canvas.renderAll();
+    }
+  });
+  document.getElementById('add-curved-size').addEventListener('change', saveHistory);
+
+  document.getElementById('add-curved-color').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (obj && obj.type === 'curvedText') {
+      obj.set('fill', this.value);
+      canvas.renderAll();
+    }
+  });
+  document.getElementById('add-curved-color').addEventListener('change', saveHistory);
+
+  document.getElementById('add-curved-radius').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (obj && obj.type === 'curvedText') {
+      var val = parseInt(this.value, 10);
+      if (val === 0) val = 1;
+      obj.radius = val;
+      obj._calcBounds();
+      canvas.renderAll();
+    }
+  });
+  document.getElementById('add-curved-radius').addEventListener('change', saveHistory);
+
+
+  /* ─── Property listeners (Edit Element Panel) ─────────────────────────────── */
+  document.getElementById('prop-opacity').addEventListener('input', function() {
+    var obj = getActiveDesignObj(); if (!obj) return;
+    obj.set('opacity', parseFloat(this.value));
+    document.getElementById('prop-opacity-val').textContent = Math.round(this.value * 100) + '%';
+    canvas.renderAll();
+  });
+  document.getElementById('prop-opacity').addEventListener('change', saveHistory);
+
+  document.getElementById('prop-angle').addEventListener('input', function() {
+    var obj = getActiveDesignObj(); if (!obj) return;
+    obj.set('angle', parseInt(this.value, 10));
+    document.getElementById('prop-angle-val').textContent = this.value + '°';
+    canvas.renderAll();
+  });
+  document.getElementById('prop-angle').addEventListener('change', saveHistory);
+
+  document.getElementById('prop-font').addEventListener('change', function() {
+    var obj = getActiveDesignObj(); if (!obj) return;
+    obj.set('fontFamily', this.value);
+    if (obj.type === 'curvedText') obj._calcBounds();
+    canvas.renderAll();
+    saveHistory();
+  });
+
+  document.getElementById('prop-size').addEventListener('input', function() {
+    var obj = getActiveDesignObj(); if (!obj) return;
+    obj.set('fontSize', parseInt(this.value, 10));
+    document.getElementById('prop-size-val').textContent = this.value + 'px';
+    if (obj.type === 'curvedText') obj._calcBounds();
+    canvas.renderAll();
+  });
+  document.getElementById('prop-size').addEventListener('change', saveHistory);
+
+  document.getElementById('prop-text-input').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (!obj || (obj.type !== 'curvedText' && obj.type !== 'i-text')) return;
+    obj.set('text', this.value || ' ');
+    if (obj.type === 'curvedText') obj._calcBounds();
+    canvas.renderAll();
+  });
+  document.getElementById('prop-text-input').addEventListener('change', saveHistory);
+  
+  document.getElementById('btn-bold').addEventListener('click', function(e) {
+    e.stopPropagation();
+    var obj = getActiveDesignObj(); if (!obj) return;
+    var isBold = obj.fontWeight === 'bold';
+    obj.set('fontWeight', isBold ? 'normal' : 'bold');
+    this.style.borderColor = isBold ? 'var(--color-border)' : 'var(--color-accent)';
+    if (obj.type === 'curvedText') obj._calcBounds();
+    canvas.renderAll();
+    saveHistory();
+  });
+  
+  document.getElementById('btn-italic').addEventListener('click', function(e) {
+    e.stopPropagation();
+    var obj = getActiveDesignObj(); if (!obj) return;
+    var isItalic = obj.fontStyle === 'italic';
+    obj.set('fontStyle', isItalic ? 'normal' : 'italic');
+    this.style.borderColor = isItalic ? 'var(--color-border)' : 'var(--color-accent)';
+    if (obj.type === 'curvedText') obj._calcBounds();
+    canvas.renderAll();
+    saveHistory();
+  });
+  
+  ['left', 'center', 'right'].forEach(function(align) {
+    document.getElementById('btn-align-' + align).addEventListener('click', function(e) {
+      e.stopPropagation();
+      var obj = getActiveDesignObj(); if (!obj) return;
+      obj.set('textAlign', align);
+      if (obj.type === 'curvedText') obj._calcBounds();
+      canvas.renderAll();
+      saveHistory();
+    });
+  });
+
+  document.getElementById('prop-radius').addEventListener('input', function() {
+    var obj = getActiveDesignObj();
+    if (!obj || obj.type !== 'curvedText') return;
+    var val = parseInt(this.value, 10);
+    if (val === 0) val = 1;
+    obj.radius = val;
+    obj._calcBounds();
+    canvas.renderAll();
+  });
+  document.getElementById('prop-radius').addEventListener('change', saveHistory);
+
+  document.getElementById('prop-color').addEventListener('input', function() {
+    var obj = getActiveDesignObj(); if (!obj) return;
+    obj.set('fill', this.value);
+    canvas.renderAll();
+  });
+  document.getElementById('prop-color').addEventListener('change', saveHistory);
+
+  canvas.on('object:modified', saveHistory);
+
+  /* ─── Image filters ──────────────────────────────────── */
+  function applyImageFilter() {
+    var obj = getActiveDesignObj();
+    if (!obj || obj.type !== 'image') return;
+    
+    obj.filters = [];
+    var brightness = parseFloat(document.getElementById('prop-brightness').value);
+    var grayscale  = document.getElementById('prop-grayscale').checked;
+    
+    if (brightness !== 0) {
+      obj.filters.push(new fabric.Image.filters.Brightness({ brightness: brightness }));
+    }
+    if (grayscale) {
+      obj.filters.push(new fabric.Image.filters.Grayscale());
+    }
+    
+    obj.applyFilters();
+    obj.dirty = true;
+    canvas.renderAll();
+  }
+  document.getElementById('prop-brightness').addEventListener('input',  applyImageFilter);
+  document.getElementById('prop-brightness').addEventListener('change', saveHistory);
+  document.getElementById('prop-grayscale').addEventListener('change', function() { applyImageFilter(); saveHistory(); });
+
+  /* ─── Delete / clear ─────────────────────────────────── */
+  function deleteSelected() {
+    var obj = canvas.getActiveObject();
+    if (!obj) return;
+    if (obj.type === 'activeSelection') {
+      obj.forEachObject(function(o) { canvas.remove(o); });
+    } else {
+      canvas.remove(obj);
+    }
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    saveHistory();
+  }
+  window.deleteSelected = deleteSelected;
+
+  function clearCanvas() {
+    var objs = canvas.getObjects();
+    if (!objs.length) return;
+    objs.forEach(function(o) { canvas.remove(o); });
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    saveHistory();
+  }
+  window.clearCanvas = clearCanvas;
+
+  /* ─── Accordion ──────────────────────────────────────── */
+  function toggleAccordion(element) {
+    document.querySelectorAll('.tool-card').forEach(function(card) {
+      if (card !== element) card.classList.remove('active');
+    });
+    element.classList.toggle('active');
+  }
+  window.toggleAccordion = toggleAccordion;
+
+  /* ─── Preview Modal Logic ───────────────────────── */
+  function closePreviewModal() {
+    document.getElementById('preview-modal').classList.add('hidden');
+  }
+  window.closePreviewModal = closePreviewModal;
+
+  function showPreview() {
+    saveAreaState();
+    document.getElementById('preview-modal').classList.remove('hidden');
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    document.getElementById('preview-front').src = canvas.toDataURL({ format: 'png', multiplier: 2 });
+
+    var otherArea = (currentArea === 'front') ? 'back' : 'front';
+    if (areaStates[otherArea] && areaStates[otherArea].json) {
+      var origArea  = currentArea;
+      var origState = areaStates[origArea];
+      isRestoringState = true;
+      canvas.loadFromJSON(areaStates[otherArea].json, function() {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+        document.getElementById('preview-back').src = canvas.toDataURL({ format: 'png', multiplier: 2 });
+        if (origState && origState.json) {
+          canvas.loadFromJSON(origState.json, function() {
+            canvas.renderAll();
+            isRestoringState = false;
+          });
+        } else {
+          isRestoringState = false;
+        }
+      });
+    } else {
+      document.getElementById('preview-back').src = (currentArea === 'front') ? (backBgUrl || '') : (frontBgUrl || '');
+    }
+  }
+  window.showPreview = showPreview;
+
+  /* ─── OFF-SCREEN RENDERER FOR CART ───────────────────── */
+  function generateOffscreenImage(json, bgUrl, callback) {
+    var tempCanvas = new fabric.StaticCanvas(null, { width: CANVAS_W, height: CANVAS_H });
+    
+    var finishRender = function() {
+      if (bgUrl && bgUrl.indexOf('no-image') === -1) {
+        var finalUrl = bgUrl;
+        if(bgUrl.indexOf('//') === 0) finalUrl = 'https:' + bgUrl;
+        
+        fabric.Image.fromURL(finalUrl, function(img) {
+          if (img) {
+            var scaleFactor = Math.min(CANVAS_W / img.width, CANVAS_H / img.height);
+            tempCanvas.setBackgroundImage(img, function() {
+              tempCanvas.renderAll();
+              callback(tempCanvas.toDataURL({ format: 'png', multiplier: 1.5 }));
+            }, { originX: 'center', originY: 'center', left: CANVAS_W/2, top: CANVAS_H/2, crossOrigin: 'anonymous' });
+          } else {
+            callback(tempCanvas.toDataURL({ format: 'png', multiplier: 1.5 }));
+          }
+        }, { crossOrigin: 'anonymous' });
+      } else {
+        callback(tempCanvas.toDataURL({ format: 'png', multiplier: 1.5 }));
+      }
+    };
+
+    if (json) {
+      tempCanvas.loadFromJSON(json, function() {
+        finishRender();
+      });
+    } else {
+      finishRender();
+    }
+  }
+
+  /* ─── Cart submit ────────────────────────────────────── */
+  function dataURLtoFile(dataurl, filename) {
+    var arr   = dataurl.split(',');
+    var mimeMatch = arr[0].match(/:(.*?);/);
+    var mime  = mimeMatch ? mimeMatch[1] : 'image/png';
+    var bstr  = atob(arr[arr.length - 1]);
+    var n     = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  function handleCartSubmit(e) {
+    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+    if (window.isSubmitting) return;
+    
+    var btn = document.getElementById('add-to-cart-submit-bottom');
+    if(btn) { btn.innerText = 'Processing Order...'; btn.disabled  = true; }
+    window.isSubmitting = true;
+
+    saveAreaState();
+
+    var frontState = areaStates['front'] ? areaStates['front'].json : null;
+    var backState = areaStates['back'] ? areaStates['back'].json : null;
+
+    generateOffscreenImage(frontState, frontBgUrl, function(frontDataURL) {
+      generateOffscreenImage(backState, backBgUrl, function(backDataURL) {
+        
+        var frontFile = dataURLtoFile(frontDataURL, 'Front-View.png');
+        var backFile  = dataURLtoFile(backDataURL, 'Back-View.png');
+
+        var qty           = parseInt(document.getElementById('quantity').value, 10) || 1;
+        var bundleId      = 'bundle-' + Date.now();
+        var mainVariantId = document.getElementById('selected-variant-id').value;
+
+        var selectedAddons = [];
+        document.querySelectorAll('.addon-checkbox:checked').forEach(function(cb) {
+          selectedAddons.push({
+            vid:   cb.getAttribute('data-vid'),
+            label: cb.getAttribute('data-label'),
+            price: parseInt(cb.getAttribute('data-price') || '0', 10)
+          });
+        });
+
+        var mainFormData = new FormData();
+        mainFormData.append('id', mainVariantId);
+        mainFormData.append('quantity', qty);
+        
+        mainFormData.append('properties[Front View Design]', frontFile);
+        mainFormData.append('properties[Back View Design]',  backFile);
+        mainFormData.append('properties[_bundle_id]',      bundleId);
+        
+        selectedAddons.forEach(function(addon) {
+          mainFormData.append('properties[' + addon.label + ']', formatMoney(addon.price));
+        });
+
+        // 🟢 NEW: Capture Custom Metafield Inputs 
+        document.querySelectorAll('.custom-metafield-input').forEach(function(input) {
+          if (input.value.trim() !== '') {
+            mainFormData.append('properties[' + input.getAttribute('data-label') + ']', input.value.trim());
+          }
+        });
+
+        var cartDrawerEl = document.querySelector('cart-drawer');
+        var rootPath = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) ? window.Shopify.routes.root : '/';
+
+        if (selectedAddons.length === 0) {
+          mainFormData.append('sections', cartDrawerEl ? 'cart-drawer,cart-icon-bubble' : 'cart-icon-bubble');
+          mainFormData.append('sections_url', window.location.pathname);
+        }
+
+        fetch(rootPath + 'cart/add.js', {
+          method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+          body: mainFormData
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            return response.text().then(function(text) {
+              throw new Error('Failed to add main item: ' + text);
+            });
+          }
+          return response.json();
+        })
+        .then(function(mainData) {
+          if (selectedAddons.length > 0) {
+            
+            var addonsPayload = {
+              items: selectedAddons.map(function(addon) {
+                return {
+                  id: addon.vid,
+                  quantity: qty,
+                  properties: {
+                    _bundle_id: bundleId,
+                    _hidden_addon: 'true',
+                    _parent_variant: mainVariantId
+                  }
+                };
+              })
+            };
+
+            if (cartDrawerEl) {
+              addonsPayload.sections = 'cart-drawer,cart-icon-bubble';
+              addonsPayload.sections_url = window.location.pathname;
+            }
+
+            return fetch(rootPath + 'cart/add.js', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+              },
+              body: JSON.stringify(addonsPayload)
+            })
+            .then(function(res) {
+              if (!res.ok) throw new Error('Failed to add customizations');
+              return res.json();
+            });
+          } else {
+            return mainData;
+          }
+        })
+        .then(function(finalData) {
+          if (cartDrawerEl) {
+            if (typeof cartDrawerEl.renderContents === 'function') cartDrawerEl.renderContents(finalData);
+            if (typeof cartDrawerEl.open === 'function') cartDrawerEl.open();
+            cartDrawerEl.classList.remove('is-empty');
+          } else {
+            window.location.href = rootPath + 'cart';
+          }
+          showToast('Added to cart!');
+        })
+        .catch(function(error) {
+          console.error('Cart error:', error);
+          showToast('Something went wrong adding to cart.', 'error');
+        })
+        .finally(function() {
+          if(btn) { btn.innerText = 'Add to Cart'; btn.disabled  = false; }
+          window.isSubmitting = false;
+        });
+      });
+    });
+  }
+  window.handleCartSubmit = handleCartSubmit;
+
+  /* ─── Init ───────────────────────────────────────────── */
+  historyData.push(JSON.stringify(canvas.toJSON(CUSTOM_PROPS)));
+  historyIdx = 0;
+
+  initFontGrid();
+  initVariantState();
+  
+  findAndUpdateVariant();
+  
+  if(!currentBgUrl) { currentBgUrl = frontBgUrl; }
+  setProductBackground(currentBgUrl);
+
+})();
+</script>
