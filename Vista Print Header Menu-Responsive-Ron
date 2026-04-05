@@ -5,6 +5,7 @@
   - Nested Sub-menus with Accordions (Mobile)
   - Mobile layout matching VistaPrint styling
   - Centered Search Bar on Desktop
+  - SessionStorage based Exact Active Menu Highlighting (Fixed Multiple Underlines)
 {% endcomment %}
 
 <style>
@@ -86,6 +87,7 @@
     background-color: var(--vh-menu-hover); transform: scaleX(0); transition: transform 0.3s ease;
   }
 
+  /* Hover & JS Active Class */
   .vista-nav-item:hover .vista-nav-link, .vista-nav-link.vista-active { color: var(--vh-menu-hover); }
   .vista-nav-item:hover .vista-nav-link::after, .vista-nav-link.vista-active::after { transform: scaleX(1); }
 
@@ -153,7 +155,7 @@
   .vm-panel-sub { transform: translateX(100%); }
   .vm-panel-sub.slide-in { transform: translateX(0); }
 
-  /* Mobile Level 1 List (MOBILE 2) */
+  /* Mobile Level 1 List */
   .vm-nav-list { list-style: none; padding: 0; margin: 0; }
   .vm-nav-list > li > a {
     display: flex; justify-content: space-between; align-items: center;
@@ -162,7 +164,7 @@
   }
   .vm-nav-list > li > a svg { width: 18px; height: 18px; color: #666; }
 
-  /* Mobile Level 2 Nested (MOBILE 3) */
+  /* Mobile Level 2 Nested */
   .vm-back-btn {
     display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: none;
     padding: 15px 20px; font-size: 18px; font-weight: 600; color: #000;
@@ -197,7 +199,7 @@
 
 
   /* =========================================
-     RESPONSIVE DESIGN (Matching Screenshots)
+     RESPONSIVE DESIGN 
      ========================================= */
   @media screen and (max-width: 1024px) {
     .vista-mega-left, .vista-mega-right { flex-wrap: wrap; }
@@ -207,22 +209,15 @@
   }
 
   @media screen and (max-width: 768px) {
-    /* Hide Desktop Nav */
     .vista-nav-wrapper { display: none; }
-    
-    /* Top Bar Reorder */
     .vista-top-bar { flex-wrap: wrap; padding: 15px 15px 10px; gap: 10px; }
-    
     .vista-mobile-hamburger { display: block; order: 1; flex: 1; text-align: left; }
     .vista-logo { order: 2; flex: 2; display: flex; justify-content: center; }
     .vista-logo img { max-width: 120px; }
-    
     .vista-search-form { order: 4; flex-basis: 100%; max-width: 100%; margin: 5px 0 0 0; }
-    
     .vista-icons { order: 3; flex: 1; justify-content: flex-end; gap: 15px; }
-    .vista-icon-item { font-size: 0; gap: 0; } /* Hide Text, Keep Icons */
+    .vista-icon-item { font-size: 0; gap: 0; } 
     .vista-icon-item svg { width: 24px; height: 24px; }
-    
     .layout-full_width, .layout-container { padding-left: 10px; padding-right: 10px; }
   }
 </style>
@@ -252,7 +247,7 @@
         </a>
       </div>
 
-      <!-- Search Form (Moved above icons for perfect centering) -->
+      <!-- Search Form -->
       <form class="vista-search-form" action="/search" method="get" role="search">
         <input type="text" name="q" placeholder="{{ section.settings.search_placeholder }}">
         <button type="submit" class="vista-search-icon">
@@ -288,7 +283,8 @@
       <ul class="vista-nav">
         {% for link in linklists[section.settings.main_menu].links %}
           <li class="vista-nav-item">
-            <a href="{{ link.url }}" class="vista-nav-link {% if link.active or link.child_active %}vista-active{% endif %}">
+            <!-- Liquid Class remvoed to avoid duplicate highlights. JS will handle it accurately -->
+            <a href="{{ link.url }}" class="vista-nav-link">
               {{ link.title }}
             </a>
 
@@ -498,7 +494,53 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Drawer Logic
+    
+    // --- 1. JS diye exact active menu logic (Ekadhik underline bondho korar jonno) ---
+    const currentPath = window.location.pathname;
+    const desktopLinks = document.querySelectorAll('.vista-nav-link');
+    let foundMatch = false;
+    
+    // Check if browser remembers which menu item was clicked
+    const clickedLinkText = sessionStorage.getItem('vistaActiveMenu');
+
+    // Remove any active classes first to reset everything
+    desktopLinks.forEach(link => {
+      link.classList.remove('vista-active');
+      
+      // Save exact link name on click
+      link.addEventListener('click', function() {
+        sessionStorage.setItem('vistaActiveMenu', this.innerText.trim());
+      });
+
+      const linkUrlObj = new URL(link.href, window.location.origin);
+      const linkPath = linkUrlObj.pathname;
+      const isPathMatch = (currentPath === linkPath || currentPath === linkPath + '/');
+
+      // If Path matches AND it's exactly the one clicked previously
+      if (isPathMatch && clickedLinkText === link.innerText.trim()) {
+        link.classList.add('vista-active');
+        foundMatch = true;
+      }
+    });
+
+    // Fallback: If no exact click memory exists (e.g. direct visit), highlight ONLY the very first matching URL
+    if (!foundMatch) {
+      for (let link of desktopLinks) {
+        const hrefAttr = link.getAttribute('href');
+        // Skip empty or # links to prevent bugs
+        if (hrefAttr === '#' || hrefAttr === '') continue;
+
+        const linkUrlObj = new URL(link.href, window.location.origin);
+        const linkPath = linkUrlObj.pathname;
+        
+        if (currentPath === linkPath || currentPath === linkPath + '/') {
+          link.classList.add('vista-active');
+          break; // <-- IMPORTANT: This stops after finding 1 match so we never get duplicate underlines
+        }
+      }
+    }
+    
+    // --- Mobile Drawer Logic ---
     const triggerBtn = document.getElementById('vista-menu-trigger');
     const closeBtn = document.getElementById('vm-close');
     const drawer = document.getElementById('vm-drawer');
