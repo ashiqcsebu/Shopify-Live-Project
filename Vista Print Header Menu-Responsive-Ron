@@ -1,0 +1,765 @@
+{% comment %}
+  Vista Header Section
+  Updated with:
+  - Professional Mobile Hamburger Menu (Slide-in Drawer)
+  - Nested Sub-menus with Accordions (Mobile)
+  - Mobile layout matching VistaPrint styling
+{% endcomment %}
+
+<style>
+  :root {
+    --vh-bg-color: {{ section.settings.bg_color }};
+    --vh-menu-size: {{ section.settings.menu_font_size }}px;
+    --vh-menu-color: {{ section.settings.menu_color }};
+    --vh-menu-hover: {{ section.settings.menu_hover_color }};
+    
+    --vh-drop-bg: {{ section.settings.dropdown_bg_color }};
+    --vh-head-size: {{ section.settings.dropdown_heading_size }}px;
+    --vh-head-color: {{ section.settings.dropdown_heading_color }};
+    
+    --vh-link-size: {{ section.settings.dropdown_link_size }}px;
+    --vh-link-color: {{ section.settings.dropdown_link_color }};
+    --vh-link-hover: {{ section.settings.dropdown_link_hover }};
+  }
+
+  .vista-header {
+    font-family: var(--font-body-family), Arial, sans-serif;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: var(--vh-bg-color);
+    width: 100%;
+    position: relative;
+  }
+
+  /* Width Layout Classes */
+  .layout-full_width { width: 100%; padding-left: 40px; padding-right: 40px; }
+  .layout-container { max-width: 1400px; margin: 0 auto; width: 100%; padding-left: 20px; padding-right: 20px; }
+  .layout-theme_default { max-width: 1200px; margin: 0 auto; width: 100%; padding-left: 15px; padding-right: 15px; }
+  
+  /* Top Bar */
+  .vista-top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 15px; padding-bottom: 15px; gap: 20px;
+  }
+  
+  .vista-logo img { max-width: {{ section.settings.logo_width }}px; height: auto; display: block; }
+  .vista-mobile-hamburger { display: none; background: transparent; border: none; padding: 5px; cursor: pointer; color: #333; }
+  
+  .vista-search-form { flex-grow: 1; max-width: 800px; position: relative; }
+  .vista-search-form input {
+    width: 100%; padding: 12px 40px 12px 20px; border: 1px solid #757575; border-radius: 4px; font-size: 16px; outline: none; transition: border-color 0.3s;
+  }
+  .vista-search-form input:focus { border-color: #000; }
+  .vista-search-icon {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; background: transparent; border: none; padding: 5px; color: #333;
+  }
+
+  /* Icons */
+  .vista-icons { display: flex; align-items: center; gap: 25px; font-size: 14px; }
+  .vista-icon-item {
+    display: flex; align-items: center; gap: 8px; color: #333; text-decoration: none; transition: color 0.3s; position: relative;
+  }
+  .vista-icon-item:hover { color: #000; }
+  .vista-icon-item svg { width: 22px; height: 22px; }
+
+  .vista-badge {
+    position: absolute; top: -8px; left: 12px; background-color: #e32c2b; color: #fff;
+    font-size: 10px; font-weight: bold; width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Desktop Main Navigation */
+  .vista-nav-wrapper { border-top: 1px solid #f5f5f5; }
+  .vista-nav { display: flex; justify-content: center; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 30px; }
+  .vista-nav-item { position: static; }
+  
+  .vista-nav-link {
+    display: block; text-decoration: none; color: var(--vh-menu-color);
+    font-weight: 500; font-size: var(--vh-menu-size); padding: 15px 0; position: relative;
+    transition: color 0.3s ease;
+  }
+  
+  .vista-nav-link::after {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+    background-color: var(--vh-menu-hover); transform: scaleX(0); transition: transform 0.3s ease;
+  }
+
+  .vista-nav-item:hover .vista-nav-link, .vista-nav-link.vista-active { color: var(--vh-menu-hover); }
+  .vista-nav-item:hover .vista-nav-link::after, .vista-nav-link.vista-active::after { transform: scaleX(1); }
+
+  /* Mega Menu Dropdown (Desktop) */
+  .vista-mega-menu {
+    visibility: hidden; opacity: 0; position: absolute; top: 100%; left: 0; width: 100vw;
+    background: var(--vh-drop-bg); border-top: 1px solid #e0e0e0;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 999; padding: 40px 0;
+    transition: all 0.3s ease; transform: translateY(10px);
+  }
+  
+  .vista-nav-item:hover .vista-mega-menu { visibility: visible; opacity: 1; transform: translateY(0); }
+  .vista-mega-wrapper { display: flex; justify-content: space-between; gap: 40px; }
+  .vista-mega-left, .vista-mega-right { display: flex; flex-direction: row; gap: 30px; flex: 1; }
+  .vista-divider { width: 1px; background-color: #e0e0e0; flex-shrink: 0; }
+  .vista-menu-col { display: flex; flex-direction: column; flex: 1; }
+  .vista-menu-col h4 { font-size: var(--vh-head-size); font-weight: 700; margin-bottom: 15px; text-transform: capitalize; }
+  .vista-menu-col h4, .vista-menu-col h4 a { color: var(--vh-head-color); text-decoration: none; transition: opacity 0.2s; }
+  .vista-menu-col ul { list-style: none; padding: 0; margin: 0; }
+  .vista-menu-col > ul > li { margin-bottom: 12px; }
+  .vista-menu-col ul li a { text-decoration: none; color: var(--vh-link-color); font-size: var(--vh-link-size); transition: color 0.2s; display: inline-block; }
+  .vista-menu-col ul li a:hover { color: var(--vh-link-hover); text-decoration: underline; }
+
+  /* Promo Banner Desktop */
+  .vista-promo { display: flex; flex-direction: column; gap: 15px; flex: 1; }
+  .vista-promo img { border-radius: 8px; max-width: 100%; height: auto; object-fit: cover; display: block; }
+  .vista-promo a { overflow: hidden; border-radius: 8px; display: block; }
+  .vista-promo span { font-weight: 600; font-size: var(--vh-head-size); color: var(--vh-head-color); }
+
+  /* =========================================
+     MOBILE DRAWER MENU STYLES
+     ========================================= */
+  .vista-mobile-drawer-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.5); z-index: 9998;
+    opacity: 0; visibility: hidden; transition: 0.3s ease;
+  }
+  .vista-mobile-drawer-overlay.active { opacity: 1; visibility: visible; }
+  
+  .vista-mobile-drawer {
+    position: fixed; top: 0; left: -100%; width: 90%; max-width: 400px; height: 100vh;
+    background: #fff; z-index: 9999; transition: left 0.3s ease;
+    display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .vista-mobile-drawer.active { left: 0; }
+  
+  .vm-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px; border-bottom: 1px solid #e0e0e0;
+  }
+  .vm-header-logo img { max-height: 30px; }
+  .vm-close-btn { background: none; border: none; font-size: 28px; cursor: pointer; color: #333; line-height: 1; }
+  
+  .vm-panels-wrapper { position: relative; flex: 1; overflow-x: hidden; }
+  .vm-panel {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    overflow-y: auto; background: #fff; transition: transform 0.3s ease;
+    padding: 10px 0 30px;
+  }
+  
+  /* Panel Animation States */
+  .vm-panel-main { transform: translateX(0); }
+  .vm-panel-main.slide-out { transform: translateX(-100%); }
+  .vm-panel-sub { transform: translateX(100%); }
+  .vm-panel-sub.slide-in { transform: translateX(0); }
+
+  /* Mobile Level 1 List (MOBILE 2) */
+  .vm-nav-list { list-style: none; padding: 0; margin: 0; }
+  .vm-nav-list > li > a {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 20px; text-decoration: none; color: #333;
+    font-weight: 600; font-size: 16px; border-bottom: 1px solid #f0f0f0;
+  }
+  .vm-nav-list > li > a svg { width: 18px; height: 18px; color: #666; }
+
+  /* Mobile Level 2 Nested (MOBILE 3) */
+  .vm-back-btn {
+    display: flex; align-items: center; gap: 10px; width: 100%; background: none; border: none;
+    padding: 15px 20px; font-size: 18px; font-weight: 600; color: #000;
+    cursor: pointer; border-bottom: 1px solid #e0e0e0; text-align: left;
+  }
+  .vm-back-btn svg { width: 20px; height: 20px; }
+  
+  .vm-see-all {
+    display: block; padding: 15px 20px; font-size: 14px; font-weight: 600;
+    color: #333; text-decoration: none; border-bottom: 1px solid #f0f0f0;
+  }
+  
+  /* Mobile Accordions */
+  .vm-accordion-item { border-bottom: 1px solid #f0f0f0; }
+  .vm-accordion-header {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; background: none; border: none; padding: 15px 20px;
+    font-size: 14px; font-weight: 600; color: #000; cursor: pointer; text-align: left;
+  }
+  .vm-accordion-header svg { width: 16px; height: 16px; transition: transform 0.3s; }
+  .vm-accordion-item.open .vm-accordion-header svg { transform: rotate(180deg); }
+  
+  .vm-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .vm-accordion-body ul { list-style: none; padding: 0 20px 10px 20px; margin: 0; }
+  .vm-accordion-body ul li a {
+    display: block; padding: 10px 0; font-size: 14px; color: #555; text-decoration: none;
+  }
+  
+  .vm-promo-box { padding: 20px; }
+  .vm-promo-box img { width: 100%; border-radius: 8px; display: block; }
+  .vm-promo-box span { display: block; margin-top: 10px; font-weight: 600; font-size: 14px; }
+
+
+  /* =========================================
+     RESPONSIVE DESIGN (Matching Screenshots)
+     ========================================= */
+  @media screen and (max-width: 1024px) {
+    .vista-mega-left, .vista-mega-right { flex-wrap: wrap; }
+    .vista-menu-col { min-width: 45%; }
+    .vista-mega-wrapper { flex-direction: column; gap: 20px; }
+    .vista-divider { width: 100%; height: 1px; margin: 20px 0; }
+  }
+
+  @media screen and (max-width: 768px) {
+    /* Hide Desktop Nav */
+    .vista-nav-wrapper { display: none; }
+    
+    /* Top Bar Reorder */
+    .vista-top-bar { flex-wrap: wrap; padding: 15px 15px 10px; gap: 10px; }
+    
+    .vista-mobile-hamburger { display: block; order: 1; flex: 1; text-align: left; }
+    .vista-logo { order: 2; flex: 2; display: flex; justify-content: center; }
+    .vista-logo img { max-width: 120px; }
+    
+    .vista-icons { order: 3; flex: 1; justify-content: flex-end; gap: 15px; }
+    .vista-icon-item { font-size: 0; gap: 0; } /* Hide Text, Keep Icons */
+    .vista-icon-item svg { width: 24px; height: 24px; }
+    
+    /* Search Bar Full Width Below */
+    .vista-search-form { order: 4; flex-basis: 100%; max-width: 100%; margin-top: 5px; }
+    .layout-full_width, .layout-container { padding-left: 10px; padding-right: 10px; }
+  }
+</style>
+
+<div class="vista-header">
+  <!-- Desktop & Mobile Top Bar -->
+  <div class="layout-{{ section.settings.top_bar_width }}">
+    <div class="vista-top-bar">
+      
+      <!-- Hamburger Icon (Mobile Only) -->
+      <button class="vista-mobile-hamburger" id="vista-menu-trigger" aria-label="Open Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Logo -->
+      <div class="vista-logo">
+        <a href="{{ routes.root_url }}">
+          {% if section.settings.logo %}
+            <img src="{{ section.settings.logo | img_url: 'master' }}" alt="{{ shop.name }}">
+          {% else %}
+            <h2 style="margin:0; font-size: 20px;">{{ shop.name }}</h2>
+          {% endif %}
+        </a>
+      </div>
+
+      <!-- Icons -->
+      <div class="vista-icons">
+        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="vista-icon-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Sign in
+        </a>
+        <a href="/pages/wishlist" class="vista-icon-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          Wishlist
+        </a>
+        <a href="{{ routes.cart_url }}" class="vista-icon-item">
+          <div style="position: relative;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="vista-badge cart-count m-cart-count" data-cart-count>{{ cart.item_count }}</span>
+          </div>
+          Cart
+        </a>
+      </div>
+
+      <!-- Search Form -->
+      <form class="vista-search-form" action="/search" method="get" role="search">
+        <input type="text" name="q" placeholder="{{ section.settings.search_placeholder }}">
+        <button type="submit" class="vista-search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Desktop Main Navigation -->
+  <div class="vista-nav-wrapper">
+    <div class="layout-{{ section.settings.main_menu_width }}">
+      <ul class="vista-nav">
+        {% for link in linklists[section.settings.main_menu].links %}
+          <li class="vista-nav-item">
+            <a href="{{ link.url }}" class="vista-nav-link {% if link.active or link.child_active %}vista-active{% endif %}">
+              {{ link.title }}
+            </a>
+
+            {% assign has_mega_menu = false %}
+            {% for block in section.blocks %}
+              {% assign menu_name_lower = block.settings.menu_item_name | downcase | strip %}
+              {% assign link_title_lower = link.title | downcase | strip %}
+              {% if menu_name_lower == link_title_lower %}
+                {% assign has_mega_menu = true %}
+                {% assign mega_block = block %}
+              {% endif %}
+            {% endfor %}
+
+            {% if has_mega_menu %}
+              <!-- Desktop Dropdown Render (Unchanged) -->
+              <div class="vista-mega-menu">
+                <div class="vista-mega-wrapper layout-{{ section.settings.dropdown_width }}">
+                  <div class="vista-mega-left">
+                    {% for i in (1..3) %}
+                      {% capture col_heading %}col_{{ i }}_heading{% endcapture %}
+                      {% capture col_menu %}col_{{ i }}_menu{% endcapture %}
+                      {% capture col_p_list %}col_{{ i }}_product_list{% endcapture %}
+                      {% capture col_c_list %}col_{{ i }}_collection_list{% endcapture %}
+                      {% capture col_single_p %}col_{{ i }}_product{% endcapture %}
+                      {% capture col_single_c %}col_{{ i }}_collection{% endcapture %}
+
+                      {% if mega_block.settings[col_p_list] != blank or mega_block.settings[col_c_list] != blank or mega_block.settings[col_menu] != blank or mega_block.settings[col_single_p] != blank or mega_block.settings[col_single_c] != blank %}
+                        <div class="vista-menu-col">
+                          {% if mega_block.settings[col_heading] != blank %}
+                            <h4>{{ mega_block.settings[col_heading] }}</h4>
+                          {% elsif mega_block.settings[col_menu] != blank %}
+                            <h4><a href="{{ linklists[mega_block.settings[col_menu]].url }}">{{ linklists[mega_block.settings[col_menu]].title }}</a></h4>
+                          {% endif %}
+
+                          {% if mega_block.settings[col_p_list] != blank %}
+                            <ul>{% for product in mega_block.settings[col_p_list] %}<li><a href="{{ product.url }}">{{ product.title }}</a></li>{% endfor %}</ul>
+                          {% elsif mega_block.settings[col_c_list] != blank %}
+                            <ul>{% for collection in mega_block.settings[col_c_list] %}<li><a href="{{ collection.url }}">{{ collection.title }}</a></li>{% endfor %}</ul>
+                          {% elsif mega_block.settings[col_menu] != blank %}
+                            <ul>{% for child_link in linklists[mega_block.settings[col_menu]].links %}<li><a href="{{ child_link.url }}">{{ child_link.title }}</a></li>{% endfor %}</ul>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                  <div class="vista-divider"></div>
+                  <div class="vista-mega-right">
+                    {% for i in (4..6) %}
+                      {% capture col_heading %}col_{{ i }}_heading{% endcapture %}
+                      {% capture col_menu %}col_{{ i }}_menu{% endcapture %}
+                      {% capture col_p_list %}col_{{ i }}_product_list{% endcapture %}
+                      {% capture col_c_list %}col_{{ i }}_collection_list{% endcapture %}
+                      {% capture col_single_p %}col_{{ i }}_product{% endcapture %}
+                      {% capture col_single_c %}col_{{ i }}_collection{% endcapture %}
+
+                      {% if mega_block.settings[col_p_list] != blank or mega_block.settings[col_c_list] != blank or mega_block.settings[col_menu] != blank or mega_block.settings[col_single_p] != blank or mega_block.settings[col_single_c] != blank %}
+                        <div class="vista-menu-col">
+                          {% if mega_block.settings[col_heading] != blank %}
+                            <h4>{{ mega_block.settings[col_heading] }}</h4>
+                          {% elsif mega_block.settings[col_menu] != blank %}
+                            <h4><a href="{{ linklists[mega_block.settings[col_menu]].url }}">{{ linklists[mega_block.settings[col_menu]].title }}</a></h4>
+                          {% endif %}
+
+                          {% if mega_block.settings[col_p_list] != blank %}
+                            <ul>{% for product in mega_block.settings[col_p_list] %}<li><a href="{{ product.url }}">{{ product.title }}</a></li>{% endfor %}</ul>
+                          {% elsif mega_block.settings[col_c_list] != blank %}
+                            <ul>{% for collection in mega_block.settings[col_c_list] %}<li><a href="{{ collection.url }}">{{ collection.title }}</a></li>{% endfor %}</ul>
+                          {% elsif mega_block.settings[col_menu] != blank %}
+                            <ul>{% for child_link in linklists[mega_block.settings[col_menu]].links %}<li><a href="{{ child_link.url }}">{{ child_link.title }}</a></li>{% endfor %}</ul>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                    {% if mega_block.settings.promo_img %}
+                    <div class="vista-promo">
+                      <a href="{{ mega_block.settings.promo_link }}">
+                        <img src="{{ mega_block.settings.promo_img | img_url: '400x' }}" alt="{{ mega_block.settings.promo_text }}">
+                      </a>
+                      {% if mega_block.settings.promo_text != blank %}<span>{{ mega_block.settings.promo_text }}</span>{% endif %}
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================
+     MOBILE MENU DRAWER (HTML)
+     ========================================= -->
+<div class="vista-mobile-drawer-overlay" id="vm-overlay"></div>
+<div class="vista-mobile-drawer" id="vm-drawer">
+  <div class="vm-header">
+    <div class="vm-header-logo">
+      {% if section.settings.logo %}
+        <img src="{{ section.settings.logo | img_url: 'master' }}" alt="{{ shop.name }}">
+      {% else %}
+        <strong>{{ shop.name }}</strong>
+      {% endif %}
+    </div>
+    <button class="vm-close-btn" id="vm-close">&times;</button>
+  </div>
+
+  <div class="vm-panels-wrapper">
+    <!-- Level 1: Main Menu -->
+    <div class="vm-panel vm-panel-main" id="vm-main">
+      <ul class="vm-nav-list">
+        {% for link in linklists[section.settings.main_menu].links %}
+          {% assign has_mega_menu = false %}
+          {% for block in section.blocks %}
+            {% assign menu_name_lower = block.settings.menu_item_name | downcase | strip %}
+            {% assign link_title_lower = link.title | downcase | strip %}
+            {% if menu_name_lower == link_title_lower %}
+              {% assign has_mega_menu = true %}
+            {% endif %}
+          {% endfor %}
+
+          <li>
+            {% if has_mega_menu %}
+              <a href="javascript:void(0);" class="vm-trigger-sub" data-target="vm-sub-{{ forloop.index }}">
+                {{ link.title }}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </a>
+            {% else %}
+              <a href="{{ link.url }}">{{ link.title }}</a>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Level 2: Sub Menus -->
+    {% for link in linklists[section.settings.main_menu].links %}
+      {% assign has_mega_menu = false %}
+      {% for block in section.blocks %}
+        {% assign menu_name_lower = block.settings.menu_item_name | downcase | strip %}
+        {% assign link_title_lower = link.title | downcase | strip %}
+        {% if menu_name_lower == link_title_lower %}
+          {% assign has_mega_menu = true %}
+          {% assign mega_block = block %}
+        {% endif %}
+      {% endfor %}
+
+      {% if has_mega_menu %}
+      <div class="vm-panel vm-panel-sub" id="vm-sub-{{ forloop.index }}">
+        <button class="vm-back-btn" data-target="vm-main">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          {{ link.title }}
+        </button>
+        <a href="{{ link.url }}" class="vm-see-all">See All {{ link.title }}</a>
+
+        <!-- Render Accordions for Columns 1 to 6 -->
+        {% for i in (1..6) %}
+          {% capture col_heading %}col_{{ i }}_heading{% endcapture %}
+          {% capture col_menu %}col_{{ i }}_menu{% endcapture %}
+          {% capture col_p_list %}col_{{ i }}_product_list{% endcapture %}
+          {% capture col_c_list %}col_{{ i }}_collection_list{% endcapture %}
+
+          {% if mega_block.settings[col_p_list] != blank or mega_block.settings[col_c_list] != blank or mega_block.settings[col_menu] != blank %}
+            <div class="vm-accordion-item">
+              <button class="vm-accordion-header">
+                {% if mega_block.settings[col_heading] != blank %}
+                  {{ mega_block.settings[col_heading] }}
+                {% elsif mega_block.settings[col_menu] != blank %}
+                  {{ linklists[mega_block.settings[col_menu]].title }}
+                {% else %}
+                  Products & Collections
+                {% endif %}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="vm-accordion-body">
+                <ul>
+                  {% if mega_block.settings[col_p_list] != blank %}
+                    {% for product in mega_block.settings[col_p_list] %}<li><a href="{{ product.url }}">{{ product.title }}</a></li>{% endfor %}
+                  {% elsif mega_block.settings[col_c_list] != blank %}
+                    {% for collection in mega_block.settings[col_c_list] %}<li><a href="{{ collection.url }}">{{ collection.title }}</a></li>{% endfor %}
+                  {% elsif mega_block.settings[col_menu] != blank %}
+                    {% for child_link in linklists[mega_block.settings[col_menu]].links %}<li><a href="{{ child_link.url }}">{{ child_link.title }}</a></li>{% endfor %}
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        <!-- Mobile Promo Banner -->
+        {% if mega_block.settings.promo_img %}
+        <div class="vm-promo-box">
+          <a href="{{ mega_block.settings.promo_link }}">
+            <img src="{{ mega_block.settings.promo_img | img_url: '500x' }}" alt="{{ mega_block.settings.promo_text }}">
+          </a>
+          {% if mega_block.settings.promo_text != blank %}<span>{{ mega_block.settings.promo_text }}</span>{% endif %}
+        </div>
+        {% endif %}
+
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Drawer Logic
+    const triggerBtn = document.getElementById('vista-menu-trigger');
+    const closeBtn = document.getElementById('vm-close');
+    const drawer = document.getElementById('vm-drawer');
+    const overlay = document.getElementById('vm-overlay');
+    
+    function openDrawer() {
+      drawer.classList.add('active');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+    
+    function closeDrawer() {
+      drawer.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      // Reset back to main panel after closing
+      setTimeout(() => {
+        document.getElementById('vm-main').classList.remove('slide-out');
+        document.querySelectorAll('.vm-panel-sub').forEach(p => p.classList.remove('slide-in'));
+      }, 300);
+    }
+
+    if(triggerBtn) triggerBtn.addEventListener('click', openDrawer);
+    if(closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    if(overlay) overlay.addEventListener('click', closeDrawer);
+
+    // Slide Panel Logic
+    const subTriggers = document.querySelectorAll('.vm-trigger-sub');
+    const backBtns = document.querySelectorAll('.vm-back-btn');
+    const mainPanel = document.getElementById('vm-main');
+
+    subTriggers.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        mainPanel.classList.add('slide-out');
+        document.getElementById(targetId).classList.add('slide-in');
+      });
+    });
+
+    backBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        mainPanel.classList.remove('slide-out');
+        this.closest('.vm-panel-sub').classList.remove('slide-in');
+      });
+    });
+
+    // Accordion Logic
+    const accordions = document.querySelectorAll('.vm-accordion-header');
+    accordions.forEach(acc => {
+      acc.addEventListener('click', function() {
+        const item = this.parentElement;
+        const body = this.nextElementSibling;
+        
+        // Toggle active class
+        item.classList.toggle('open');
+        
+        // Animate height
+        if (item.classList.contains('open')) {
+          body.style.maxHeight = body.scrollHeight + "px";
+        } else {
+          body.style.maxHeight = null;
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Vista Custom Header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logos & Layout Widths"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 50,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo Width",
+      "default": 150
+    },
+    {
+      "type": "select",
+      "id": "top_bar_width",
+      "label": "Top Bar Width",
+      "options": [
+        { "value": "full_width", "label": "Full Width" },
+        { "value": "container", "label": "Container Width (Minimog)" },
+        { "value": "theme_default", "label": "Theme Default" }
+      ],
+      "default": "full_width"
+    },
+    {
+      "type": "select",
+      "id": "main_menu_width",
+      "label": "Main Nav Width",
+      "options": [
+        { "value": "full_width", "label": "Full Width" },
+        { "value": "container", "label": "Container Width (Minimog)" },
+        { "value": "theme_default", "label": "Theme Default" }
+      ],
+      "default": "full_width"
+    },
+    {
+      "type": "select",
+      "id": "dropdown_width",
+      "label": "Dropdown Menu Width",
+      "options": [
+        { "value": "full_width", "label": "Full Width" },
+        { "value": "container", "label": "Container Width (Minimog)" },
+        { "value": "theme_default", "label": "Theme Default" }
+      ],
+      "default": "container"
+    },
+    {
+      "type": "header",
+      "content": "Typography & Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Header Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "min": 12, "max": 24, "step": 1, "unit": "px",
+      "label": "Main Menu Font Size",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "menu_color",
+      "label": "Main Menu Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "menu_hover_color",
+      "label": "Main Menu Hover/Active Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg_color",
+      "label": "Dropdown Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_heading_size",
+      "min": 12, "max": 24, "step": 1, "unit": "px",
+      "label": "Dropdown Heading Font Size",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "dropdown_heading_color",
+      "label": "Dropdown Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_link_size",
+      "min": 12, "max": 20, "step": 1, "unit": "px",
+      "label": "Dropdown Link Font Size",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_color",
+      "label": "Dropdown Link Color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_hover",
+      "label": "Dropdown Link Hover Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Placeholder Text",
+      "default": "Search"
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega Menu Dropdown",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_item_name",
+          "label": "Main Menu Item Name",
+          "info": "Type the exact name of the menu item to attach this mega menu."
+        },
+        { "type": "header", "content": "Left Section - Column 1" },
+        { "type": "text", "id": "col_1_heading", "label": "Custom Heading", "info": "Overrides menu title" },
+        { "type": "product_list", "id": "col_1_product_list", "label": "List up to 8 Products", "limit": 8 },
+        { "type": "collection_list", "id": "col_1_collection_list", "label": "OR List up to 8 Collections", "limit": 8 },
+        { "type": "link_list", "id": "col_1_menu", "label": "OR Select Menu" },
+        
+        { "type": "header", "content": "Left Section - Column 2" },
+        { "type": "text", "id": "col_2_heading", "label": "Custom Heading" },
+        { "type": "product_list", "id": "col_2_product_list", "label": "List up to 8 Products", "limit": 8 },
+        { "type": "collection_list", "id": "col_2_collection_list", "label": "OR List up to 8 Collections", "limit": 8 },
+        { "type": "link_list", "id": "col_2_menu", "label": "OR Select Menu" },
+
+        { "type": "header", "content": "Left Section - Column 3" },
+        { "type": "text", "id": "col_3_heading", "label": "Custom Heading" },
+        { "type": "product_list", "id": "col_3_product_list", "label": "List up to 8 Products", "limit": 8 },
+        { "type": "collection_list", "id": "col_3_collection_list", "label": "OR List up to 8 Collections", "limit": 8 },
+        { "type": "link_list", "id": "col_3_menu", "label": "OR Select Menu" },
+
+        { "type": "header", "content": "Right Section - Column 4" },
+        { "type": "text", "id": "col_4_heading", "label": "Custom Heading" },
+        { "type": "product_list", "id": "col_4_product_list", "label": "List up to 8 Products", "limit": 8 },
+        { "type": "collection_list", "id": "col_4_collection_list", "label": "OR List up to 8 Collections", "limit": 8 },
+        { "type": "link_list", "id": "col_4_menu", "label": "OR Select Menu" },
+
+        { "type": "header", "content": "Right Section - Column 5" },
+        { "type": "text", "id": "col_5_heading", "label": "Custom Heading" },
+        { "type": "product_list", "id": "col_5_product_list", "label": "List up to 8 Products", "limit": 8 },
+        { "type": "collection_list", "id": "col_5_collection_list", "label": "OR List up to 8 Collections", "limit": 8 },
+        { "type": "link_list", "id": "col_5_menu", "label": "OR Select Menu" },
+
+        { "type": "header", "content": "Right Section - Column 6" },
+        { "type": "text", "id": "col_6_heading", "label": "Custom Heading" },
+        { "type": "product_list", "id": "col_6_product_list", "label": "List up to 8 Products", "limit": 8 },
+        { "type": "collection_list", "id": "col_6_collection_list", "label": "OR List up to 8 Collections", "limit": 8 },
+        { "type": "link_list", "id": "col_6_menu", "label": "OR Select Menu" },
+
+        { "type": "header", "content": "Right Section - Promo Banner" },
+        { "type": "image_picker", "id": "promo_img", "label": "Banner Poster Image" },
+        { "type": "text", "id": "promo_text", "label": "Banner Text", "default": "Event Supplies" },
+        { "type": "url", "id": "promo_link", "label": "Banner Link" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Vista Custom Header" }
+  ]
+}
+{% endschema %}
+
