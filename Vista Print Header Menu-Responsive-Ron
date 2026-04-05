@@ -4,6 +4,7 @@
   - Professional Mobile Hamburger Menu (Slide-in Drawer)
   - Nested Sub-menus with Accordions (Mobile)
   - Mobile layout matching VistaPrint styling
+  - Centered Search Bar on Desktop
 {% endcomment %}
 
 <style>
@@ -41,10 +42,12 @@
     padding-top: 15px; padding-bottom: 15px; gap: 20px;
   }
   
+  .vista-logo { flex: 1; display: flex; align-items: center; justify-content: flex-start; }
   .vista-logo img { max-width: {{ section.settings.logo_width }}px; height: auto; display: block; }
+  
   .vista-mobile-hamburger { display: none; background: transparent; border: none; padding: 5px; cursor: pointer; color: #333; }
   
-  .vista-search-form { flex-grow: 1; max-width: 800px; position: relative; }
+  .vista-search-form { flex: 2; max-width: 800px; margin: 0 20px; position: relative; }
   .vista-search-form input {
     width: 100%; padding: 12px 40px 12px 20px; border: 1px solid #757575; border-radius: 4px; font-size: 16px; outline: none; transition: border-color 0.3s;
   }
@@ -54,7 +57,7 @@
   }
 
   /* Icons */
-  .vista-icons { display: flex; align-items: center; gap: 25px; font-size: 14px; }
+  .vista-icons { flex: 1; display: flex; align-items: center; justify-content: flex-end; gap: 25px; font-size: 14px; }
   .vista-icon-item {
     display: flex; align-items: center; gap: 8px; color: #333; text-decoration: none; transition: color 0.3s; position: relative;
   }
@@ -214,12 +217,12 @@
     .vista-logo { order: 2; flex: 2; display: flex; justify-content: center; }
     .vista-logo img { max-width: 120px; }
     
+    .vista-search-form { order: 4; flex-basis: 100%; max-width: 100%; margin: 5px 0 0 0; }
+    
     .vista-icons { order: 3; flex: 1; justify-content: flex-end; gap: 15px; }
     .vista-icon-item { font-size: 0; gap: 0; } /* Hide Text, Keep Icons */
     .vista-icon-item svg { width: 24px; height: 24px; }
     
-    /* Search Bar Full Width Below */
-    .vista-search-form { order: 4; flex-basis: 100%; max-width: 100%; margin-top: 5px; }
     .layout-full_width, .layout-container { padding-left: 10px; padding-right: 10px; }
   }
 </style>
@@ -249,6 +252,14 @@
         </a>
       </div>
 
+      <!-- Search Form (Moved above icons for perfect centering) -->
+      <form class="vista-search-form" action="/search" method="get" role="search">
+        <input type="text" name="q" placeholder="{{ section.settings.search_placeholder }}">
+        <button type="submit" class="vista-search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+      </form>
+
       <!-- Icons -->
       <div class="vista-icons">
         <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="vista-icon-item">
@@ -267,14 +278,6 @@
           Cart
         </a>
       </div>
-
-      <!-- Search Form -->
-      <form class="vista-search-form" action="/search" method="get" role="search">
-        <input type="text" name="q" placeholder="{{ section.settings.search_placeholder }}">
-        <button type="submit" class="vista-search-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        </button>
-      </form>
 
     </div>
   </div>
@@ -300,7 +303,7 @@
             {% endfor %}
 
             {% if has_mega_menu %}
-              <!-- Desktop Dropdown Render (Unchanged) -->
+              <!-- Desktop Dropdown Render -->
               <div class="vista-mega-menu">
                 <div class="vista-mega-wrapper layout-{{ section.settings.dropdown_width }}">
                   <div class="vista-mega-left">
@@ -762,4 +765,3 @@
   ]
 }
 {% endschema %}
-
